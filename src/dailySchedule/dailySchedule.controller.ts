@@ -9,15 +9,15 @@ export class DailyScheduleController {
 
   // 여행 로그 조회
   @Get(':dailyScheduleId/travelLog')
-  async getTravelLogOne(@Param('dailyScheduleId') dailyScheduleId: string) {
-    return this.travelLogService.findTravelLogOne(dailyScheduleId);
+  async getOneTravelLog(@Param('dailyScheduleId') dailyScheduleId: string) {
+    return this.travelLogService.findOneTravelLog(dailyScheduleId);
   }
 
   // AWS S3 프로필 이미지 Signed URL 불러오기
   @Get('travel-log-image-signed-url/:fileName')
   async getTravelLogImageSignedUrl(@Req() req, @Param('fileName') fileName) {
     const { userId } = req.user;
-    const signedUrl = await this.travelLogService.getTravelLogImageSignedUrl(fileName, userId);
+    const signedUrl = await this.travelLogService.findTravelLogImageSignedUrl(fileName, userId);
     return { signedUrl };
   }
 
@@ -41,7 +41,7 @@ export class DailyScheduleController {
 
   // 여행 로그 삭제
   @Delete(':dailyScheduleId/travelLog')
-  async removeTravelLog(@Param('dailyScheduleId') dailyScheduleId: string) {
+  async deleteTravelLog(@Param('dailyScheduleId') dailyScheduleId: string) {
     return this.travelLogService.deleteTravelLog(dailyScheduleId);
   }
 }

@@ -13,13 +13,13 @@ export class TravelPlanController {
 
   // 일별 일정 조회
   @Get(':travelPlanId/dailyPlan/:dailyPlanId')
-  async getDailyPlanOne(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
-    return this.dailyPlanService.findDailyPlanOne(travelPlanId, dailyPlanId);
+  async getOneDailyPlan(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
+    return this.dailyPlanService.findOneDailyPlan(travelPlanId, dailyPlanId);
   }
 
   // 일별 일정(DailyPlan) 생성
   @Post(':travelPlanId/dailyPlan')
-  async createDailyPlan(@Param('travelPlanId') travelPlanId: string, @Body() createDailyPlanDto: CreateDailyPlanDto) {
+  async postDailyPlan(@Param('travelPlanId') travelPlanId: string, @Body() createDailyPlanDto: CreateDailyPlanDto) {
     return this.dailyPlanService.createDailyPlan(createDailyPlanDto, travelPlanId);
   }
 
@@ -35,7 +35,7 @@ export class TravelPlanController {
 
   // 일별 일정 삭제
   @Delete(':travelPlanId/dailyPlan/:dailyPlanId')
-  async removeDailyPlan(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
+  async deleteDailyPlan(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
     return this.dailyPlanService.deleteDailyPlan(travelPlanId, dailyPlanId);
   }
 }

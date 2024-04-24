@@ -151,7 +151,7 @@ export class FeedController {
   @Get(':feedId/travelPlan/:travelPlanId')
   async getTravelPlan(@Req() req, @Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {
     const { userId } = req.user;
-    return await this.travelPlanService.getTravelPlan(feedId, travelPlanId, userId);
+    return await this.travelPlanService.findTravelPlan(feedId, travelPlanId, userId);
   }
 
   // 여행 일정 수정
@@ -163,7 +163,7 @@ export class FeedController {
     @Body() putTravelPlanDto: PutTravelPlanDto,
   ) {
     const { userId } = req.user;
-    return await this.travelPlanService.putTravelPlan(feedId, travelPlanId, putTravelPlanDto, userId);
+    return await this.travelPlanService.updateTravelPlan(feedId, travelPlanId, putTravelPlanDto, userId);
   }
 
   // 여행 일정 삭제

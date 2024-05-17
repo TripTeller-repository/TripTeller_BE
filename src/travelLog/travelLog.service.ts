@@ -11,7 +11,7 @@ export class TravelLogService {
   constructor(@InjectModel('DailySchedule') private readonly dailyScheduleModel: Model<DailySchedule>) {}
 
   // 여행 로그 조회
-  async findTravelLogOne(dailyScheduleId: string) {
+  async findOneTravelLog(dailyScheduleId: string) {
     const findTravelLog = await this.dailyScheduleModel.findOne({ _id: dailyScheduleId }).exec();
     if (!findTravelLog) {
       throw new NotFoundException('해당 여행 로그를 조회할 수 없습니다.');
@@ -69,7 +69,7 @@ export class TravelLogService {
   }
 
   // AWS S3 TravelLog 이미지 Signed URL 불러오기
-  async getTravelLogImageSignedUrl(fileName: string, userId: string) {
+  async findTravelLogImageSignedUrl(fileName: string, userId: string) {
     const fileNameInBucket = createFileUnixName(fileName, userId);
     const filePathName = `travel-log-image/${fileNameInBucket}`;
     return await createSignedUrl(filePathName);

@@ -19,7 +19,7 @@ export class TravelPlanService {
   ) {}
 
   // 특정 여행 일정 조회
-  async getTravelPlan(feedId: string, travelPlanId: string, userId: string) {
+  async findTravelPlan(feedId: string, travelPlanId: string, userId: string) {
     await this.feedExtractor.checkUser(feedId, userId);
     const plan = await this.travelPlanModel.findById({ _id: travelPlanId }).exec();
 
@@ -81,7 +81,7 @@ export class TravelPlanService {
   }
 
   // 여행 일정 수정
-  async putTravelPlan(feedId: string, travelPlanId: string, putTravelPlanDto: PutTravelPlanDto, userId: string) {
+  async updateTravelPlan(feedId: string, travelPlanId: string, putTravelPlanDto: PutTravelPlanDto, userId: string) {
     await this.feedExtractor.checkUser(feedId, userId);
     const updatePlan = await this.travelPlanModel.findByIdAndUpdate({ _id: travelPlanId }, putTravelPlanDto, {
       runValidators: true,

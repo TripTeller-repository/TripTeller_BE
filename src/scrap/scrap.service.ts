@@ -46,7 +46,7 @@ export class ScrapService {
 
   ////// 스크랩 취소 //////
   // 스크랩 목록에서 해당 게시물을 삭제함.
-  async deleteScrap(feedId: string, userId: string) {
+  async removeScrap(feedId: string, userId: string) {
     // 해당 게시물을 조회
     const feed = await this.feedModel.findOne({ _id: feedId });
     if (!feed) {
@@ -68,7 +68,7 @@ export class ScrapService {
   ////// 스크랩한 게시물 목록 조회 //////
   // 본인이 스크랩한 글 불러오는 함수
   // 토큰 id로 회원을 조회하여 그 회원이 스크랩한 게시물 ID를 보내줌.
-  async getScraps(userId: string) {
+  async fetchScraps(userId: string) {
     const scrapLists = await this.scrapModel.find({ userId }).exec();
     const myScraps = [];
 

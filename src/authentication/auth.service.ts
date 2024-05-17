@@ -94,7 +94,7 @@ export class AuthService {
   ////// 카카오 로그인 로직
   // 카카오한테 토큰 요청
   // 프론트에서 인증번호 넘겨줌
-  async getKakaoToken(code: string | null) {
+  async fetchKakaoToken(code: string | null) {
     try {
       const {
         data: { access_token },
@@ -104,7 +104,7 @@ export class AuthService {
         params: {
           grant_type: 'authorization_code',
           client_id: process.env.KAKAO_CLIENT_ID,
-          redirect_url: process.env.KAKAO_CALLBACK_URL,
+          redirect_uri: process.env.KAKAO_CALLBACK_URL,
           code, // 프론트측에서 넘겨준 코드
         },
       });
@@ -115,7 +115,7 @@ export class AuthService {
   }
 
   // 받은 토큰 다시 넘겨주고 회원 정보 받아오기
-  async getKakaoUserInfo(kakaoToken: string | null) {
+  async fetchKakaoUserInfo(kakaoToken: string | null) {
     const result = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: {
         Authorization: `Bearer ${kakaoToken}`,
@@ -136,12 +136,13 @@ export class AuthService {
     try {
       // 이메일로 회원 조회
       const { email } = userInfo;
-      const user = await this.userService.findByEmail(email);
+      let user = await this.userService.findByEmail(email);
 
       // DB에 회원 정보가 존재하지 않으면 자동으로 가입되도록 함.
-      // if (!user) {
-      //   user = await this.userService.createUser(userInfo);
-      // }
+      if (!user) {
+        const newUser = await this.createUser(userInfo);
+        user = newUser;
+      }
 
       // JWT 토큰 생성
       const { accessToken } = await this.createToken(user._id, OAuthProvider.Kakao);

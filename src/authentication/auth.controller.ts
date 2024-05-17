@@ -4,13 +4,13 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/authentication/dto/createUser.dto';
 import { SignInDto } from './dto/signIn.dto';
 
-// interface IOAuthUser {
-//   user: {
-//     name: string;
-//     email: string;
-//     password: string;
-//   };
-// }
+interface IOAuthUser {
+  user: {
+    name: string;
+    email: string;
+    password: string;
+  };
+}
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +18,7 @@ export class AuthController {
 
   // 회원가입
   @Post('sign-up')
-  async signUp(@Body() createUserDto: CreateUserDto) {
+  async postSignUp(@Body() createUserDto: CreateUserDto) {
     const newUser = await this.authService.createUser(createUserDto);
     return {
       email: newUser.email, // 이메일
@@ -30,7 +30,7 @@ export class AuthController {
 
   // 로그인
   @Post('sign-in')
-  async signIn(@Body() signInDto: SignInDto) {
+  async postSignIn(@Body() signInDto: SignInDto) {
     try {
       const token = this.authService.signIn(signInDto);
       return token;
@@ -43,9 +43,10 @@ export class AuthController {
   // 프론트에서 인가 코드 넘겨줌
   // 카카오에게 토큰 요청
   @Post('sign-in/kakao')
-  async signInKakao(@Query('code') code: string) {
+  async postSignInKakao(@Query('code') code: string) {
     try {
       // 카카오에서 토큰 받아오기
+      console.log('code', code)  // 인가 코드 확인
       const kakaoToken = await this.authService.getKakaoToken(code);
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
       const kakaoUserInfo = await this.authService.getKakaoUserInfo(kakaoToken);
@@ -60,7 +61,7 @@ export class AuthController {
 
   // 회원탈퇴
   @Delete('withdraw')
-  async withdraw(@Req() req: Request) {
+  async deleteWithdraw(@Req() req: Request) {
     const token = req.headers.authorization.split(' ')[1];
     await this.authService.withdraw(token);
     return { message: '회원탈퇴가 성공적으로 완료되었습니다.' };
@@ -68,7 +69,7 @@ export class AuthController {
 
   // 토큰 검증 (테스트용)
   @Get('token-verification')
-  async verifyToken(@Req() req: Request) {
+  async getVerifyToken(@Req() req: Request) {
     // 헤더에서 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
     // 토큰 유무 검증

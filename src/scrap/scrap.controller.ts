@@ -9,12 +9,12 @@ export class ScrapController {
   @Get()
   async getScraps(@Req() req) {
     const { userId } = req.user;
-    return await this.scrapService.getScraps(userId);
+    return await this.scrapService.fetchScraps(userId);
   }
 
   // 스크랩 등록
   @Post()
-  async createScrap(@Req() req, @Body() createScrapDto: CreateScrapDto) {
+  async postScrap(@Req() req, @Body() createScrapDto: CreateScrapDto) {
     const { userId } = req.user;
     return await this.scrapService.createScrap(createScrapDto, userId);
   }
@@ -23,6 +23,6 @@ export class ScrapController {
   @Delete(':feedId')
   async deleteScrap(@Req() req, @Param('feedId') feedId: string) {
     const { userId } = req.user;
-    return await this.scrapService.deleteScrap(feedId, userId);
+    return await this.scrapService.removeScrap(feedId, userId);
   }
 }

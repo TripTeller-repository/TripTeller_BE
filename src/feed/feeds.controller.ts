@@ -17,13 +17,13 @@ export class FeedsController {
   // 모든 게시글 조회 (공개)
   @Get()
   getPublicFeeds() {
-    return this.feedsService.getPublicFeeds();
+    return this.feedsService.getPublicFeedsPaginated();
   }
 
   // 모든 게시글 조회 페이지네이션 (공개)
   @Get('pagination')
   async getPublicFeedsPagination(@Query('pageNumber', ParseIntPipe) pageNumber: number) {
-    return this.feedsService.getPublicFeedsPagination(pageNumber);
+    return this.feedsService.getPublicFeedsPaginated(pageNumber);
   }
 
   // 게시물 ID로 특정 게시물 조회 (공개)

@@ -47,9 +47,9 @@ export class AuthController {
     try {
       // 카카오에서 토큰 받아오기
       console.log('code', code)  // 인가 코드 확인
-      const kakaoToken = await this.authService.getKakaoToken(code);
+      const kakaoToken = await this.authService.fetchKakaoToken(code);
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
-      const kakaoUserInfo = await this.authService.getKakaoUserInfo(kakaoToken);
+      const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
       // 우리 서버의 토큰 발행하기
       const token = await this.authService.oauthSignIn(kakaoUserInfo);
       // 토큰에 oauthProvider 정보 넣어주기

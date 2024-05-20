@@ -27,21 +27,16 @@ export class FeedsService {
     return this.feedExtractor.extractFeeds(feeds);
   }
 
-  // 모든 공개 게시물 페이지네이션
-  async getPublicFeedsPagination(pageNumber: number = 1) {
-    const pageSize = 9; // 한 페이지당 최대 게시물 수
-    const skip = (pageNumber - 1) * pageSize;
+  // 모든 공개 게시물 조회 (페이지네이션)
+  async getPublicFeedsPaginated(pageNumber: number = 1, pageSize: number = 9) {
     const criteria = {
       isPublic: true,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-
-    try {
-      const feeds = await this.feedModel.find(criteria).sort({ createdAt: -1 }).skip(skip).limit(pageSize).exec();
-      return this.feedExtractor.extractFeeds(feeds);
-    } catch (error) {
-      throw error;
-    }
+    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
+    const extractedFeeds = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data);
+    paginatedResult.feeds.data = extractedFeeds;
+    return paginatedResult;
   }
 
   // 게시물 ID로 특정 공개 게시물 조회하기

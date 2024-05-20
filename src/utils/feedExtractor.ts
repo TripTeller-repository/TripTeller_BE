@@ -37,6 +37,37 @@ export class FeedExtractor {
       .exec();
   };
 
+  // 페이지네이션 설정하는 함수
+  getFeedPaginated = async (pageNumber: number = 1, pageSize: number = 9, criteria: any = {}) => {
+    const skip = (pageNumber - 1) * pageSize;
+
+    try {
+      const feeds = await this.feedModel.aggregate([
+        { $match: criteria },
+        {
+          $facet: {
+            metadata: [{ $count: 'totalCount' }],
+            data: [{ $skip: skip }, { $limit: pageSize }],
+          },
+        },
+      ]);
+
+      const totalCount = feeds[0].metadata.length > 0 ? feeds[0].metadata[0].totalCount : 0;
+
+      const result = {
+        success: true,
+        feeds: {
+          metadata: { totalCount, pageNumber, pageSize },
+          data: feeds[0].data,
+        },
+      };
+
+      return result;
+    } catch (error) {
+      throw new Error('페이지네이션 작업이 실패하였습니다.');
+    }
+  };
+
   // 게시물 정렬 기준 설정하는 함수
   findFeedsByCriteria = async (criteria: any) => {
     return this.feedModel.find(criteria).exec();

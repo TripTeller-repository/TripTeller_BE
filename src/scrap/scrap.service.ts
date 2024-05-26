@@ -25,10 +25,10 @@ export class ScrapService {
     if (!feed.isPublic) {
       throw new Error('이 게시물은 공개되지 않았습니다.');
     }
-
+    console.log('증가했는지확인 - 이전', feed.likeCount);
     // 해당 게시물의 좋아요 숫자를 1 증가 (update query)
     await this.feedModel.updateOne({ _id: feed._id }, { $inc: { likeCount: 1 } });
-
+    console.log('증가했는지확인 - 이후', feed.likeCount);
     // 게시물 작성자가 본인인지 확인
     if (feed.userId === userId) {
       throw new Error('자신이 작성한 게시물은 스크랩할 수 없습니다.');

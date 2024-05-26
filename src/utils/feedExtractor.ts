@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { DailySchedule } from 'src/dailySchedule/dailySchedule.schema';
 import Feed, { FeedDocument } from 'src/feed/feed.schema';
+import Scrap from 'src/scrap/scrap.schema';
 import { TravelPlan } from 'src/travelPlan/travelPlan.schema';
 import { User } from 'src/user/user.schema';
 
@@ -11,6 +12,7 @@ export class FeedExtractor {
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Feed') private readonly feedModel: Model<Feed>,
     @InjectModel('TravelPlan') private readonly travelPlanModel: Model<TravelPlan>,
+    @InjectModel('Scrap') private readonly scrapModel: Model<Scrap>,
   ) {}
 
   // 로그인한 회원과 글 작성자가 일치하는지 판별하는 함수
@@ -73,8 +75,19 @@ export class FeedExtractor {
     return this.feedModel.find(criteria).exec();
   };
 
+  // 스크랩 여부 확인 함수 추가
+  // 스크랩 되어 있으면 true, 안 되어 있으면 false
+  isScrappedByUser = async (feedId: string, userId?: string) => {
+    console.log('isScrappedByUser', 'feedId', feedId, 'userId', userId);
+    if (!userId) return false; // 로그인 상태가 아니면 false 반환
+    const scrap = await this.scrapModel.findOne({ feedId, userId }).exec();
+    return scrap ? true : false;
+  };
+
   // 원하는 형태로 리턴값 추출
-  extractFeeds = async (feeds: FeedDocument[]) => {
+  // 우리의 여행에서의 게시글 형태
+  // travelPlan이 없는 경우는 제외
+  extractFeeds = async (feeds: FeedDocument[], userId?: string) => {
     const extractFeed = async (feed: FeedDocument) => {
       const { likeCount, travelPlan, coverImage, isPublic } = feed;
       if (!travelPlan) return null;
@@ -100,6 +113,10 @@ export class FeedExtractor {
         thumbnailUrl = dailySchedule?.imageUrl ?? null;
       }
 
+      // 해당 게시물 스크랩 여부 확인
+      const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId);
+      console.log('isScrapped', isScrapped);
+
       return {
         feedId: feed._id, // 게시물 ID 값
         travelPlanId: feed.travelPlan['_id'], // travelPlan ID값
@@ -112,6 +129,76 @@ export class FeedExtractor {
         endDate, // 종료일
         thumbnailUrl, // TravelLog 이미지 중 썸네일 URL
         coverImage, // 게시물 커버 이미지 URL
+        isScrapped, // 해당 게시물 스크랩 여부
+      };
+    };
+
+    return (
+      await Promise.all(
+        feeds
+          .filter((feed) => !feed.deletedAt) // deletedAt이 없는 경우 = 삭제되지 않은 경우
+          .map(async (feed) => {
+            // feed를 extractFeed로 만드는 함수
+            const _extractedFeed = await extractFeed(feed);
+
+            return _extractedFeed;
+          }), // => ExtractedFeed[]
+      )
+    ).filter((feed) => feed !== null); // null인 경우는 제외
+  };
+
+  // 나의 여행에서의 게시글 형태
+  // travelPlan이 있는 경우도 표시
+  extractMyFeeds = async (feeds: FeedDocument[], userId?: string) => {
+    const extractFeed = async (feed: FeedDocument) => {
+      const { likeCount, travelPlan, coverImage, isPublic } = feed;
+
+      let thumbnailUrl = null; // 썸네일 URL
+      let startDate = null;
+      let endDate = null;
+      let title = null;
+
+      if (travelPlan) {
+        // 이 TravelPlan의 모든 DailySchedule을 가져옴
+        const dailySchedules: DailySchedule[] = travelPlan.dailyPlans // => DailyPlan[]
+          .map((dailyPlan) => dailyPlan.dailySchedules) // => DailySchedule[][]
+          .flat(); // => DailySchedule[]
+
+        // DailySchedule 중 썸네일 이미지가 있고, isThumbnail이 true인 DailySchedule을 찾아 썸네일 URL을 추출
+        const isThumbnailDailySchedule = dailySchedules.find((dailySchedule) => dailySchedule.isThumbnail);
+        if (isThumbnailDailySchedule && isThumbnailDailySchedule.imageUrl) {
+          thumbnailUrl = isThumbnailDailySchedule.imageUrl;
+        }
+
+        startDate = travelPlan.startDate;
+        endDate = travelPlan.endDate;
+        title = travelPlan.title;
+
+        // isThumbnail이 true인 DailySchedule이 없을 경우
+        if (!thumbnailUrl) {
+          // imgUrl이 있는 아무 DailySchedule을 찾아 썸네일 URL을 추출
+          const dailySchedule = dailySchedules.find((dailySchedule) => dailySchedule.imageUrl);
+          thumbnailUrl = dailySchedule?.imageUrl ?? null;
+        }
+      }
+
+      // 해당 게시물 스크랩 여부 확인
+      const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId);
+      console.log('isScrapped', isScrapped);
+
+      return {
+        feedId: feed._id, // 게시물 ID 값
+        travelPlanId: travelPlan ? travelPlan['_id'] : null, // travelPlan ID값
+        userId: feed.userId, // 회원 ID 값
+        createdAt: feed.createdAt, // 게시물 작성일
+        isPublic, // 공개 여부
+        likeCount, // 좋아요(스크랩) 개수
+        title, // 제목
+        startDate, // 시작일
+        endDate, // 종료일
+        thumbnailUrl, // TravelLog 이미지 중 썸네일 URL
+        coverImage, // 게시물 커버 이미지 URL
+        isScrapped, // 해당 게시물 스크랩 여부
       };
     };
 

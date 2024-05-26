@@ -23,46 +23,42 @@ export class FeedController {
   /////////////// feed ///////////////
   ////////////////////////////////////
 
-  // 본인 모든 게시물 조회
+  // 본인의 모든 게시물 조회
+  // feed?pageNumber=1
   @Get()
-  async getAllFeeds(@Req() req) {
+  async getAllFeeds(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
     const { userId } = req.user;
-    return await this.feedService.getAllFeeds(userId);
+    return await this.feedService.fetchAllMyFeedsPaginated(pageNumber, userId);
   }
 
-  // 본인이 쓴 게시물 기간별 조회 (공개, 비공개 다)
-  @Get('/byDate')
-  async getFeedsByDate(@Req() req, @Query('startDate') startDate: string, @Query('endDate') endDate: string) {
-    const { userId } = req.user;
-    return await this.feedService.getFeedsByDate(userId, startDate, endDate);
-  }
+  // // 본인이 쓴 게시물 기간별 조회
+  // @Get('/byDate')
+  // async getFeedsByDate(@Req() req, @Query('startDate') startDate: string, @Query('endDate') endDate: string) {
+  //   const { userId } = req.user;
+  //   return await this.feedService.getFeedsByDate(userId, startDate, endDate);
+  // }
 
-  // 본인의 공개 게시물 조회: feed/public
+  // 본인의 공개 게시물 조회
+  // feed/public?pageNumber=1
   @Get('public')
-  async getMyPublicFeed(@Req() req) {
+  async getMyPublicFeed(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
     const { userId } = req.user;
-    return await this.feedService.getMyPublicFeed(userId);
+    return await this.feedService.fetchMyPublicFeeds(pageNumber, userId);
   }
 
-  // 본인의 비공개 게시물 조회: feed/private
+  // 본인의 비공개 게시물 조회
+  // feed/private?pageNumber=1
   @Get('private')
-  async getMyPrivateFeed(@Req() req) {
+  async getMyPrivateFeed(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
     const { userId } = req.user;
-    return await this.feedService.getMyPrivateFeed(userId);
-  }
-
-  // 본인 모든 게시물 조회 (페이지네이션)
-  @Get('pagination')
-  async getAllFeedsPagination(@Req() req, @Query('pageNumber', ParseIntPipe) pageNumber: number) {
-    const { userId } = req.user;
-    return await this.feedService.getAllFeedsPagination(userId, pageNumber);
+    return await this.feedService.fetchMyPrivateFeeds(pageNumber, userId);
   }
 
   // 본인의 특정 게시물을 게시물 ID로 조회
   @Get(':feedId')
   async getFeed(@Req() req, @Param('feedId') feedId: string) {
     const { userId } = req.user;
-    return await this.feedService.getMyFeedByFeedId(feedId, userId);
+    return await this.feedService.fetchMyFeedByFeedId(feedId, userId);
   }
 
   // 특정 게시물의 커버 이미지 url 불러오기
@@ -82,16 +78,16 @@ export class FeedController {
 
   // 본인의 모든 게시글 정렬 : 최신순
   @Get('order/byRecent')
-  getMyFeedOrderedByRecent(@Req() req) {
+  getMyFeedOrderedByRecent(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
     const { userId } = req.user;
-    return this.feedService.sortPrivateByRecent(userId);
+    return this.feedService.sortMyFeedsByRecent(pageNumber, userId);
   }
 
   // 본인의 모든 게시글 정렬 : 인기순
   @Get('order/byLikeCount')
-  getMyFeedOrderedByLikeCount(@Req() req) {
+  getMyFeedOrderedByLikeCount(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
     const { userId } = req.user;
-    return this.feedService.sortPrivateByLikeCount(userId);
+    return this.feedService.sortMyFeedsByLikeCount(pageNumber, userId);
   }
 
   // 게시물 등록

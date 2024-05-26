@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { DailySchedule } from 'src/dailySchedule/dailySchedule.schema';
 import Feed, { FeedDocument } from 'src/feed/feed.schema';
+import Scrap from 'src/scrap/scrap.schema';
 import { TravelPlan } from 'src/travelPlan/travelPlan.schema';
 import { User } from 'src/user/user.schema';
 
@@ -11,6 +12,7 @@ export class FeedExtractor {
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Feed') private readonly feedModel: Model<Feed>,
     @InjectModel('TravelPlan') private readonly travelPlanModel: Model<TravelPlan>,
+    @InjectModel('Scrap') private readonly scrapModel: Model<Scrap>,
   ) {}
 
   // 로그인한 회원과 글 작성자가 일치하는지 판별하는 함수
@@ -73,8 +75,16 @@ export class FeedExtractor {
     return this.feedModel.find(criteria).exec();
   };
 
+  // 스크랩 여부 확인 함수 추가
+  // 스크랩 되어 있으면 true, 안 되어 있으면 false
+  isScrappedByUser = async (feedId: string, userId?: string) => {
+    if (!userId) return false; // 로그인 상태가 아니면 false 반환
+    const scrap = await this.scrapModel.findOne({ feedId, userId }).exec();
+    return scrap;
+  };
+
   // 원하는 형태로 리턴값 추출
-  extractFeeds = async (feeds: FeedDocument[]) => {
+  extractFeeds = async (feeds: FeedDocument[], userId?: string) => {
     const extractFeed = async (feed: FeedDocument) => {
       const { likeCount, travelPlan, coverImage, isPublic } = feed;
       if (!travelPlan) return null;
@@ -100,6 +110,9 @@ export class FeedExtractor {
         thumbnailUrl = dailySchedule?.imageUrl ?? null;
       }
 
+      // 해당 게시물 스크랩 여부 확인
+      const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId);
+
       return {
         feedId: feed._id, // 게시물 ID 값
         travelPlanId: feed.travelPlan['_id'], // travelPlan ID값
@@ -112,6 +125,7 @@ export class FeedExtractor {
         endDate, // 종료일
         thumbnailUrl, // TravelLog 이미지 중 썸네일 URL
         coverImage, // 게시물 커버 이미지 URL
+        isScrapped, // 해당 게시물 스크랩 여부
       };
     };
 

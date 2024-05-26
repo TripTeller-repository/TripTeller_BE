@@ -5,4 +5,8 @@ export class AppService {
   getHello(): string {
     return '홈페이지에 접속하였습니다!';
   }
+
+  getHealthCheck(): string {
+    return 'Health Check';
+  }
 }

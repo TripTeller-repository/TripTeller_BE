@@ -22,12 +22,12 @@ import { TravelPlanService } from './travelPlan/travelPlan.service';
 import mongoose from 'mongoose';
 import { ExpenseSchema } from './expense/expense.schema';
 import { TravelPlanSchema } from './travelPlan/travelPlan.schema';
-// import { FeedsController } from './feed/feeds.controller';
+import { FeedsController } from './feed/feeds.controller';
 import { TravelPlanController } from './travelPlan/travelPlan.controller';
 import { ExpenseService } from './expense/expense.service';
 import { TravelLogService } from './travelLog/travelLog.service';
 import { DailyScheduleController } from './dailySchedule/dailySchedule.controller';
-// import { FeedsService } from './feed/feeds.service';
+import { FeedsService } from './feed/feeds.service';
 import { DailyPlanSchema } from './dailyPlan/dailyPlan.schema';
 import { DailyPlanService } from './dailyPlan/dailyPlan.service';
 import { DailyPlanController } from './dailyPlan/dailyPlan.controller';
@@ -71,7 +71,7 @@ import { FeedExtractor } from './utils/feedExtractor';
     AuthController,
     UserController,
     FeedController,
-    // FeedsController,
+    FeedsController,
     ScrapController,
     TravelPlanController,
     DailyPlanController,
@@ -83,7 +83,7 @@ import { FeedExtractor } from './utils/feedExtractor';
     UserService,
     AuthService,
     FeedService,
-    // FeedsService,
+    FeedsService,
     ScrapService,
     DailyScheduleService,
     TravelPlanService,

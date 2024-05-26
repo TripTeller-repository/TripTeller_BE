@@ -81,7 +81,7 @@ export class FeedExtractor {
     console.log('isScrappedByUser', 'feedId', feedId, 'userId', userId);
     if (!userId) return false; // 로그인 상태가 아니면 false 반환
     const scrap = await this.scrapModel.findOne({ feedId, userId }).exec();
-    return scrap;
+    return scrap ? true : false;
   };
 
   // 원하는 형태로 리턴값 추출

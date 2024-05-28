@@ -109,7 +109,7 @@ export class FeedsController {
   // 회원 프로필 정보를 회원 ID로 조회
   // 정보 : 이메일, 프로필 이미지 URL, 닉네임
   // OurTrip => 회원 ID 값으로 조회
-  @Post('user/info')
+  @Post('user-info')
   async getUserInfoOurTrip(@Body('userId') userId: string) {
     return this.userService.getUserInfo(userId);
   }

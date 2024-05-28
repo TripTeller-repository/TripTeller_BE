@@ -23,11 +23,17 @@ export class FeedsController {
     try {
       // 로그인한 상태인 경우 회원의 userId를 추출
       const authHeader = req.headers['authorization'];
-      const token = authHeader.split(' ')[1];
-      const decodedToken = await this.authService.verifyToken(token);
-      const { userId } = decodedToken;
+      let userId = null; // userId 기본값을 null로 설정
 
-      return this.feedsService.fetchOurFeeds(pageNumber, userId);
+      if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        if (token) {
+          const decodedToken = await this.authService.verifyToken(token);
+          userId = decodedToken ? decodedToken.userId : null;
+        }
+      }
+
+      return this.feedsService.fetchOurFeeds(pageNumber, userId || null);
     } catch (error) {
       throw new HttpException(
         {
@@ -60,11 +66,17 @@ export class FeedsController {
     try {
       // 로그인한 상태인 경우 회원의 userId를 추출
       const authHeader = req.headers['authorization'];
-      const token = authHeader.split(' ')[1];
-      const decodedToken = await this.authService.verifyToken(token);
-      const { userId } = decodedToken;
+      let userId = null; // userId 기본값을 null로 설정
 
-      return this.feedsService.sortOurFeedsByRecent(pageNumber, userId);
+      if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        if (token) {
+          const decodedToken = await this.authService.verifyToken(token);
+          userId = decodedToken ? decodedToken.userId : null;
+        }
+      }
+
+      return this.feedsService.sortOurFeedsByRecent(pageNumber, userId || null);
     } catch (error) {
       throw new HttpException(
         {
@@ -83,11 +95,17 @@ export class FeedsController {
     try {
       // 로그인한 상태인 경우 회원의 userId를 추출
       const authHeader = req.headers['authorization'];
-      const token = authHeader.split(' ')[1];
-      const decodedToken = await this.authService.verifyToken(token);
-      const { userId } = decodedToken;
+      let userId = null; // userId 기본값을 null로 설정
 
-      return this.feedsService.sortOurFeedsByLikeCount(pageNumber, userId);
+      if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        if (token) {
+          const decodedToken = await this.authService.verifyToken(token);
+          userId = decodedToken ? decodedToken.userId : null;
+        }
+      }
+
+      return this.feedsService.sortOurFeedsByLikeCount(pageNumber, userId || null);
     } catch (error) {
       throw new HttpException(
         {

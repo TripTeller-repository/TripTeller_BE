@@ -78,7 +78,6 @@ export class FeedExtractor {
   // 스크랩 여부 확인 함수 추가
   // 스크랩 되어 있으면 true, 안 되어 있으면 false
   isScrappedByUser = async (feedId: string, userId?: string) => {
-    console.log('isScrappedByUser', 'feedId', feedId, 'userId', userId);
     if (!userId) return false; // 로그인 상태가 아니면 false 반환
     const scrap = await this.scrapModel.findOne({ feedId, userId }).exec();
     return scrap ? true : false;
@@ -115,7 +114,6 @@ export class FeedExtractor {
 
       // 해당 게시물 스크랩 여부 확인
       const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId);
-      console.log('isScrapped', isScrapped);
 
       return {
         feedId: feed._id, // 게시물 ID 값
@@ -184,7 +182,6 @@ export class FeedExtractor {
 
       // 해당 게시물 스크랩 여부 확인
       const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId);
-      console.log('isScrapped', isScrapped);
 
       return {
         feedId: feed._id, // 게시물 ID 값

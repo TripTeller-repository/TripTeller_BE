@@ -100,7 +100,7 @@ export class FeedsService {
         if (!feed.travelPlan) return false;
 
         if (!feed.travelPlan.dailyPlans) return false;
-        // console.log('feed.travelPlan.dailyPlans', feed.travelPlan.dailyPlans);
+
         for (const dailyPlan of feed.travelPlan.dailyPlans) {
           if (dailyPlan.date < InputStartDate || dailyPlan.date > InputEndDate) return false;
         }

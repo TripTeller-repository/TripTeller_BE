@@ -74,53 +74,51 @@ export class FeedsService {
     return paginatedResult;
   }
 
-  // // 공개 게시물 기간별 조회 (페이지네이션)
-  // async fetchFeedsByDate(startDate: string, endDate: string, pageNumber: number = 1, pageSize: number = 9) {
-  //   const InputStartDate: Date = new Date(startDate);
-  //   const InputEndDate: Date = new Date(endDate);
-  //   console.log(InputStartDate, InputEndDate);
-  //   if (InputStartDate > InputEndDate) {
-  //     throw new BadRequestException('startDate는 endDate보다 이전이어야 합니다.');
-  //   }
-  //   try {
-  //     // travelPlan의 startDate가 InputStartDate보다 크고
-  //     // travelPlan의 endDate가 InputEndDate보다 작음
+  // 공개 게시물 기간별 조회
+  async fetchFeedsByDate(startDate: string, endDate: string, pageNumber: number, userId?: string) {
+    const pageSize = 9;
+    const InputStartDate: Date = new Date(startDate);
+    const InputEndDate: Date = new Date(endDate);
 
-  //     const criteria = {
-  //       isPublic: true,
-  //       // 'travelPlan.dailyPlans.date': { $gte: InputStartDate, $lte: InputEndDate },
-  //       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
-  //     };
+    if (InputStartDate > InputEndDate) {
+      throw new BadRequestException('startDate는 endDate보다 이전이어야 합니다.');
+    }
+    try {
+      // travelPlan의 startDate가 InputStartDate보다 크고
+      // travelPlan의 endDate가 InputEndDate보다 작음
 
-  //     const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
+      const criteria = {
+        isPublic: true,
+        $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+      };
 
-  //     const paginatedFeeds = paginatedResult.feeds.data;
+      const AllFeeds = await this.feedModel.find(criteria).exec();
 
-  //     console.log('★★★★★★★', paginatedFeeds);
+      const filteredFeeds = AllFeeds.filter((feed) => {
+        if (feed.isPublic === false) return false;
 
-  //     const filteredFeeds = paginatedFeeds.filter((feed) => {
-  //       console.log('필터링!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  //       console.log('▲', 'feed안 데일리플랜', feed.travelPlan.dailyPlans);
-  //       console.log('날짜', feed.travelPlan.dailyPlans.date);
-  //       if (feed.isPublic === false) return false;
+        if (!feed.travelPlan) return false;
 
-  //       if (!feed.travelPlan) return false;
+        if (!feed.travelPlan.dailyPlans) return false;
 
-  //       if (feed.travelPlan.dailyPlans.lenth === 0) return false;
+        for (const dailyPlan of feed.travelPlan.dailyPlans) {
+          if (dailyPlan.date < InputStartDate || dailyPlan.date > InputEndDate) return false;
+        }
+        return true;
+      });
 
-  //       for (const dailyPlan of feed.travelPlan.dailyPlans) {
-  //         console.log('데일리플랜의 날짜!!!!!!!!!!!!!!!!!!!!', dailyPlan.date);
-  //         if (dailyPlan.date < InputStartDate || dailyPlan.date > InputEndDate) return false;
-  //       }
-  //       return true;
-  //     });
+      if (!filteredFeeds || filteredFeeds.length === 0) {
+        return { message: '게시물이 해당 날짜 사이에 존재하지 않습니다.' };
+      }
 
-  //     if (!filteredFeeds || filteredFeeds.length === 0) {
-  //       return { message: '게시물이 해당 날짜 사이에 존재하지 않습니다.' };
-  //     }
-  //     return filteredFeeds;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      // 필터링된 배열의 id목록과 일치하는 게시글을 가져오도록 함.
+      const paginationCriteria = { _id: { $in: filteredFeeds.map((feed) => feed._id) } };
+      const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, paginationCriteria);
+      paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
+
+      return paginatedResult;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

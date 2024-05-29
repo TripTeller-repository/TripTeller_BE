@@ -31,12 +31,18 @@ export class FeedController {
     return await this.feedService.fetchAllMyFeedsPaginated(pageNumber, userId);
   }
 
-  // // 본인이 쓴 게시물 기간별 조회
-  // @Get('/byDate')
-  // async getFeedsByDate(@Req() req, @Query('startDate') startDate: string, @Query('endDate') endDate: string) {
-  //   const { userId } = req.user;
-  //   return await this.feedService.getFeedsByDate(userId, startDate, endDate);
-  // }
+  // 본인이 쓴 게시물 기간별 조회
+  // feed/date?startDate=2023-01-01&endDate=2023-01-31&pageNumber=1
+  @Get('/date')
+  async getFeedsByDate(
+    @Req() req,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Query('pageNumber', ParseIntPipe) pageNumber: number,
+  ) {
+    const { userId } = req.user;
+    return await this.feedService.fetchMyFeedsByDate(startDate, endDate, pageNumber, userId);
+  }
 
   // 본인의 공개 게시물 조회
   // feed/public?pageNumber=1

@@ -93,7 +93,7 @@ export class FeedService {
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
     const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
-    const extractedFeeds = await this.feedExtractor.extractMyFeeds(paginatedResult.feeds.data);
+    const extractedFeeds = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data);
     paginatedResult.feeds.data = extractedFeeds;
 
     return paginatedResult;
@@ -114,7 +114,7 @@ export class FeedService {
         $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
       })
       .exec();
-    return this.feedExtractor.extractMyFeeds(feeds);
+    return this.feedExtractor.extractFeeds(feeds);
   }
 
   // 본인이 작성한 모든 게시물 중 "공개" 게시물 조회
@@ -127,7 +127,7 @@ export class FeedService {
     };
     const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
     const sortedFeeds = paginatedResult.feeds.data;
-    paginatedResult.feeds.data = await this.feedExtractor.extractMyFeeds(sortedFeeds);
+    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
 
     return paginatedResult;
   }
@@ -142,7 +142,7 @@ export class FeedService {
     };
     const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
     const sortedFeeds = paginatedResult.feeds.data;
-    paginatedResult.feeds.data = await this.feedExtractor.extractMyFeeds(sortedFeeds);
+    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
 
     return paginatedResult;
   }
@@ -156,7 +156,7 @@ export class FeedService {
     };
     const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
     const sortedFeeds = paginatedResult.feeds.data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    paginatedResult.feeds.data = await this.feedExtractor.extractMyFeeds(sortedFeeds);
+    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
 
     return paginatedResult;
   }
@@ -171,7 +171,7 @@ export class FeedService {
     };
     const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
     const sortedFeeds = paginatedResult.feeds.data.sort((a, b) => b.likeCount - a.likeCount);
-    paginatedResult.feeds.data = await this.feedExtractor.extractMyFeeds(sortedFeeds);
+    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
 
     return paginatedResult;
   }

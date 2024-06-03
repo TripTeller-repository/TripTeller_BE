@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Post, Query, Req, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/authentication/dto/createUser.dto';
 import { SignInDto } from './dto/sign-in.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 interface IOAuthUser {
   user: {

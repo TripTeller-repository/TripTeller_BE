@@ -145,6 +145,6 @@ export class OurTripController {
   // 정보 : 이메일, 프로필 이미지 URL, 닉네임
   @Post('user-info')
   async getUserInfoOurTrip(@Body('userId') userId: string) {
-    return this.userService.getUserInfo(userId);
+    return this.userService.findUserInfoById(userId);
   }
 }

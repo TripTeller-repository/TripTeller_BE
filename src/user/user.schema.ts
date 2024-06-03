@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 // 소셜 로그인 사용자 정보 제공자 (OAuth 공급자)
-enum OAuthProvider {
+enum IAuthProvider {
   GOOGLE = 'Google',
   NAVER = 'Naver',
   KAKAO = 'Kakao',
@@ -14,8 +14,8 @@ const defaultProfileImage =
 @Schema({ timestamps: true, collection: 'User' })
 export class User extends Document {
   // OAuth 공급자
-  @Prop({ enum: OAuthProvider, default: null })
-  oauthProvider: OAuthProvider | null;
+  @Prop({ enum: IAuthProvider, default: null })
+  authProvider: IAuthProvider | null;
 
   // 이메일 주소
   @Prop({ required: true })

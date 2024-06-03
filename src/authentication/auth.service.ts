@@ -9,8 +9,8 @@ import { Model } from 'mongoose';
 import { User } from 'src/user/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
 
-// 소셜 로그인 사용자 정보 제공자 (OAuth 공급자)
-enum OAuthProvider {
+// 소셜 로그인 사용자 정보 제공자 (Auth 공급자)
+enum IAuthProvider {
   Google = 'google',
   Naver = 'naver',
   Kakao = 'kakao',
@@ -45,16 +45,19 @@ export class AuthService {
   }
 
   ////// 토큰 생성
-  // userId, oauthProvider을 기반으로 JWT 토큰을 생성
+  // userId, authProvider을 기반으로 JWT 토큰을 생성
   // 추후 쿠키(res.cookie) 사용할 예정
-  async createToken(userId: string, oauthProvider: string) {
+  async createToken(userId: string, authProvider: string) {
     // JWT payload 생성
-    const payload = { userId, oauthProvider };
+    const payload = { userId, authProvider };
 
     // Access Token 생성
     const accessToken = jwt.sign(payload, process.env.SECRET_KEY);
 
-    return { accessToken };
+    // Refresh Token 생성 (쿠키)
+    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY);
+
+    return { accessToken, refreshToken };
   }
 
   ////// 로그인
@@ -83,8 +86,8 @@ export class AuthService {
 
       // 해당 유저가 DB에 존재하고, user의 고유 ID가 있는 경우에는 토큰 발행
       if (user && user._id) {
-        const token = await this.createToken(user._id, user.oauthProvider);
-        return token;
+        const tokens = await this.createToken(user._id, user.authProvider);
+        return tokens;
       }
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');

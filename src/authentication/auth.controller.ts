@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Post, Query, Req, UnauthorizedException } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Delete, Get, Post, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/authentication/dto/createUser.dto';
-import { SignInDto } from './dto/signIn.dto';
+import { SignInDto } from './dto/sign-in.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { stringify } from 'flatted';
 
 interface IOAuthUser {
   user: {
@@ -30,10 +31,20 @@ export class AuthController {
 
   // 로그인
   @Post('sign-in')
-  async postSignIn(@Body() signInDto: SignInDto) {
+  async postSignIn(@Body() signInDto: SignInDto, @Req() req, @Res({ passthrough: true }) res: expRes) {
     try {
-      const token = this.authService.signIn(signInDto);
-      return token;
+      console.log('Request body:', req.body);
+
+      const tokens = await this.authService.signIn(signInDto);
+      console.log(tokens);
+
+      const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
+      console.log('accessToken', accessToken);
+      console.log('refreshToken', refreshToken);
+
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+
+      return res.send({ accessToken });
     } catch (error) {
       throw new UnauthorizedException('유효하지 않은 이메일이나 비밀번호를 입력하여 로그인이 실패하였습니다.');
     }
@@ -46,7 +57,7 @@ export class AuthController {
   async postSignInKakao(@Query('code') code: string) {
     try {
       // 카카오에서 토큰 받아오기
-      console.log('code', code)  // 인가 코드 확인
+      console.log('code', code); // 인가 코드 확인
       const kakaoToken = await this.authService.fetchKakaoToken(code);
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
@@ -61,7 +72,7 @@ export class AuthController {
 
   // 회원탈퇴
   @Delete('withdraw')
-  async deleteWithdraw(@Req() req: Request) {
+  async deleteWithdraw(@Req() req: expReq) {
     const token = req.headers.authorization.split(' ')[1];
     await this.authService.withdraw(token);
     return { message: '회원탈퇴가 성공적으로 완료되었습니다.' };
@@ -69,7 +80,7 @@ export class AuthController {
 
   // 토큰 검증 (테스트용)
   @Get('token-verification')
-  async getVerifyToken(@Req() req: Request) {
+  async getVerifyToken(@Req() req: expReq) {
     // 헤더에서 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
     // 토큰 유무 검증

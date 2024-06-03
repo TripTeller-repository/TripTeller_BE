@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import Feed from 'src/feed/feed.schema';
 import Scrap from './scrap.schema';
-import { FeedExtractor } from '../utils/feedExtractor';
+import { FeedExtractor } from '../utils/feed-extractor';
 
 @Injectable()
 export class ScrapService {

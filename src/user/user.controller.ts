@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { PostProfileImageDto } from './dto/postProfileImage.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { PostProfileImageDto } from './dto/post-profile-image.dto';
 
 @Controller('user')
 export class UserController {

@@ -1,6 +1,6 @@
 import { Controller, Post, Delete, Get, Param, Body, Req } from '@nestjs/common';
 import { ScrapService } from './scrap.service';
-import { CreateScrapDto } from './dto/createScrap.dto';
+import { CreateScrapDto } from './dto/create-scrap.dto';
 
 @Controller('scrap')
 export class ScrapController {

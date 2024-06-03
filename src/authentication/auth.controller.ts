@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Post, Query, Req, UnauthorizedException 
 import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/authentication/dto/createUser.dto';
-import { SignInDto } from './dto/signIn.dto';
+import { SignInDto } from './dto/sign-in.dto';
 
 interface IOAuthUser {
   user: {
@@ -46,7 +46,7 @@ export class AuthController {
   async postSignInKakao(@Query('code') code: string) {
     try {
       // 카카오에서 토큰 받아오기
-      console.log('code', code)  // 인가 코드 확인
+      console.log('code', code); // 인가 코드 확인
       const kakaoToken = await this.authService.fetchKakaoToken(code);
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);

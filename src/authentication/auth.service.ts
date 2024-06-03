@@ -64,7 +64,7 @@ export class AuthService {
   async signIn(signInDto: SignInDto) {
     try {
       // 이메일로 특정 회원 조회
-      const user = await this.userService.findByEmail(signInDto.email);
+      const user = await this.userService.findUserByEmail(signInDto.email);
 
       // 회원이 존재하지 않을 경우
       if (!user || user === null || user === undefined) {
@@ -139,7 +139,7 @@ export class AuthService {
     try {
       // 이메일로 회원 조회
       const { email } = userInfo;
-      let user = await this.userService.findByEmail(email);
+      let user = await this.userService.findUserByEmail(email);
 
       // DB에 회원 정보가 존재하지 않으면 자동으로 가입되도록 함.
       if (!user) {
@@ -196,11 +196,11 @@ export class AuthService {
       const { userId } = verifiedToken;
 
       // 회원 ID로 회원 조회
-      const user = await this.userService.findById(userId);
+      const user = await this.userService.findUserById(userId);
 
       // DB에 있는 회원 id에서 deletedAt의 값을 현재 시각(date)로 만들기
       if (user) {
-        await this.userService.deleteById(userId, new Date());
+        await this.userService.deleteUserById(userId, new Date());
       } else {
         return { message: '해당하는 사용자를 찾을 수 없습니다.' };
       }

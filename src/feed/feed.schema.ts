@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { TravelPlan } from 'src/travelPlan/travelPlan.schema';
+import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
 
 export type FeedDocument = Feed & Document;
 

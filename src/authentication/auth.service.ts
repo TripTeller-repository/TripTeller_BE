@@ -10,7 +10,7 @@ import { User } from 'src/user/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
 
 // 소셜 로그인 사용자 정보 제공자 (Auth 공급자)
-enum IAuthProvider {
+enum AuthProvider {
   Google = 'google',
   Naver = 'naver',
   Kakao = 'kakao',
@@ -148,7 +148,7 @@ export class AuthService {
       }
 
       // JWT 토큰 생성
-      const { accessToken } = await this.createToken(user._id, OAuthProvider.Kakao);
+      const { accessToken } = await this.createToken(user._id, AuthProvider.Kakao);
       return { token: accessToken };
     } catch (error) {
       // 오류 발생시 에러 메시지 출력

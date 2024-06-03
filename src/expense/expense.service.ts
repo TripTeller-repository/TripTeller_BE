@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { DailyPlan } from 'src/dailyPlan/dailyPlan.schema';
 import { Expense } from './expense.schema';
-import { CreateExpenseDto } from './dto/createExpense.dto';
-import { PutExpenseDto } from './dto/putExpense.dto';
+import { CreateExpenseDto } from './dto/create-expense.dto';
+import { PutExpenseDto } from './dto/put-expense.dto';
+import { DailyPlan } from 'src/daily-plan/daily-plan.schema';
 
 @Injectable()
 export class ExpenseService {

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { User } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { UserInfoDto } from './dto/userInfo.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserInfoDto } from './dto/user-info.dto';
 import { createFileUnixName, createSignedUrl } from 'src/utils/file.util';
 
 @Injectable()

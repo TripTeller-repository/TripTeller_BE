@@ -3,7 +3,6 @@ import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { stringify } from 'flatted';
 
 interface IOAuthUser {
   user: {
@@ -34,17 +33,19 @@ export class AuthController {
   async postSignIn(@Body() signInDto: SignInDto, @Req() req, @Res({ passthrough: true }) res: expRes) {
     try {
       console.log('Request body:', req.body);
+      console.log('signInDto: ', signInDto);
 
-      const tokens = await this.authService.signIn(signInDto);
-      console.log(tokens);
+      // const tokens = await this.authService.signIn(signInDto);
+      // console.log('tokens: ', tokens);
 
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
       console.log('accessToken', accessToken);
       console.log('refreshToken', refreshToken);
 
-      res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, domain: '.localhost', maxAge: 24 * 60 * 60 * 1000 });
 
-      return res.send({ accessToken });
+      //res.json({ accessToken });
+      return { accessToken };
     } catch (error) {
       throw new UnauthorizedException('유효하지 않은 이메일이나 비밀번호를 입력하여 로그인이 실패하였습니다.');
     }

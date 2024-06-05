@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { DailySchedule } from 'src/daily-schedule/daily-schedule.schema';
 import Feed, { FeedDocument } from 'src/feed/feed.schema';
 import Scrap from 'src/scrap/scrap.schema';
+import { RegionName } from 'src/travel-plan/region-name.enum';
 import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
 import { User } from 'src/user/user.schema';
 
@@ -123,6 +124,7 @@ export class FeedExtractor {
         isPublic, // 공개 여부
         likeCount, // 좋아요(스크랩) 개수
         title: travelPlan.title, // 제목
+        region: travelPlan.region as RegionName, // 지역
         startDate, // 시작일
         endDate, // 종료일
         thumbnailUrl, // TravelLog 이미지 중 썸네일 URL

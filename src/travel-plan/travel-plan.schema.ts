@@ -2,20 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types, Document } from 'mongoose';
 import { DailyPlan } from 'src/daily-plan/daily-plan.schema';
 import { DailySchedule } from 'src/daily-schedule/daily-schedule.schema';
+import { RegionName } from './region-name.enum';
 
 export type TravelPlanDocument = TravelPlan & Document;
-
-// 지역 이름
-enum RegionName {
-  Seoul = 'Seoul', // 서울
-  Gangwon = 'Gangwon', // 강원
-  GyeonggiIncheon = 'GyeonggiIncheon', // 경기
-  ChungcheongDaejeon = 'ChungcheongDaejeon', // 충청 대전
-  GyeongsangDaeguUlsan = 'GyeongsangDaeguUlsan', // 경상 대구 울산
-  Busan = 'Busan', // 부산
-  JeollaGwangju = 'JeollaGwangju', // 전라 광주
-  Jeju = 'Jeju', // 제주
-}
 
 @Schema({ timestamps: true, collection: 'TravelPlan', toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class TravelPlan {

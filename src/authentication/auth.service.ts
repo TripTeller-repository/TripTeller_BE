@@ -52,10 +52,10 @@ export class AuthService {
     const payload = { userId, authProvider };
 
     // Access Token 생성
-    const accessToken = jwt.sign(payload, process.env.SECRET_KEY);
+    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
 
     // Refresh Token 생성 (쿠키)
-    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY);
+    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1d' });
 
     return { accessToken, refreshToken };
   }
@@ -75,6 +75,9 @@ export class AuthService {
       if (user.deletedAt !== null) {
         throw new UnauthorizedException('이미 탈퇴한 회원입니다.');
       }
+      console.log('signInDto.password', signInDto.password);
+      console.log('user.password', user.password);
+      console.log('타입', typeof user.password)
 
       // 비밀번호 생성
       const isPasswordValid = await this.verifyPassword(signInDto.password, user.password);
@@ -86,7 +89,10 @@ export class AuthService {
 
       // 해당 유저가 DB에 존재하고, user의 고유 ID가 있는 경우에는 토큰 발행
       if (user && user._id) {
-        const tokens = await this.createToken(user._id, user.authProvider);
+        const userIdString = user._id.toString();
+        console.log('userIdString의 타입', typeof userIdString);
+        const tokens = await this.createToken(userIdString, user.authProvider);
+        console.log('로그인 서비스에서 발행한 토큰', tokens);
         return tokens;
       }
     } catch (error) {

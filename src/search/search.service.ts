@@ -85,7 +85,7 @@ export class SearchService {
 
         return extractedRegionResult;
       } else {
-        filteredResult = extractedResult.filter((result) => result.region === region);
+        filteredResult = extractedResult.filter((result) => result.region === region && result.isPublic === true);
 
         return filteredResult;
       }

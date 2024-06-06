@@ -3,6 +3,7 @@ import { ScrapService } from './scrap.service';
 import { CreateScrapDto } from './dto/create-scrap.dto';
 
 @Controller('scrap')
+@UseGuards(CustomAuthGuard)
 export class ScrapController {
   constructor(private readonly scrapService: ScrapService) {}
   // 스크랩한 게시물 조회

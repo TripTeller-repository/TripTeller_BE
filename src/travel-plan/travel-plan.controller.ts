@@ -4,6 +4,7 @@ import { CreateDailyPlanDto } from 'src/daily-plan/dto/create-daily-plan.dto';
 import { PutDailyPlanDto } from 'src/daily-plan/dto/put-daily-plan.dto';
 
 @Controller('travel-plan')
+@UseGuards(CustomAuthGuard)
 export class TravelPlanController {
   constructor(private readonly dailyPlanService: DailyPlanService) {}
 

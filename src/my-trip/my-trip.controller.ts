@@ -1,4 +1,4 @@
-import { Controller, Post, Delete, Get, Param, Body, Req, Put, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Delete, Get, Param, Body, Req, Put, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { MyTripService } from './my-trip.service';
 import { CreateFeedDto } from '../feed/dto/create-feed.dto';
 import { UpdateFeedDto } from '../feed/dto/update-feed.dto';
@@ -6,8 +6,10 @@ import { TravelPlanService } from '../travel-plan/travel-plan.service';
 import { CreateTravelPlanDto } from '../travel-plan/dto/create-travel-plan.dto';
 import { PutTravelPlanDto } from '../travel-plan/dto/put-travel-plan.dto';
 import { PostCoverImageDto } from '../feed/dto/post-cover-Image.dto';
+import { CustomAuthGuard } from 'src/authentication/auth.guard';
 
 @Controller('my-trip')
+@UseGuards(CustomAuthGuard)
 export class MyTripController {
   constructor(
     private readonly myTripService: MyTripService,

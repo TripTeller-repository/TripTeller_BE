@@ -1,16 +1,8 @@
-import { Body, Controller, Delete, Get, Post, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-
-interface IOAuthUser {
-  user: {
-    name: string;
-    email: string;
-    password: string;
-  };
-}
 
 @Controller('auth')
 export class AuthController {
@@ -32,40 +24,32 @@ export class AuthController {
   @Post('sign-in')
   async postSignIn(@Body() signInDto: SignInDto, @Req() req, @Res({ passthrough: true }) res: expRes) {
     try {
-      console.log('Request body:', req.body);
-      console.log('signInDto: ', signInDto);
-
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
-      console.log('accessToken', accessToken);
-      console.log('refreshToken', refreshToken);
 
-      res.cookie('refreshToken', refreshToken, { httpOnly: true, domain: '.localhost', maxAge: 24 * 60 * 60 * 1000 });
+      const domain = '.trip-teller.com' || '.localhost';
 
-      //res.json({ accessToken });
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, domain: domain, maxAge: 24 * 60 * 60 * 1000 });
+
       return { accessToken };
     } catch (error) {
       throw new UnauthorizedException('유효하지 않은 이메일이나 비밀번호를 입력하여 로그인이 실패하였습니다.');
     }
   }
 
-  ////// 카카오 로그인
-  // 프론트에서 인가 코드 넘겨줌
-  // 카카오에게 토큰 요청
+  // 카카오 로그인
   @Post('sign-in/kakao')
   async postSignInKakao(@Body('code') code: string) {
     try {
       // 카카오에서 토큰 받아오기
-      console.log('code', code); // 인가 코드 확인
       const kakaoToken = await this.authService.fetchKakaoToken(code);
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
-      console.log('kakaoToken', kakaoToken);
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
       // 우리 서버의 토큰 발행하기
       const token = await this.authService.oauthSignIn(kakaoUserInfo);
-      // 토큰에 oauthProvider 정보 넣어주기
-      ///
+      return token;
     } catch (error) {
-      throw error;
+      console.error(error);
+      throw new UnauthorizedException('카카오 로그인에 실패하였습니다.');
     }
   }
 
@@ -77,7 +61,7 @@ export class AuthController {
     return { message: '회원탈퇴가 성공적으로 완료되었습니다.' };
   }
 
-  // 토큰 검증 (테스트용)
+  // 토큰 검증
   @Get('token-verification')
   async getVerifyToken(@Req() req: expReq) {
     // 헤더에서 토큰 추출

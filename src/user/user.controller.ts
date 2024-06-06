@@ -1,15 +1,16 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PostProfileImageDto } from './dto/post-profile-image.dto';
+import { CustomAuthGuard } from 'src/authentication/auth.guard';
 
 @Controller('user')
+@UseGuards(CustomAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // 회원정보 전체 조회
   // 정보 : 이메일, 프로필 이미지 URL, 닉네임
-  // MyTrip => 토큰에 있는 userID로 조회
   @Get('info')
   async getUserInfoMyTrip(@Req() req) {
     const { userId } = req.user;

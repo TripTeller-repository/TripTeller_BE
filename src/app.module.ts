@@ -3,13 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserController } from './user/user.controller';
-import { ScrapController } from './scrap/scrap.controller';
 import { AuthMiddleware } from './authentication/auth.middleware';
 import mongoose from 'mongoose';
-import { TravelPlanController } from './travel-plan/travel-plan.controller';
-import { DailyScheduleController } from './daily-schedule/daily-schedule.controller';
-import { DailyPlanController } from './daily-plan/daily-plan.controller';
 import { AuthModule } from './authentication/auth.module';
 import { DailyPlanModule } from './daily-plan/daily-plan.module';
 import { DailyscheduleModule } from './daily-schedule/daily-schedule.module';
@@ -54,8 +49,6 @@ import { AuthService } from './authentication/auth.service';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .forRoutes(ScrapController, UserController, TravelPlanController, DailyPlanController, DailyScheduleController);
+    consumer.apply(AuthMiddleware).forRoutes('*');
   }
 }

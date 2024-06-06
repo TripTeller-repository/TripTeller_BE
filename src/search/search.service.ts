@@ -91,6 +91,6 @@ export class SearchService {
       }
     }
 
-    return extractedResult;
+    return extractedResult.filter((result) => result.isPublic === true);
   }
 }

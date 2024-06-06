@@ -19,16 +19,7 @@ export class OurTripController {
   async getPublicFeeds(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req: Request) {
     try {
       // 로그인한 상태인 경우 회원의 userId를 추출
-      const authHeader = req.headers['authorization'];
-      let userId = null; // userId 기본값을 null로 설정
-
-      if (authHeader) {
-        const token = authHeader.split(' ')[1];
-        if (token) {
-          const decodedToken = await this.authService.verifyToken(token);
-          userId = decodedToken ? decodedToken.userId : null;
-        }
-      }
+      const userId = req['user']?.userId;
 
       return this.ourTripService.fetchOurFeeds(pageNumber, userId || null);
     } catch (error) {
@@ -53,16 +44,7 @@ export class OurTripController {
   ) {
     try {
       // 로그인한 상태인 경우 회원의 userId를 추출
-      const authHeader = req.headers['authorization'];
-      let userId = null; // userId 기본값을 null로 설정
-
-      if (authHeader) {
-        const token = authHeader.split(' ')[1];
-        if (token) {
-          const decodedToken = await this.authService.verifyToken(token);
-          userId = decodedToken ? decodedToken.userId : null;
-        }
-      }
+      const userId = req['user']?.userId;
 
       return this.ourTripService.fetchFeedsByDate(startDate, endDate, pageNumber, userId || null);
     } catch (error) {
@@ -82,16 +64,7 @@ export class OurTripController {
   async getOurFeedsOrderedByRecent(@Query('pageNumber', ParseIntPipe) pageNumber: number = 1, @Req() req: Request) {
     try {
       // 로그인한 상태인 경우 회원의 userId를 추출
-      const authHeader = req.headers['authorization'];
-      let userId = null; // userId 기본값을 null로 설정
-
-      if (authHeader) {
-        const token = authHeader.split(' ')[1];
-        if (token) {
-          const decodedToken = await this.authService.verifyToken(token);
-          userId = decodedToken ? decodedToken.userId : null;
-        }
-      }
+      const userId = req['user']?.userId;
 
       return this.ourTripService.sortOurFeedsByRecent(pageNumber, userId || null);
     } catch (error) {
@@ -111,16 +84,7 @@ export class OurTripController {
   async getOurFeedsOrderedByLikeCount(@Query('pageNumber', ParseIntPipe) pageNumber: number = 1, @Req() req: Request) {
     try {
       // 로그인한 상태인 경우 회원의 userId를 추출
-      const authHeader = req.headers['authorization'];
-      let userId = null; // userId 기본값을 null로 설정
-
-      if (authHeader) {
-        const token = authHeader.split(' ')[1];
-        if (token) {
-          const decodedToken = await this.authService.verifyToken(token);
-          userId = decodedToken ? decodedToken.userId : null;
-        }
-      }
+      const userId = req['user']?.userId;
 
       return this.ourTripService.sortOurFeedsByLikeCount(pageNumber, userId || null);
     } catch (error) {

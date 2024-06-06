@@ -60,23 +60,4 @@ export class AuthController {
     await this.authService.withdraw(token);
     return { message: '회원탈퇴가 성공적으로 완료되었습니다.' };
   }
-
-  // // 토큰 검증
-  // @Get('token-verification')
-  // async getVerifyToken(@Req() req: expReq) {
-  //   // 헤더에서 토큰 추출
-  //   const token = req.headers.authorization?.split(' ')[1];
-  //   // 토큰 유무 검증
-  //   // 로그인한 회원만 서비스를 이용할 수 있도록 함.
-  //   if (!token) {
-  //     return { success: false, message: '토큰이 제공되지 않았습니다.' };
-  //   }
-  //   // 토큰 검증함
-  //   try {
-  //     const decodedToken = await this.authService.verifyToken(token);
-  //     return { success: true, payload: decodedToken };
-  //   } catch (error) {
-  //     return { success: false, message: '토큰 검증에 실패하였습니다.' };
-  //   }
-  // }
 }

@@ -1,9 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Put, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
+import { CustomAuthGuard } from 'src/authentication/auth.guard';
 import { PutTravelLogImageDto } from 'src/travel-log/dto/put-travel-log-image.dto';
 import { PutTravelLogPostContentDto } from 'src/travel-log/dto/put-travel-log-post-content.dto';
 import { TravelLogService } from 'src/travel-log/travel-log.service';
 
 @Controller('dailySchedule')
+@UseGuards(CustomAuthGuard)
 export class DailyScheduleController {
   constructor(private readonly travelLogService: TravelLogService) {}
 

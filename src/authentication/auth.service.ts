@@ -9,7 +9,7 @@ import { Model } from 'mongoose';
 import { User } from 'src/user/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 
-// 소셜 로그인 사용자 정보 제공자 (Auth 공급자)
+// 소셜 로그인 사용자 정보 제공자
 enum AuthProvider {
   Google = 'google',
   Naver = 'naver',
@@ -46,7 +46,6 @@ export class AuthService {
 
   ////// 토큰 생성
   // userId, authProvider을 기반으로 JWT 토큰을 생성
-  // 추후 쿠키(res.cookie) 사용할 예정
   async createToken(userId: string, authProvider: string) {
     // JWT payload 생성
     const payload = { userId, authProvider };
@@ -67,17 +66,14 @@ export class AuthService {
       const user = await this.userService.findUserByEmail(signInDto.email);
 
       // 회원이 존재하지 않을 경우
-      if (!user || user === null || user === undefined) {
+      if (!user || user.deletedAt) {
         throw new UnauthorizedException('등록되지 않은 회원입니다.');
       }
 
       // 탈퇴한 회원인지 확인
       if (user.deletedAt !== null) {
-        throw new UnauthorizedException('이미 탈퇴한 회원입니다.');
+        throw new UnauthorizedException('탈퇴한 회원입니다.');
       }
-      console.log('signInDto.password', signInDto.password);
-      console.log('user.password', user.password);
-      console.log('타입', typeof user.password)
 
       // 비밀번호 생성
       const isPasswordValid = await this.verifyPassword(signInDto.password, user.password);
@@ -90,10 +86,8 @@ export class AuthService {
       // 해당 유저가 DB에 존재하고, user의 고유 ID가 있는 경우에는 토큰 발행
       if (user && user._id) {
         const userIdString = user._id.toString();
-        console.log('userIdString의 타입', typeof userIdString);
-        const tokens = await this.createToken(userIdString, user.authProvider);
-        console.log('로그인 서비스에서 발행한 토큰', tokens);
-        return tokens;
+
+        return this.createToken(userIdString, (user.authProvider = null));
       }
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');
@@ -102,72 +96,59 @@ export class AuthService {
 
   ////// 카카오 로그인 로직
   // 카카오한테 토큰 요청
-  // 프론트에서 인증번호 넘겨줌
   async fetchKakaoToken(code: string | null) {
     try {
-      const {
-        data: { access_token },
-      } = await axios({
-        url: `https://kauth.kakao.com/oauth/token`,
-        method: 'post',
+      const url = 'https://kauth.kakao.com/oauth/token';
+      const response = await axios.post(url, null, {
         params: {
-          grant_type: 'authorization_code',
-          client_id: process.env.KAKAO_CLIENT_ID,
+          grant_type: 'authorization_code', // 고정값
+          client_id: process.env.KAKAO_CLIENT_ID, // Kakao 개발자 콘솔에서 발급받은 클라이언트 ID
           redirect_uri: process.env.KAKAO_CALLBACK_URL,
-          code, // 프론트측에서 넘겨준 코드
+          code: code, // 사용자가 카카오 로그인을 통해 받은 인증 코드
         },
+        headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' },
       });
-      return access_token;
+      const accessToken = response.data.access_token;
+      console.log('카카오가 준 토큰', accessToken);
+
+      return accessToken;
     } catch (error) {
-      throw error;
+      console.error(error);
+      throw new UnauthorizedException('카카오 토큰 요청 실패');
     }
   }
 
   // 받은 토큰 다시 넘겨주고 회원 정보 받아오기
   async fetchKakaoUserInfo(kakaoToken: string | null) {
-    const result = await axios.get('https://kapi.kakao.com/v2/user/me', {
-      headers: {
-        Authorization: `Bearer ${kakaoToken}`,
-      },
-    });
-
-    const { data } = result;
-    const nickname = data.properties.nickname;
-    const email = data.kakako_account.email;
-
-    if (!nickname || !email) {
-      throw new Error('닉네임 혹은 이메일이 없습니다.');
-    }
-  }
-
-  ////// 소셜 로그인 성공 후 우리 서버로 로그인 처리
-  async oauthSignIn(userInfo) {
     try {
-      // 이메일로 회원 조회
-      const { email } = userInfo;
-      let user = await this.userService.findUserByEmail(email);
+      const url = 'https://kapi.kakao.com/v2/user/me';
+      const { data } = await axios.get(url, {
+        headers: { Authorization: `Bearer ${kakaoToken}` },
+      });
 
-      // DB에 회원 정보가 존재하지 않으면 자동으로 가입되도록 함.
-      if (!user) {
-        const newUser = await this.createUser(userInfo);
-        user = newUser;
+      const { nickname, email } = data.properties;
+      if (!nickname || !email) {
+        throw new UnauthorizedException('닉네임 혹은 이메일이 없습니다.');
       }
 
-      // JWT 토큰 생성
-      const { accessToken } = await this.createToken(user._id, AuthProvider.Kakao);
-      return { token: accessToken };
+      const userInfo = { email, nickname, authProvider: AuthProvider.Kakao };
+      return userInfo;
     } catch (error) {
-      // 오류 발생시 에러 메시지 출력
-      throw new UnauthorizedException('로그인에 실패하였습니다.');
+      throw new UnauthorizedException('카카오 유저 정보 요청 실패');
     }
+  }
+  ////// 소셜 로그인 성공 후 우리 서버로 로그인 처리
+  async oauthSignIn(userInfo) {
+    const user = await this.userService.findUserByEmail(userInfo.email);
+    const { accessToken } = await this.createToken(user._id, userInfo.authProvider);
+    return { accessToken };
   }
 
   ////// 토큰 검증
   // 토큰에서 회원 정보 추출
   async verifyToken(token: string): Promise<{ userId: string; oauthProvider: string }> {
     try {
-      const decodedToken = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
-      const { userId, oauthProvider } = decodedToken;
+      const { userId, oauthProvider } = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
 
       return { userId, oauthProvider };
     } catch (error) {
@@ -183,7 +164,7 @@ export class AuthService {
     }
   }
 
-  ////// 비밀번호 해쉬화
+  ////// 비밀번호 해시화
   async hashPassword(password: string) {
     const saltRounds = 15;
     return await bcrypt.hash(password, saltRounds);
@@ -198,8 +179,7 @@ export class AuthService {
   async withdraw(token: string) {
     try {
       // 토큰에 있는 회원 ID 확인
-      const verifiedToken = await this.verifyToken(token);
-      const { userId } = verifiedToken;
+      const { userId } = await this.verifyToken(token);
 
       // 회원 ID로 회원 조회
       const user = await this.userService.findUserById(userId);
@@ -211,7 +191,7 @@ export class AuthService {
         return { message: '해당하는 사용자를 찾을 수 없습니다.' };
       }
     } catch (error) {
-      return { message: '회원 탈퇴 중 오류가 발생했습니다.' };
+      throw new UnauthorizedException('해당하는 사용자를 찾을 수 없습니다.');
     }
   }
 

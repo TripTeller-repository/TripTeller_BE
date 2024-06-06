@@ -35,9 +35,6 @@ export class AuthController {
       console.log('Request body:', req.body);
       console.log('signInDto: ', signInDto);
 
-      // const tokens = await this.authService.signIn(signInDto);
-      // console.log('tokens: ', tokens);
-
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
       console.log('accessToken', accessToken);
       console.log('refreshToken', refreshToken);
@@ -55,12 +52,13 @@ export class AuthController {
   // 프론트에서 인가 코드 넘겨줌
   // 카카오에게 토큰 요청
   @Post('sign-in/kakao')
-  async postSignInKakao(@Query('code') code: string) {
+  async postSignInKakao(@Body('code') code: string) {
     try {
       // 카카오에서 토큰 받아오기
       console.log('code', code); // 인가 코드 확인
       const kakaoToken = await this.authService.fetchKakaoToken(code);
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
+      console.log('kakaoToken', kakaoToken);
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
       // 우리 서버의 토큰 발행하기
       const token = await this.authService.oauthSignIn(kakaoUserInfo);

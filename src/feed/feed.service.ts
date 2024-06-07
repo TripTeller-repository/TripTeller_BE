@@ -11,7 +11,7 @@ export class FeedService implements OnModuleInit {
   async onModuleInit() {
     try {
       await this.feedModel.syncIndexes();
-      console.log('Indexes created successfully');
+      console.log('feed indexes created successfully');
     } catch (error) {
       console.error('Error creating indexes', error);
     }

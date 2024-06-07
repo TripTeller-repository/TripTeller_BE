@@ -9,7 +9,7 @@ const passwordMessage = {
 export class CreateUserDto {
   @IsOptional()
   @IsString()
-  oauthProvider: string;
+  authProvider: string;
 
   @IsNotEmpty()
   @IsString()
@@ -18,7 +18,7 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   @Matches(passwordRegex, passwordMessage)
-  password: string;
+  password?: string;
 
   @IsOptional()
   @IsString()
@@ -26,5 +26,5 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  profileImage: string;
+  profileImage?: string;
 }

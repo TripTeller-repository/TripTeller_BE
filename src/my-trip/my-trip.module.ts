@@ -9,6 +9,7 @@ import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
 import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
 import { UserSchema } from 'src/user/user.schema';
 import { ScrapSchema } from 'src/scrap/scrap.schema';
+import { FeedModule } from 'src/feed/feed.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ScrapSchema } from 'src/scrap/scrap.schema';
       { name: 'User', schema: UserSchema },
       { name: 'Scrap', schema: ScrapSchema },
     ]),
+    FeedModule,
   ],
   providers: [MyTripService, TravelPlanService, FeedExtractor],
   controllers: [MyTripController],

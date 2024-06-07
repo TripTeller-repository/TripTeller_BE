@@ -26,9 +26,12 @@ export class AuthController {
     try {
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
 
-      const domain = '.trip-teller.com' || '.localhost';
-
-      res.cookie('refreshToken', refreshToken, { httpOnly: true, domain: domain, maxAge: 24 * 60 * 60 * 1000 });
+      const domain = '.localhost';
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: false,
+        domain: domain,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
 
       return { accessToken };
     } catch (error) {
@@ -41,6 +44,36 @@ export class AuthController {
         }
       }
       throw new UnauthorizedException('유효하지 않은 이메일이나 비밀번호를 입력하여 로그인이 실패하였습니다.');
+    }
+  }
+
+  // 액세스 토큰 재발급
+  @Post('refresh-token')
+  async postRefreshToken(@Req() req: expReq, @Res({ passthrough: true }) res) {
+    try {
+      // 헤더의 쿠키에서 리프레시 토큰 확인
+      const refreshToken = req.cookies['refreshToken'];
+
+      // 리프레시 토큰이 없으면 에러
+      if (!refreshToken) {
+        throw new UnauthorizedException('Refresh token not found');
+      }
+
+      // 리프레시 토큰이 만료된 경우 에러
+      const isRefreshTokenExpired = await this.authService.isRefreshTokenExpired(refreshToken);
+      if (isRefreshTokenExpired) {
+        throw new UnauthorizedException('Refresh token has expired');
+      }
+
+      // 리프레시 토큰 검증
+      const { userId, authProvider } = await this.authService.verifyToken(refreshToken);
+
+      // 액세스 토큰 재발급
+      const { accessToken } = await this.authService.createAccessTokenAgain(userId, authProvider);
+
+      return { accessToken };
+    } catch (error) {
+      return res.status(401).json(error);
     }
   }
 

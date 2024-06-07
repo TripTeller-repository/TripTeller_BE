@@ -9,6 +9,7 @@ import { UserSchema } from 'src/user/user.schema';
 import { ScrapSchema } from 'src/scrap/scrap.schema';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from 'src/authentication/auth.service';
+import { FeedModule } from 'src/feed/feed.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthService } from 'src/authentication/auth.service';
       { name: 'User', schema: UserSchema },
       { name: 'Scrap', schema: ScrapSchema },
     ]),
+    FeedModule,
   ],
   providers: [OurTripService, FeedExtractor, UserService, AuthService],
   controllers: [OurTripController],

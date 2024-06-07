@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type DailyScheduleDocument = DailySchedule & Document;
 
-@Schema({ timestamps: true, collection: 'DailySchedule' })
+@Schema({ timestamps: true, collection: 'DailySchedule', autoIndex: false })
 export class DailySchedule {
   // 시간 (ex. 오전 2시)
   @Prop({ type: Date })
@@ -35,3 +35,6 @@ export class DailySchedule {
 }
 
 export const DailyScheduleSchema = SchemaFactory.createForClass(DailySchedule);
+
+// 인덱스 추가
+DailyScheduleSchema.index({ postContent: 1 });

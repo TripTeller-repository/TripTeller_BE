@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
@@ -22,7 +22,7 @@ export class AuthController {
 
   // 로그인
   @Post('sign-in')
-  async postSignIn(@Body() signInDto: SignInDto, @Req() req, @Res({ passthrough: true }) res: expRes) {
+  async postSignIn(@Body() signInDto: SignInDto, @Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
 
@@ -32,6 +32,14 @@ export class AuthController {
 
       return { accessToken };
     } catch (error) {
+      // 쿠키의 리프레시 토큰 확인해서 만료 시 에러처리
+      if (error instanceof UnauthorizedException && error.message === 'Token has expired') {
+        const refreshToken = req.cookies?.refreshToken;
+        const isExpired = await this.authService.isRefreshTokenExpired(refreshToken);
+        if (isExpired) {
+          throw new UnauthorizedException('Refresh token has expired');
+        }
+      }
       throw new UnauthorizedException('유효하지 않은 이메일이나 비밀번호를 입력하여 로그인이 실패하였습니다.');
     }
   }

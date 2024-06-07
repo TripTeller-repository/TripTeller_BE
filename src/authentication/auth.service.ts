@@ -94,6 +94,20 @@ export class AuthService {
     }
   }
 
+  // 리프레시 토큰 만료 여부 확인
+  async isRefreshTokenExpired(refreshToken: string): Promise<boolean> {
+    try {
+      jwt.verify(refreshToken, process.env.SECRET_KEY);
+      return false;
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        return true;
+      } else {
+        throw new UnauthorizedException('Refresh token verification error');
+      }
+    }
+  }
+
   ////// 카카오 로그인 로직
   // 카카오한테 토큰 요청
   async fetchKakaoToken(code: string | null) {
@@ -109,7 +123,7 @@ export class AuthService {
         headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' },
       });
       const accessToken = response.data.access_token;
-      console.log('카카오가 준 토큰', accessToken);
+      console.log('카카오에서 받은 토큰', accessToken);
 
       return accessToken;
     } catch (error) {

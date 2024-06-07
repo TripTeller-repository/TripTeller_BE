@@ -23,7 +23,7 @@ export class User extends Document {
 
   // 비밀번호
   @Prop()
-  password: string;
+  password: string | null;
 
   // 프로필 이미지 url
   @Prop({ default: defaultProfileImage })

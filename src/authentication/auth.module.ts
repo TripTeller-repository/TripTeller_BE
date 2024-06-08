@@ -14,9 +14,6 @@ import { UserService } from 'src/user/user.service';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('SECRET_KEY'),
-        signOptions: {
-          expiresIn: '1h', // 액세스 토큰 유효 기간: 1시간
-        },
       }),
       inject: [ConfigService],
     }),

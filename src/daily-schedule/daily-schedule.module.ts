@@ -8,6 +8,7 @@ import { DailyScheduleService } from './daily-schedule.service';
 import { DailyPlanService } from 'src/daily-plan/daily-plan.service';
 import { ExpenseService } from 'src/expense/expense.service';
 import { ExpenseSchema } from 'src/expense/expense.schema';
+import { DailyScheduleIndexService } from './daily-schedule-index.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { ExpenseSchema } from 'src/expense/expense.schema';
       { name: 'Expense', schema: ExpenseSchema },
     ]),
   ],
-  providers: [DailyPlanService, DailyScheduleService, ExpenseService],
+  providers: [DailyPlanService, DailyScheduleService, ExpenseService, DailyScheduleIndexService],
   controllers: [DailyPlanController],
 })
 export class DailyscheduleModule {}

@@ -16,6 +16,14 @@ import { UserModule } from './user/user.module';
 import { TravelPlanModule } from './travel-plan/travel-plan.module';
 import { TravelLogModule } from './travel-log/travel-log.module';
 import { AuthService } from './authentication/auth.service';
+import { UserController } from './user/user.controller';
+import { TravelPlanController } from './travel-plan/travel-plan.controller';
+import { SearchController } from './search/search.controller';
+import { ScrapController } from './scrap/scrap.controller';
+import { OurTripController } from './our-trip/our-trip.controller';
+import { MyTripController } from './my-trip/my-trip.controller';
+import { DailyScheduleController } from './daily-schedule/daily-schedule.controller';
+import { DailyPlanController } from './daily-plan/daily-plan.controller';
 
 @Module({
   imports: [
@@ -49,6 +57,17 @@ import { AuthService } from './authentication/auth.service';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes(
+        DailyPlanController,
+        DailyScheduleController,
+        MyTripController,
+        OurTripController,
+        ScrapController,
+        UserController,
+        SearchController,
+        TravelPlanController,
+      );
   }
 }

@@ -11,9 +11,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 // 소셜 로그인 사용자 정보 제공자
 enum AuthProvider {
-  Google = 'google',
-  Naver = 'naver',
-  Kakao = 'kakao',
+  GOOGLE = 'Google',
+  NAVER = 'Naver',
+  KAKAO = 'Kakao',
 }
 
 @Injectable()
@@ -133,20 +133,21 @@ export class AuthService {
     }
   }
 
-  ////// 카카오 로그인 로직
-  // 카카오한테 토큰 요청
   async fetchKakaoToken(code: string | null) {
     try {
+      console.log('fetchKakaoToken 함수에 전달된 코드', code);
       const url = 'https://kauth.kakao.com/oauth/token';
-      const response = await axios.post(url, null, {
-        params: {
-          grant_type: 'authorization_code', // 고정값
-          client_id: process.env.KAKAO_CLIENT_ID, // Kakao 개발자 콘솔에서 발급받은 클라이언트 ID
-          redirect_uri: process.env.KAKAO_CALLBACK_URL,
-          code: code, // 사용자가 카카오 로그인을 통해 받은 인증 코드
-        },
-        headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' },
-      });
+      const data = {
+        grant_type: 'authorization_code',
+        client_id: process.env.KAKAO_CLIENT_ID,
+        redirect_uri: process.env.KAKAO_CALLBACK_URL,
+        code: code,
+      };
+      const headers = {
+        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+      };
+      const response = await axios.post(url, data, { headers: headers });
+      console.log('카카오 응답', response);
       const accessToken = response.data.access_token;
       console.log('카카오에서 받은 토큰', accessToken);
 
@@ -162,15 +163,21 @@ export class AuthService {
     try {
       const url = 'https://kapi.kakao.com/v2/user/me';
       const { data } = await axios.get(url, {
-        headers: { Authorization: `Bearer ${kakaoToken}` },
+        headers: {
+          Authorization: `Bearer ${kakaoToken}`,
+          'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+        },
       });
+      console.log('카카오에서 받은 데이터', data);
+      const nickname = data.properties.nickname;
+      const email = data.kakao_account.email;
+      console.log('닉네임 이메일', nickname, email);
 
-      const { nickname, email } = data.properties;
       if (!nickname || !email) {
         throw new UnauthorizedException('닉네임 혹은 이메일이 없습니다.');
       }
 
-      const userInfo = { email, nickname, authProvider: AuthProvider.Kakao };
+      const userInfo = { email, nickname, authProvider: AuthProvider.KAKAO };
       return userInfo;
     } catch (error) {
       throw new UnauthorizedException('카카오 유저 정보 요청 실패');
@@ -178,9 +185,38 @@ export class AuthService {
   }
   ////// 소셜 로그인 성공 후 우리 서버로 로그인 처리
   async oauthSignIn(userInfo) {
-    const user = await this.userService.findUserByEmail(userInfo.email);
-    const { accessToken } = await this.createTokens(user._id, userInfo.authProvider);
-    return { accessToken };
+    try {
+      console.log('소셜 로그인 성공 후 oauthSignIn: userInfo', userInfo);
+      // 이메일로 회원 조회
+      const existingUser = await this.userModel.findOne({ email: userInfo.email });
+
+      let user;
+      if (!existingUser) {
+        // 가입되지 않은 경우 회원가입 진행
+        const newUser: {
+          email: string;
+          authProvider: string;
+          nickname: string;
+        } = {
+          email: userInfo.email,
+          authProvider: userInfo.authProvider,
+          nickname: userInfo.nickname,
+        };
+
+        user = await this.userModel.create(newUser);
+        await user.save();
+        console.log('새 사용자 저장 완료:', user);
+      } else {
+        user = existingUser;
+      }
+
+      // 토큰 발행
+      const tokens = await this.createTokens(user._id, userInfo.authProvider);
+      return tokens;
+    } catch (error) {
+      console.error('OAuth sign-in failed:', error);
+      throw new Error('OAuth sign-in failed.');
+    }
   }
 
   ////// 토큰 검증

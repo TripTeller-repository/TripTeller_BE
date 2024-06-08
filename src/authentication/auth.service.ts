@@ -46,17 +46,28 @@ export class AuthService {
 
   ////// 토큰 생성
   // userId, authProvider을 기반으로 JWT 토큰을 생성
-  async createToken(userId: string, authProvider: string) {
+  async createTokens(userId: string, authProvider: string) {
     // JWT payload 생성
     const payload = { userId, authProvider };
 
     // Access Token 생성
-    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
+    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '10s' });
 
     // Refresh Token 생성 (쿠키)
-    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1d' });
+    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '20s' });
 
     return { accessToken, refreshToken };
+  }
+
+  // 액세스 토큰 재발급
+  async createAccessTokenAgain(userId: string, authProvider: string) {
+    // JWT payload 생성
+    const payload = { userId, authProvider };
+
+    // Access Token 생성
+    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '10s' });
+
+    return { accessToken };
   }
 
   ////// 로그인
@@ -87,10 +98,38 @@ export class AuthService {
       if (user && user._id) {
         const userIdString = user._id.toString();
 
-        return this.createToken(userIdString, (user.authProvider = null));
+        return this.createTokens(userIdString, (user.authProvider = null));
       }
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');
+    }
+  }
+
+  // 액세스 토큰 만료 여부 확인
+  async isAccessTokenExpired(accessToken: string): Promise<boolean> {
+    try {
+      jwt.verify(accessToken, process.env.SECRET_KEY);
+      return false;
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        return true;
+      } else {
+        throw new UnauthorizedException('Access token verification error');
+      }
+    }
+  }
+
+  // 리프레시 토큰 만료 여부 확인
+  async isRefreshTokenExpired(refreshToken: string): Promise<boolean> {
+    try {
+      jwt.verify(refreshToken, process.env.SECRET_KEY);
+      return false;
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        return true;
+      } else {
+        throw new UnauthorizedException('Refresh token verification error');
+      }
     }
   }
 
@@ -109,7 +148,7 @@ export class AuthService {
         headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' },
       });
       const accessToken = response.data.access_token;
-      console.log('카카오가 준 토큰', accessToken);
+      console.log('카카오에서 받은 토큰', accessToken);
 
       return accessToken;
     } catch (error) {
@@ -140,17 +179,17 @@ export class AuthService {
   ////// 소셜 로그인 성공 후 우리 서버로 로그인 처리
   async oauthSignIn(userInfo) {
     const user = await this.userService.findUserByEmail(userInfo.email);
-    const { accessToken } = await this.createToken(user._id, userInfo.authProvider);
+    const { accessToken } = await this.createTokens(user._id, userInfo.authProvider);
     return { accessToken };
   }
 
   ////// 토큰 검증
   // 토큰에서 회원 정보 추출
-  async verifyToken(token: string): Promise<{ userId: string; oauthProvider: string }> {
+  async verifyToken(token: string): Promise<{ userId: string; authProvider: string }> {
     try {
-      const { userId, oauthProvider } = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
+      const { userId, authProvider } = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
 
-      return { userId, oauthProvider };
+      return { userId, authProvider };
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
         // 토큰 기한 만료

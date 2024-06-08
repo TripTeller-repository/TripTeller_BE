@@ -6,7 +6,13 @@ import { RegionName } from './region-name.enum';
 
 export type TravelPlanDocument = TravelPlan & Document;
 
-@Schema({ timestamps: true, collection: 'TravelPlan', toJSON: { virtuals: true }, toObject: { virtuals: true } })
+@Schema({
+  timestamps: true,
+  collection: 'TravelPlan',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+  autoIndex: false,
+})
 export class TravelPlan {
   // 일별 일정 관리 (참조)
   @Prop({ type: [{ type: Types.ObjectId, ref: DailySchedule.name }] })
@@ -75,6 +81,10 @@ TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
   // 가장 늦은 날짜 반환
   return dates[dates.length - 1];
 });
+
+// 인덱스 추가
+TravelPlanSchema.index({ title: 1 });
+TravelPlanSchema.index({ region: 1 });
 
 // 'dailyPlans' 필드를 populate하는 미들웨어 함수
 const populateDailyPlans = function (next) {

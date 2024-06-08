@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
@@ -79,15 +79,28 @@ export class AuthController {
 
   // 카카오 로그인
   @Post('sign-in/kakao')
-  async postSignInKakao(@Body('code') code: string) {
+  async postSignInKakao(@Body('code') code: string, @Res({ passthrough: true }) res: expRes) {
     try {
       // 카카오에서 토큰 받아오기
       const kakaoToken = await this.authService.fetchKakaoToken(code);
+      console.log('컨트롤러 kakaoToken', kakaoToken);
+
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
+      console.log('컨트롤러 kakaoUserInfo', kakaoUserInfo);
+
       // 우리 서버의 토큰 발행하기
-      const token = await this.authService.oauthSignIn(kakaoUserInfo);
-      return token;
+      const { accessToken, refreshToken } = await this.authService.oauthSignIn(kakaoUserInfo);
+
+      const domain = '.localhost';
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        domain: domain,
+        sameSite: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      console.log('카카오로그인 후 서버의 로그인 액세스 토큰', accessToken);
+      return { accessToken };
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException('카카오 로그인에 실패하였습니다.');

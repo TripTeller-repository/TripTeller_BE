@@ -10,7 +10,8 @@ export class AppService {
         throw new InternalServerErrorException('DATABASE_HOST environment variable is not defined.');
       }
 
-      return `${text} + 현재 실행환경 : ${context}`;
+      return `${text}
+      현재 실행환경 : ${context}`;
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('An error occurred while processing the request.');

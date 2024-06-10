@@ -33,6 +33,8 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+
+  app.listen(3000);
 }
 
 bootstrap();

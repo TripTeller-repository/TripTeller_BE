@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dto/sign-in.dto';
 import * as jwt from 'jsonwebtoken';
@@ -23,7 +23,7 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  ////// 회원 가입
+  // 회원 가입
   async createUser(createUserDto: CreateUserDto) {
     // DB에 중복된 이메일이 있는지 확인
     const existingEmail = await this.userModel.findOne({ email: createUserDto.email });
@@ -44,7 +44,7 @@ export class AuthService {
     return user;
   }
 
-  ////// 토큰 생성
+  // 토큰 생성
   // userId, authProvider을 기반으로 JWT 토큰을 생성
   async createTokens(userId: string, authProvider: string) {
     // JWT payload 생성
@@ -133,6 +133,7 @@ export class AuthService {
     }
   }
 
+  // 카카오에서 토큰 받아오기
   async fetchKakaoToken(code: string | null) {
     try {
       console.log('fetchKakaoToken 함수에 전달된 코드', code);
@@ -167,10 +168,8 @@ export class AuthService {
           'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
       });
-      console.log('카카오에서 받은 데이터', data);
       const nickname = data.properties.nickname;
       const email = data.kakao_account.email;
-      console.log('닉네임 이메일', nickname, email);
 
       if (!nickname || !email) {
         throw new UnauthorizedException('닉네임 혹은 이메일이 없습니다.');
@@ -182,10 +181,10 @@ export class AuthService {
       throw new UnauthorizedException('카카오 유저 정보 요청 실패');
     }
   }
-  ////// 소셜 로그인 성공 후 우리 서버로 로그인 처리
+
+  // 소셜 로그인 성공 후 우리 서버로 로그인 처리
   async oauthSignIn(userInfo) {
     try {
-      console.log('소셜 로그인 성공 후 oauthSignIn: userInfo', userInfo);
       // 이메일로 회원 조회
       const existingUser = await this.userModel.findOne({ email: userInfo.email });
 
@@ -204,12 +203,11 @@ export class AuthService {
 
         user = await this.userModel.create(newUser);
         await user.save();
-        console.log('새 사용자 저장 완료:', user);
       } else {
         user = existingUser;
       }
 
-      // 토큰 발행
+      // 우리 서버 토큰 발행
       const tokens = await this.createTokens(user._id, userInfo.authProvider);
       return tokens;
     } catch (error) {
@@ -218,8 +216,7 @@ export class AuthService {
     }
   }
 
-  ////// 토큰 검증
-  // 토큰에서 회원 정보 추출
+  // 토큰 검증
   async verifyToken(token: string): Promise<{ userId: string; authProvider: string }> {
     try {
       const { userId, authProvider } = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
@@ -238,34 +235,34 @@ export class AuthService {
     }
   }
 
-  ////// 비밀번호 해시화
+  // 비밀번호 해시화
   async hashPassword(password: string) {
     const saltRounds = 15;
     return await bcrypt.hash(password, saltRounds);
   }
 
-  ////// 비밀번호 확인
+  // 해시화된 비밀번호 검증
   async verifyPassword(password: string, hashedPassword: string) {
     return await bcrypt.compare(password, hashedPassword);
   }
 
-  ////// 회원 탈퇴
-  async withdraw(token: string) {
+  // 회원 탈퇴
+  async withdraw(userId: string) {
     try {
-      // 토큰에 있는 회원 ID 확인
-      const { userId } = await this.verifyToken(token);
-
       // 회원 ID로 회원 조회
       const user = await this.userService.findUserById(userId);
 
-      // DB에 있는 회원 id에서 deletedAt의 값을 현재 시각(date)로 만들기
-      if (user) {
-        await this.userService.deleteUserById(userId, new Date());
-      } else {
-        return { message: '해당하는 사용자를 찾을 수 없습니다.' };
+      if (!user) {
+        throw new NotFoundException('해당 ID를 가진 회원이 없습니다.');
       }
+
+      // DB에 있는 회원 id에서 deletedAt의 값을 현재 시각(date)로 만들기
+      await this.userService.deleteUserById(userId, new Date());
+
+      return { message: '해당하는 사용자를 찾을 수 없습니다.' };
     } catch (error) {
-      throw new UnauthorizedException('해당하는 사용자를 찾을 수 없습니다.');
+      console.error(error);
+      throw new UnauthorizedException('회원 탈퇴 중 오류가 발생하였습니다.');
     }
   }
 

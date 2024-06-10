@@ -15,7 +15,7 @@ export class ExpenseService {
 
   // 일별 전체 지출내역 조회
   // ex. 3월 20일에 해당하는 전체 지출 내역이 배열로 나옴
-  async findAllExpenses(dailyPlanId: string) {
+  async fetchAllExpenses(dailyPlanId: string) {
     const dailyPlans = await this.dailyPlanModel.findById(dailyPlanId).populate('expenses').exec();
     if (!dailyPlans) {
       throw new NotFoundException('세부 지출 내역을 찾을 수 없습니다.');
@@ -39,7 +39,7 @@ export class ExpenseService {
   }
 
   // 지출 내역 조회
-  async findOneExpense(dailyPlanId: string, expenseId: string) {
+  async fetchOneExpense(dailyPlanId: string, expenseId: string) {
     const findExpense = await this.expenseModel.findOne({ _id: expenseId }).exec();
 
     if (!findExpense) {
@@ -79,7 +79,7 @@ export class ExpenseService {
   }
 
   // 지출 내역 삭제
-  async deleteExpense(dailyPlanId: string, expenseId: string) {
+  async removeExpense(dailyPlanId: string, expenseId: string) {
     // dailyPlanModel 모델의 expenses 필드(배열)에서 expenseId id값 삭제
     const objectExpenseId = new Types.ObjectId(expenseId);
     await this.dailyPlanModel

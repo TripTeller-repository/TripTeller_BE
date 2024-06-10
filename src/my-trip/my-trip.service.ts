@@ -15,7 +15,7 @@ export class MyTripService {
   ) {}
 
   // 게시물의 커버 이미지 url만 불러오기
-  async getMyFeedImgUrl(feedId: string, userId: string) {
+  async fetchMyFeedImgUrl(feedId: string, userId: string) {
     // 해당 게시물 찾기
     const feed = await this.feedModel.findById(feedId).exec();
 
@@ -68,7 +68,7 @@ export class MyTripService {
   }
 
   // 게시물 삭제
-  async deleteFeed(feedId: string, userId: string) {
+  async removeFeed(feedId: string, userId: string) {
     const feed = await this.feedModel.findById(feedId).exec();
     if (!feed) {
       throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
@@ -221,7 +221,7 @@ export class MyTripService {
   }
 
   // AWS S3 프로필 이미지 Signed URL 불러오기
-  async getCoverImageSignedUrl(fileName: string, userId: string) {
+  async fetchCoverImageSignedUrl(fileName: string, userId: string) {
     const fileNameInBucket = createFileUnixName(fileName, userId);
     const filePathName = `cover-image/${fileNameInBucket}`;
     return await createSignedUrl(filePathName);

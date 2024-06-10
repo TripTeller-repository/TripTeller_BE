@@ -14,7 +14,7 @@ export class DailyPlanService {
   ) {}
 
   // 일별 일정 조회
-  async findOneDailyPlan(travelPlanId: string, dailyPlanId: string) {
+  async fetchOneDailyPlan(travelPlanId: string, dailyPlanId: string) {
     const findDailyPlan = await this.dailyPlanModel.findOne({ _id: dailyPlanId }).exec();
     if (!findDailyPlan) {
       throw new NotFoundException('해당 일정이 존재하지 않습니다.');

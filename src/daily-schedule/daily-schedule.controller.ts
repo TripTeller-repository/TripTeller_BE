@@ -12,14 +12,14 @@ export class DailyScheduleController {
   // 여행 로그 조회
   @Get(':dailyScheduleId/travelLog')
   async getOneTravelLog(@Param('dailyScheduleId') dailyScheduleId: string) {
-    return this.travelLogService.findOneTravelLog(dailyScheduleId);
+    return this.travelLogService.fetchOneTravelLog(dailyScheduleId);
   }
 
   // AWS S3 프로필 이미지 Signed URL 불러오기
   @Get('travel-log-image-signed-url/:fileName')
   async getTravelLogImageSignedUrl(@Req() req, @Param('fileName') fileName) {
     const { userId } = req.user;
-    const signedUrl = await this.travelLogService.findTravelLogImageSignedUrl(fileName, userId);
+    const signedUrl = await this.travelLogService.fetchTravelLogImageSignedUrl(fileName, userId);
     return { signedUrl };
   }
 

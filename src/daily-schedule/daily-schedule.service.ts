@@ -16,7 +16,7 @@ export class DailyScheduleService {
   ) {}
 
   // 개별 일정 조회
-  async findOneDailySchedule(dailyScheduleId: string) {
+  async fetchOneDailySchedule(dailyScheduleId: string) {
     const findDailySchedule = await this.dailyScheduleModel.findOne({ _id: dailyScheduleId }).exec();
     if (!findDailySchedule) {
       throw new NotFoundException('해당 일정을 조회할 수 없습니다.');

@@ -56,7 +56,7 @@ export class MyTripController {
   // 본인의 특정 게시물을 게시물 ID로 조회
   // my-trip/:feedId
   @Get(':feedId')
-  async getFeed(@Req() req, @Param('feedId') feedId: string) {
+  async getOneFeed(@Req() req, @Param('feedId') feedId: string) {
     const { userId } = req.user;
     return await this.myTripService.fetchMyFeedByFeedId(feedId, userId);
   }
@@ -66,7 +66,7 @@ export class MyTripController {
   @Get(':feedId/cover-image')
   async getFeedCoverImage(@Req() req, @Param('feedId') feedId: string) {
     const { userId } = req.user;
-    return await this.myTripService.getMyFeedImgUrl(feedId, userId);
+    return await this.myTripService.fetchMyFeedImgUrl(feedId, userId);
   }
 
   // AWS S3 프로필 이미지 Signed URL 불러오기
@@ -74,14 +74,14 @@ export class MyTripController {
   @Get('cover-image-signed-url/:fileName')
   async getCoverImageSignedUrl(@Req() req, @Param('fileName') fileName) {
     const { userId } = req.user;
-    const signedUrl = await this.myTripService.getCoverImageSignedUrl(fileName, userId);
+    const signedUrl = await this.myTripService.fetchCoverImageSignedUrl(fileName, userId);
     return { signedUrl };
   }
 
   // 본인의 모든 게시글 정렬 : 최신순
   // my-trip/order-by/recent
   @Get('order-by/recent')
-  getMyFeedOrderedByRecent(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
+  async getMyFeedOrderedByRecent(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
     const { userId } = req.user;
     return this.myTripService.sortMyFeedsByRecent(pageNumber, userId);
   }
@@ -89,14 +89,14 @@ export class MyTripController {
   // 본인의 모든 게시글 정렬 : 인기순
   // my-trip/order-by/like-count
   @Get('order-by/like-count')
-  getMyFeedOrderedByLikeCount(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
+  async getMyFeedOrderedByLikeCount(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
     const { userId } = req.user;
     return this.myTripService.sortMyFeedsByLikeCount(pageNumber, userId);
   }
 
   // 게시물 등록
   @Post()
-  async createFeed(@Req() req, @Body() createFeedDto: CreateFeedDto) {
+  async postOneFeed(@Req() req, @Body() createFeedDto: CreateFeedDto) {
     const { userId } = req.user;
     return await this.myTripService.createFeed(createFeedDto, userId);
   }
@@ -124,16 +124,16 @@ export class MyTripController {
 
   // 게시물 수정
   @Put(':feedId')
-  async updateFeed(@Req() req, @Param('feedId') feedId: string, @Body() updateFeedDto: UpdateFeedDto) {
+  async putOneFeed(@Req() req, @Param('feedId') feedId: string, @Body() updateFeedDto: UpdateFeedDto) {
     const { userId } = req.user;
     return await this.myTripService.updateFeed(feedId, userId, updateFeedDto);
   }
 
   // 게시글 삭제
   @Delete(':feedId')
-  async deleteFeed(@Req() req, @Param('feedId') feedId: string) {
+  async deleteOneFeed(@Req() req, @Param('feedId') feedId: string) {
     const { userId } = req.user;
-    return await this.myTripService.deleteFeed(feedId, userId);
+    return await this.myTripService.removeFeed(feedId, userId);
   }
 
   ////////////////////////////////////
@@ -151,7 +151,7 @@ export class MyTripController {
   @Get(':feedId/travel-plan/:travelPlanId')
   async getTravelPlan(@Req() req, @Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {
     const { userId } = req.user;
-    return await this.travelPlanService.findTravelPlan(feedId, travelPlanId, userId);
+    return await this.travelPlanService.fetchTravelPlan(feedId, travelPlanId, userId);
   }
 
   // 여행 일정 수정
@@ -168,7 +168,7 @@ export class MyTripController {
 
   // 여행 일정 삭제
   @Delete(':feedId/travel-plan/:travelPlanId')
-  deleteTravelPlan(@Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {
-    return this.travelPlanService.deleteTravelPlan(feedId, travelPlanId);
+  async deleteTravelPlan(@Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {
+    return this.travelPlanService.removeTravelPlan(feedId, travelPlanId);
   }
 }

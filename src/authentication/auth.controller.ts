@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';

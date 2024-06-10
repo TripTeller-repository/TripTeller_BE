@@ -16,7 +16,7 @@ export class TravelPlanController {
   // 일별 일정 조회
   @Get(':travelPlanId/daily-plan/:dailyPlanId')
   async getOneDailyPlan(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
-    return this.dailyPlanService.findOneDailyPlan(travelPlanId, dailyPlanId);
+    return this.dailyPlanService.fetchOneDailyPlan(travelPlanId, dailyPlanId);
   }
 
   // 일별 일정(DailyPlan) 생성

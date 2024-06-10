@@ -25,7 +25,7 @@ export class DailyPlanController {
     @Param('dailyPlanId') dailyPlanId: string,
     @Param('dailyScheduleId') dailyScheduleId: string,
   ) {
-    return this.dailyScheduleService.findOneDailySchedule(dailyScheduleId);
+    return this.dailyScheduleService.fetchOneDailySchedule(dailyScheduleId);
   }
 
   // 개별 일정 생성
@@ -65,13 +65,13 @@ export class DailyPlanController {
   // 일별 전체 지출내역 조회
   @Get(':dailyPlanId')
   async getAllExpenses(@Param('dailyPlanId') dailyPlanId: string) {
-    return this.expenseService.findAllExpenses(dailyPlanId);
+    return this.expenseService.fetchAllExpenses(dailyPlanId);
   }
 
   // 지출 내역 조회
   @Get(':dailyPlanId/expense/:expenseId')
   async getOneExpense(@Param('dailyPlanId') dailyPlanId: string, @Param('expenseId') expenseId: string) {
-    return this.expenseService.findOneExpense(dailyPlanId, expenseId);
+    return this.expenseService.fetchOneExpense(dailyPlanId, expenseId);
   }
 
   // 지출 내역 생성
@@ -93,6 +93,6 @@ export class DailyPlanController {
   // 지출 내역 삭제
   @Delete(':dailyPlanId/expense/:expenseId')
   async deleteExpense(@Param('dailyPlanId') dailyPlanId: string, @Param('expenseId') expenseId: string) {
-    return this.expenseService.deleteExpense(dailyPlanId, expenseId);
+    return this.expenseService.removeExpense(dailyPlanId, expenseId);
   }
 }

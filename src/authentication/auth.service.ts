@@ -147,9 +147,8 @@ export class AuthService {
         'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
       };
       const response = await axios.post(url, data, { headers: headers });
-      console.log('카카오 응답', response);
+
       const accessToken = response.data.access_token;
-      console.log('카카오에서 받은 토큰', accessToken);
 
       return accessToken;
     } catch (error) {

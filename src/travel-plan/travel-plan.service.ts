@@ -19,7 +19,7 @@ export class TravelPlanService {
   ) {}
 
   // 특정 여행 일정 조회
-  async findTravelPlan(feedId: string, travelPlanId: string, userId: string) {
+  async fetchTravelPlan(feedId: string, travelPlanId: string, userId: string) {
     await this.feedExtractor.checkUser(feedId, userId);
     const plan = await this.travelPlanModel.findById({ _id: travelPlanId }).exec();
 
@@ -94,7 +94,7 @@ export class TravelPlanService {
   }
 
   // 여행 일정 삭제
-  async deleteTravelPlan(feedId: string, travelPlanId: string) {
+  async removeTravelPlan(feedId: string, travelPlanId: string) {
     // travelPlanModel의 deletedAt의 값을 date로 변경
     const deletedTravelPlan = await this.travelPlanModel
       .findByIdAndUpdate({ _id: travelPlanId }, { deletedAt: new Date() }, { runValidators: true, new: true })

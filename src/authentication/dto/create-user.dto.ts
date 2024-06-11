@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -7,23 +8,28 @@ const passwordMessage = {
 };
 
 export class CreateUserDto {
+  @ApiProperty()
   @IsOptional()
   @IsString()
   authProvider: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   email: string;
 
+  @ApiProperty()
   @IsOptional()
   @IsString()
   @Matches(passwordRegex, passwordMessage)
   password?: string;
 
+  @ApiProperty()
   @IsOptional()
   @IsString()
   nickname: string;
 
+  @ApiProperty()
   @IsOptional()
   @IsString()
   profileImage?: string;

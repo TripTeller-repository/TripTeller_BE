@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 // 닉네임 설정 시
@@ -11,6 +12,7 @@ const message = {
 };
 
 export class UpdateUserDto {
+  @ApiProperty()
   @IsOptional()
   @IsString()
   @MaxLength(6)

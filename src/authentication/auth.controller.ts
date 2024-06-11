@@ -3,6 +3,7 @@ import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +11,7 @@ export class AuthController {
 
   // 회원가입
   @Post('sign-up')
+  @ApiOperation({ summary: '회원가입', description: '유저를 생성한다.' })
   async postSignUp(@Body() createUserDto: CreateUserDto) {
     const newUser = await this.authService.createUser(createUserDto);
     return {

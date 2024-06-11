@@ -22,7 +22,7 @@ export class AppService {
     return 'Health Check!';
   }
 
-  getHealthCheck(): string {
-    return 'Health Check';
+  getTestError(): string {
+    throw new Error('This is a test error');
   }
 }

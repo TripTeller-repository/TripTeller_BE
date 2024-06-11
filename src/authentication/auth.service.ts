@@ -51,10 +51,10 @@ export class AuthService {
     const payload = { userId, authProvider };
 
     // Access Token 생성
-    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '10s' });
+    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' }); // 실)5m, 테)1h
 
     // Refresh Token 생성 (쿠키)
-    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '20s' });
+    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '4h' }); // 실)1h, 테)4h
 
     return { accessToken, refreshToken };
   }
@@ -168,9 +168,6 @@ export class AuthService {
           'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
       });
-      
-      const nickname = data.properties.nickname;
-      const email = data.kakao_account.email;
 
       const nickname = data.properties.nickname;
       const email = data.kakao_account.email;
@@ -259,13 +256,11 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('해당 ID를 가진 회원이 없습니다.');
       }
-      // 토큰에 있는 회원 ID 확인
-      const { userId } = await this.verifyToken(token);
 
       // DB에 있는 회원 id에서 deletedAt의 값을 현재 시각(date)로 만들기
       await this.userService.deleteUserById(userId, new Date());
 
-      return { message: '해당하는 사용자를 찾을 수 없습니다.' };
+      return { message: '해당 회원의 탈퇴처리가 완료되었습니다.' };
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException('회원 탈퇴 중 오류가 발생하였습니다.');

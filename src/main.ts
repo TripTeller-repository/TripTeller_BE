@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 // NODE_ENV 값에 따라 .env 파일을 다르게 읽음
 dotenv.config({
@@ -20,15 +21,24 @@ async function bootstrap() {
 
   const prodList = ['https://trip-teller.com', 'https://www.trip-teller.com'];
 
-  const origin =
-    process.env.NODE_ENV === 'development' ? devList : prodList;
+  const origin = process.env.NODE_ENV === 'development' ? devList : prodList;
 
   app.enableCors({
-    origin: devList,
+    origin,
     credentials: true,
   });
 
   app.use(cookieParser());
+
+  // Swagger 설정
+  const config = new DocumentBuilder()
+    .setTitle('TripTeller APIs')
+    .setDescription('TripTeller APIs description')
+    .setVersion('1.0')
+    .addTag('group')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(3000);
 }

@@ -28,13 +28,14 @@ async function bootstrap() {
     process.env.NODE_ENV === 'development' ? devList : process.env.NODE_ENV === 'stage' ? stageList : prodList;
 
   app.enableCors({
-    origin: origin,
+    origin: devList,
     credentials: true,
   });
 
   app.use(cookieParser());
 
   app.listen(3000);
+  await app.listen(3000);
 }
 
 bootstrap();

@@ -1,8 +1,10 @@
-import { Controller, Post, Delete, Get, Param, Body, Req } from '@nestjs/common';
+import { Controller, Post, Delete, Get, Param, Body, Req, UseGuards } from '@nestjs/common';
 import { ScrapService } from './scrap.service';
-import { CreateScrapDto } from './dto/createScrap.dto';
+import { CreateScrapDto } from './dto/create-scrap.dto';
+import { CustomAuthGuard } from 'src/authentication/auth.guard';
 
 @Controller('scrap')
+@UseGuards(CustomAuthGuard)
 export class ScrapController {
   constructor(private readonly scrapService: ScrapService) {}
   // 스크랩한 게시물 조회

@@ -1,16 +1,8 @@
-import { Body, Controller, Delete, Get, Post, Query, Req, UnauthorizedException } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Delete, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/authentication/dto/createUser.dto';
-import { SignInDto } from './dto/signIn.dto';
-
-interface IOAuthUser {
-  user: {
-    name: string;
-    email: string;
-    password: string;
-  };
-}
+import { SignInDto } from './dto/sign-in.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -30,59 +22,125 @@ export class AuthController {
 
   // 로그인
   @Post('sign-in')
-  async postSignIn(@Body() signInDto: SignInDto) {
+  async postSignIn(@Body() signInDto: SignInDto, @Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
-      const token = this.authService.signIn(signInDto);
-      return token;
+      const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
+
+      this.setRefreshTokenCookie(res, refreshToken);
+
+      return { accessToken };
     } catch (error) {
+      // 쿠키의 리프레시 토큰 확인해서 만료 시 에러처리
+      if (error instanceof UnauthorizedException && error.message === 'Token has expired') {
+        const refreshToken = req.cookies?.refreshToken;
+        const isExpired = await this.authService.isRefreshTokenExpired(refreshToken);
+        if (isExpired) {
+          throw new UnauthorizedException('Refresh token has expired');
+        }
+      }
       throw new UnauthorizedException('유효하지 않은 이메일이나 비밀번호를 입력하여 로그인이 실패하였습니다.');
     }
   }
 
-  ////// 카카오 로그인
-  // 프론트에서 인가 코드 넘겨줌
-  // 카카오에게 토큰 요청
-  @Post('sign-in/kakao')
-  async postSignInKakao(@Query('code') code: string) {
+  // 액세스 토큰 재발급
+  @Post('refresh-accessToken')
+  async postRefreshAccessToken(@Req() req: expReq, @Res({ passthrough: true }) res) {
     try {
-      // 카카오에서 토큰 받아오기
-      console.log('code', code)  // 인가 코드 확인
+      // 헤더의 쿠키에서 리프레시 토큰 확인
+      const refreshToken = req.cookies['refreshToken'];
+
+      // 리프레시 토큰이 없으면 에러
+      if (!refreshToken) {
+        throw new UnauthorizedException('Refresh token not found');
+      }
+
+      // 리프레시 토큰이 만료된 경우 에러
+      const isRefreshTokenExpired = await this.authService.isRefreshTokenExpired(refreshToken);
+      if (isRefreshTokenExpired) {
+        throw new UnauthorizedException('Refresh token has expired');
+      }
+
+      // 리프레시 토큰 검증
+      const { userId, authProvider } = await this.authService.verifyToken(refreshToken);
+
+      // 액세스 토큰 재발급
+      const { accessToken } = await this.authService.createAccessTokenAgain(userId, authProvider);
+
+      return { accessToken };
+    } catch (error) {
+      return res.status(401).json(error);
+    }
+  }
+
+  // 카카오 로그인
+  @Post('sign-in/kakao')
+  async postSignInKakao(@Body('code') code: string, @Res({ passthrough: true }) res: expRes) {
+    try {
+      // 카카오에서 인증토큰 받아오기
       const kakaoToken = await this.authService.fetchKakaoToken(code);
+
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
+
       // 우리 서버의 토큰 발행하기
-      const token = await this.authService.oauthSignIn(kakaoUserInfo);
-      // 토큰에 oauthProvider 정보 넣어주기
-      ///
+      const { accessToken, refreshToken } = await this.authService.oauthSignIn(kakaoUserInfo);
+
+      this.setRefreshTokenCookie(res, refreshToken);
+
+      return { accessToken };
     } catch (error) {
-      throw error;
+      console.error(error);
+      throw new UnauthorizedException('카카오 로그인에 실패하였습니다.');
     }
   }
 
   // 회원탈퇴
   @Delete('withdraw')
-  async deleteWithdraw(@Req() req: Request) {
-    const token = req.headers.authorization.split(' ')[1];
-    await this.authService.withdraw(token);
-    return { message: '회원탈퇴가 성공적으로 완료되었습니다.' };
+  async deleteWithdraw(@Req() req: expReq) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        throw new UnauthorizedException('request에 userId가 존재하지 않습니다.');
+      }
+
+      await this.authService.withdraw(userId);
+
+      return { message: '회원탈퇴가 성공적으로 완료되었습니다.' };
+    } catch (error) {
+      console.error(error);
+      throw new UnauthorizedException('회원탈퇴가 실패하였습니다.');
+    }
   }
 
-  // 토큰 검증 (테스트용)
-  @Get('token-verification')
-  async getVerifyToken(@Req() req: Request) {
-    // 헤더에서 토큰 추출
-    const token = req.headers.authorization?.split(' ')[1];
-    // 토큰 유무 검증
-    // 로그인한 회원만 서비스를 이용할 수 있도록 함.
-    if (!token) {
-      return { success: false, message: '토큰이 제공되지 않았습니다.' };
+  // 쿠키 환경 설정
+  private setRefreshTokenCookie(res: expRes, refreshToken: string) {
+    const commonOptions = {
+      httpOnly: true,
+      maxAge: 60 * 60 * 1000, // 1시간
+    };
+
+    let domain;
+    let additionalOptions = {};
+
+    // 개발, 스테이지 환경
+    if (process.env.NODE_ENV === 'production') {
+      domain = '.trip-teller.com';
+      additionalOptions = {
+        secure: true,
+        sameSite: 'none',
+      };
+      // 개발환경 환경
+    } else {
+      domain = '.localhost';
+      additionalOptions = {
+        sameSite: true,
+      };
     }
-    // 토큰 검증함
-    try {
-      const decodedToken = await this.authService.verifyToken(token);
-      return { success: true, payload: decodedToken };
-    } catch (error) {
-      return { success: false, message: '토큰 검증에 실패하였습니다.' };
-    }
+    res.cookie('refreshToken', refreshToken, {
+      domain: domain,
+      ...commonOptions,
+      ...additionalOptions,
+    });
   }
 }

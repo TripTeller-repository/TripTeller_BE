@@ -1,40 +1,41 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { PostProfileImageDto } from './dto/postProfileImage.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { PostProfileImageDto } from './dto/post-profile-image.dto';
+import { CustomAuthGuard } from 'src/authentication/auth.guard';
 
 @Controller('user')
+@UseGuards(CustomAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // 회원정보 전체 조회
   // 정보 : 이메일, 프로필 이미지 URL, 닉네임
-  // MyTrip => 토큰에 있는 userID로 조회
   @Get('info')
   async getUserInfoMyTrip(@Req() req) {
     const { userId } = req.user;
-    return this.userService.getUserInfo(userId);
+    return this.userService.findUserInfoById(userId);
   }
 
   // 프로필 이미지 불러오기
   @Get('profile-image')
   async getProfileImage(@Req() req) {
     const { userId } = req.user;
-    return this.userService.getProfileImage(userId);
+    return this.userService.fetchProfileImage(userId);
   }
 
   // 닉네임 조회
   @Get('nickname')
   async getNickname(@Req() req) {
     const { userId } = req.user;
-    return this.userService.getNickname(userId);
+    return this.userService.findNickname(userId);
   }
 
   // AWS S3 프로필 이미지 Signed URL 불러오기
   @Get('profile-image-signed-url/:fileName')
   async getProfileImageSignedUrl(@Req() req, @Param('fileName') fileName) {
     const { userId } = req.user;
-    const signedUrl = await this.userService.getProfileImageSignedUrl(fileName, userId);
+    const signedUrl = await this.userService.fetchProfileImageSignedUrl(fileName, userId);
     return { signedUrl };
   }
 

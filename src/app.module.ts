@@ -3,45 +3,26 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthController } from './authentication/auth.controller';
-import { UserController } from './user/user.controller';
-import { AuthService } from './authentication/auth.service';
-import { JwtModule } from '@nestjs/jwt';
-import { UserSchema } from './user/user.schema';
-import { UserService } from './user/user.service';
-import { ScrapSchema } from './scrap/scrap.schema';
-import { DailyScheduleSchema } from './dailySchedule/dailySchedule.schema';
-import { FeedSchema } from './feed/feed.schema';
-import { FeedController } from './feed/feed.controller';
-import { FeedService } from './feed/feed.service';
-import { ScrapController } from './scrap/scrap.controller';
-import { ScrapService } from './scrap/scrap.service';
-import { DailyScheduleService } from './dailySchedule/dailySchedule.service';
-import { AuthMiddleware } from './authentication/auth.middleware';
-import { TravelPlanService } from './travelPlan/travelPlan.service';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 import mongoose from 'mongoose';
-import { ExpenseSchema } from './expense/expense.schema';
-import { TravelPlanSchema } from './travelPlan/travelPlan.schema';
-import { FeedsController } from './feed/feeds.controller';
-import { TravelPlanController } from './travelPlan/travelPlan.controller';
-import { ExpenseService } from './expense/expense.service';
-import { TravelLogService } from './travelLog/travelLog.service';
-import { DailyScheduleController } from './dailySchedule/dailySchedule.controller';
-import { FeedsService } from './feed/feeds.service';
-import { DailyPlanSchema } from './dailyPlan/dailyPlan.schema';
-import { DailyPlanService } from './dailyPlan/dailyPlan.service';
-import { DailyPlanController } from './dailyPlan/dailyPlan.controller';
-import { FeedExtractor } from './utils/feedExtractor';
+import { AuthModule } from './authentication/auth.module';
+import { DailyPlanModule } from './daily-plan/daily-plan.module';
+import { DailyscheduleModule } from './daily-schedule/daily-schedule.module';
+import { MyTripModule } from './my-trip/my-trip.module';
+import { OurTripModule } from './our-trip/our-trip.module';
+import { ScrapModule } from './scrap/scrap.module';
+import { SearchModule } from './search/search.module';
+import { UserModule } from './user/user.module';
+import { TravelPlanModule } from './travel-plan/travel-plan.module';
+import { TravelLogModule } from './travel-log/travel-log.module';
+import { AuthService } from './authentication/auth.service';
+import { AllExceptionsFilter } from './utils/all-exceptions.filter';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 
 @Module({
   imports: [
-    JwtModule.register({
-      global: true,
-      secret: process.env.SECRET_KEY,
-      signOptions: {
-        expiresIn: '1h', // 토큰 유효 기간: 1시간
-      },
-    }),
     ConfigModule.forRoot({ isGlobal: true }),
     // 비동기 실행을 위해 forRootAsync 함수 사용
     MongooseModule.forRootAsync({
@@ -56,54 +37,34 @@ import { FeedExtractor } from './utils/feedExtractor';
       },
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([
-      { name: 'User', schema: UserSchema },
-      { name: 'Scrap', schema: ScrapSchema },
-      { name: 'DailySchedule', schema: DailyScheduleSchema },
-      { name: 'Expense', schema: ExpenseSchema },
-      { name: 'TravelPlan', schema: TravelPlanSchema },
-      { name: 'DailyPlan', schema: DailyPlanSchema },
-      { name: 'Feed', schema: FeedSchema },
-    ]),
+    WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console({
+          level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            nestWinstonModuleUtilities.format.nestLike('TripTeller', { prettyPrint: true, colors: true }),
+          ),
+        }),
+      ],
+    }),
+    AuthModule,
+    DailyPlanModule,
+    DailyscheduleModule,
+    MyTripModule,
+    OurTripModule,
+    ScrapModule,
+    SearchModule,
+    UserModule,
+    TravelPlanModule,
+    TravelLogModule,
   ],
-  controllers: [
-    AppController,
-    AuthController,
-    UserController,
-    FeedController,
-    FeedsController,
-    ScrapController,
-    TravelPlanController,
-    DailyPlanController,
-    DailyScheduleController,
-  ],
-  providers: [
-    AppService,
-    ConfigService,
-    UserService,
-    AuthService,
-    FeedService,
-    FeedsService,
-    ScrapService,
-    DailyScheduleService,
-    TravelPlanService,
-    DailyPlanService,
-    ExpenseService,
-    TravelLogService,
-    FeedExtractor,
-  ],
+  controllers: [AppController],
+  providers: [AppService, AuthService, { provide: 'APP_FILTER', useClass: AllExceptionsFilter }],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .forRoutes(
-        ScrapController,
-        UserController,
-        FeedController,
-        TravelPlanController,
-        DailyPlanController,
-        DailyScheduleController,
-      );
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer.apply(AuthMiddleware).forRoutes('*');
   }
 }

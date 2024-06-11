@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { TravelPlan } from 'src/travelPlan/travelPlan.schema';
+import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
 
 export type FeedDocument = Feed & Document;
 
-@Schema({ timestamps: true, collection: 'Feed' })
+@Schema({ timestamps: true, collection: 'Feed', autoIndex: false })
 export default class Feed {
   // 글쓴이(회원) ID
   @Prop({ required: true })
@@ -43,6 +43,11 @@ export default class Feed {
 
 // Feed 스키마에 대한 Mongoose 모델 생성
 const FeedSchema = SchemaFactory.createForClass(Feed);
+
+// 인덱스 추가
+FeedSchema.index({ userId: 1 });
+FeedSchema.index({ travelPlan: 1 });
+FeedSchema.index({ createdAt: -1 });
 
 const populate = function (next) {
   this.populate({

@@ -168,6 +168,10 @@ export class AuthService {
           'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
       });
+      
+      const nickname = data.properties.nickname;
+      const email = data.kakao_account.email;
+
       const nickname = data.properties.nickname;
       const email = data.kakao_account.email;
 
@@ -255,6 +259,8 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('해당 ID를 가진 회원이 없습니다.');
       }
+      // 토큰에 있는 회원 ID 확인
+      const { userId } = await this.verifyToken(token);
 
       // DB에 있는 회원 id에서 deletedAt의 값을 현재 시각(date)로 만들기
       await this.userService.deleteUserById(userId, new Date());

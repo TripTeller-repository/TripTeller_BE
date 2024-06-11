@@ -18,7 +18,7 @@ export class AuthMiddleware implements NestMiddleware {
         if (isAccessTokenExpired) {
           throw new UnauthorizedException('Access token has expired');
         }
-
+        
         // 토큰에서 회원 ID 추출
         const { userId, authProvider } = await this.authService.verifyToken(accessToken);
 
@@ -37,7 +37,7 @@ export class AuthMiddleware implements NestMiddleware {
           throw new UnauthorizedException('Refresh token has expired');
         }
       }
-
+      
       next(); // 다음 미들웨어로 이동
     } catch (error) {
       return res.status(401).json({ message: error.message });

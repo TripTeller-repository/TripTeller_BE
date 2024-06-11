@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { EAuthProvider } from '../auth.service';
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 const passwordMessage = {
@@ -10,8 +11,8 @@ const passwordMessage = {
 export class CreateUserDto {
   @ApiProperty()
   @IsOptional()
-  @IsString()
-  authProvider: string;
+  @IsEnum(EAuthProvider)
+  authProvider: EAuthProvider;
 
   @ApiProperty()
   @IsNotEmpty()

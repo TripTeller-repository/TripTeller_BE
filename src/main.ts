@@ -35,7 +35,6 @@ async function bootstrap() {
     .setTitle('TripTeller APIs')
     .setDescription('TripTeller APIs description')
     .setVersion('1.0')
-    .addTag('group')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

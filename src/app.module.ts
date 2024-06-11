@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthMiddleware } from './authentication/auth.middleware';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 import mongoose from 'mongoose';
 import { AuthModule } from './authentication/auth.module';
 import { DailyPlanModule } from './daily-plan/daily-plan.module';
@@ -16,6 +16,10 @@ import { UserModule } from './user/user.module';
 import { TravelPlanModule } from './travel-plan/travel-plan.module';
 import { TravelLogModule } from './travel-log/travel-log.module';
 import { AuthService } from './authentication/auth.service';
+import { AllExceptionsFilter } from './utils/all-exceptions.filter';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 
 @Module({
   imports: [
@@ -33,6 +37,17 @@ import { AuthService } from './authentication/auth.service';
       },
       inject: [ConfigService],
     }),
+    WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console({
+          level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            nestWinstonModuleUtilities.format.nestLike('TripTeller', { prettyPrint: true, colors: true }),
+          ),
+        }),
+      ],
+    }),
     AuthModule,
     DailyPlanModule,
     DailyscheduleModule,
@@ -45,10 +60,11 @@ import { AuthService } from './authentication/auth.service';
     TravelLogModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AuthService],
+  providers: [AppService, AuthService, { provide: 'APP_FILTER', useClass: AllExceptionsFilter }],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
     consumer.apply(AuthMiddleware).forRoutes('*');
   }
 }

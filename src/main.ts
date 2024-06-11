@@ -3,35 +3,18 @@ import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import winston from 'winston';
-import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
 
 // NODE_ENV 값에 따라 .env 파일을 다르게 읽음
 dotenv.config({
   path: path.resolve(
     process.env.NODE_ENV === 'production'
       ? '.production.env' // 프로덕션 환경
-      : process.env.NODE_ENV === 'stage'
-        ? '.stage.env' // 스테이지 환경
-        : '.development.env', // 로컬 환경
+      : '.development.env', // 로컬(개발) 환경
   ),
 });
 
-// Winston 로거 설정
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: WinstonModule.createLogger({
-      transports: [
-        new winston.transports.Console({
-          level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            nestWinstonModuleUtilities.format.nestLike('TripTeller', { prettyPrint: true, colors: true }),
-          ),
-        }),
-      ],
-    }),
-  });
+  const app = await NestFactory.create(AppModule);
 
   const devList = ['http://127.0.0.1:5500', 'http://localhost:5500', 'http://localhost:5173', 'http://127.0.0.1:5173'];
 
@@ -49,7 +32,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  app.listen(3000);
+  await app.listen(3000);
 }
 
 bootstrap();

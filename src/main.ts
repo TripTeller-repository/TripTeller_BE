@@ -18,12 +18,10 @@ async function bootstrap() {
 
   const devList = ['http://127.0.0.1:5500', 'http://localhost:5500', 'http://localhost:5173', 'http://127.0.0.1:5173'];
 
-  const stageList = ['https://dev.trip-teller.com'];
-
   const prodList = ['https://trip-teller.com', 'https://www.trip-teller.com'];
 
   const origin =
-    process.env.NODE_ENV === 'development' ? devList : process.env.NODE_ENV === 'stage' ? stageList : prodList;
+    process.env.NODE_ENV === 'development' ? devList : prodList;
 
   app.enableCors({
     origin: origin,

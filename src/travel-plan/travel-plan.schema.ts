@@ -30,8 +30,8 @@ export class TravelPlan {
   @Prop({ required: true, maxlength: 20 })
   title: string;
 
-  declare readonly startDate: Date;
-  declare readonly endDate: Date;
+  declare startDate: Date;
+  declare endDate: Date;
 
   // 인원
   @Prop({

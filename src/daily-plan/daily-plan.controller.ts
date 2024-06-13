@@ -6,8 +6,9 @@ import { DailyScheduleService } from '../daily-schedule/daily-schedule.service';
 import { CreateExpenseDto } from 'src/expense/dto/create-expense.dto';
 import { PutExpenseDto } from 'src/expense/dto/put-expense.dto';
 import { CustomAuthGuard } from '../authentication/auth.guard';
+import { ApiOperation } from '@nestjs/swagger';
 
-@Controller('dailyPlan')
+@Controller('daily-plan')
 @UseGuards(CustomAuthGuard)
 export class DailyPlanController {
   constructor(
@@ -20,7 +21,8 @@ export class DailyPlanController {
   //////////////////////////////////
 
   // 개별 일정 조회
-  @Get(':dailyPlanId/dailySchedule/:dailyScheduleId')
+  @Get(':dailyPlanId/daily-schedule/:dailyScheduleId')
+  @ApiOperation({ summary: '개별 일정 조회' })
   async getOneDailySchedule(
     @Param('dailyPlanId') dailyPlanId: string,
     @Param('dailyScheduleId') dailyScheduleId: string,
@@ -29,7 +31,8 @@ export class DailyPlanController {
   }
 
   // 개별 일정 생성
-  @Post(':dailyPlanId/dailySchedule')
+  @Post(':dailyPlanId/daily-schedule')
+  @ApiOperation({ summary: '개별 일정 생성' })
   async postDailySchedule(
     @Param('dailyPlanId') dailyPlanId: string,
     @Body() createDailyScheduleDto: CreateDailyScheduleDto,
@@ -39,7 +42,8 @@ export class DailyPlanController {
   }
 
   // 개별 일정 수정
-  @Put(':dailyPlanId/dailySchedule/:dailyScheduleId')
+  @Put(':dailyPlanId/daily-schedule/:dailyScheduleId')
+  @ApiOperation({ summary: '개별 일정 수정' })
   async putDailySchedule(
     @Param('dailyPlanId') dailyPlanId: string,
     @Param('dailyScheduleId') dailyScheduleId: string,
@@ -49,7 +53,8 @@ export class DailyPlanController {
   }
 
   // 개별 일정 삭제
-  @Delete(':dailyPlanId/dailySchedule/:dailyScheduleId')
+  @Delete(':dailyPlanId/daily-schedule/:dailyScheduleId')
+  @ApiOperation({ summary: '개별 일정 삭제' })
   async deleteDailySchedule(
     @Param('dailyPlanId') dailyPlanId: string,
     @Param('dailyScheduleId') dailyScheduleId: string,
@@ -64,24 +69,28 @@ export class DailyPlanController {
   // /dailyPlan/:dailyPlanId
   // 일별 전체 지출내역 조회
   @Get(':dailyPlanId')
+  @ApiOperation({ summary: '일별 전체 지출내역 조회' })
   async getAllExpenses(@Param('dailyPlanId') dailyPlanId: string) {
     return this.expenseService.fetchAllExpenses(dailyPlanId);
   }
 
   // 지출 내역 조회
   @Get(':dailyPlanId/expense/:expenseId')
+  @ApiOperation({ summary: '지출내역 조회' })
   async getOneExpense(@Param('dailyPlanId') dailyPlanId: string, @Param('expenseId') expenseId: string) {
     return this.expenseService.fetchOneExpense(dailyPlanId, expenseId);
   }
 
   // 지출 내역 생성
   @Post(':dailyPlanId/expense')
+  @ApiOperation({ summary: '지출내역 생성' })
   async postExpense(@Req() req, @Param('dailyPlanId') dailyPlanId: string, @Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.createExpense(createExpenseDto, dailyPlanId);
   }
 
   // 지출 내역 수정
   @Put(':dailyPlanId/expense/:expenseId')
+  @ApiOperation({ summary: '지출내역 수정' })
   async putExpense(
     @Param('dailyPlanId') dailyPlanId: string,
     @Param('expenseId') expenseId: string,
@@ -92,6 +101,7 @@ export class DailyPlanController {
 
   // 지출 내역 삭제
   @Delete(':dailyPlanId/expense/:expenseId')
+  @ApiOperation({ summary: '지출내역 삭제' })
   async deleteExpense(@Param('dailyPlanId') dailyPlanId: string, @Param('expenseId') expenseId: string) {
     return this.expenseService.removeExpense(dailyPlanId, expenseId);
   }

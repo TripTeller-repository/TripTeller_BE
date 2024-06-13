@@ -12,13 +12,13 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('healthCheck')
+  @Get('health-check')
   @ApiOperation({ summary: 'Health Check API', description: '현재 서버의 상태가 정상인지 여부를 확인한다.' })
   getHealthCheck(): string {
     return this.appService.getHealthCheck();
   }
 
-  @Get('ErrorTest')
+  @Get('error-test')
   @ApiOperation({ summary: 'Exception filters API', description: 'Exception filters의 동작 여부를 확인한다.' })
   async test() {
     return this.appService.getTestError();

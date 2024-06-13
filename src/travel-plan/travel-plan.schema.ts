@@ -30,9 +30,6 @@ export class TravelPlan {
   @Prop({ required: true, maxlength: 20 })
   title: string;
 
-  declare startDate: Date;
-  declare endDate: Date;
-
   // 인원
   @Prop({
     required: true,
@@ -52,6 +49,9 @@ export class TravelPlan {
   // 삭제일
   @Prop({ default: null })
   deletedAt: Date | null;
+
+  declare startDate: Date;
+  declare endDate: Date;
 }
 
 // startDate와 endDate를 가상 속성으로 정의

@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { CustomAuthGuard } from 'src/authentication/auth.guard';
 import { DailyPlanService } from 'src/daily-plan/daily-plan.service';
 import { CreateDailyPlanDto } from 'src/daily-plan/dto/create-daily-plan.dto';
@@ -15,18 +16,21 @@ export class TravelPlanController {
 
   // 일별 일정 조회
   @Get(':travelPlanId/daily-plan/:dailyPlanId')
+  @ApiOperation({ summary: '일별 일정 조회' })
   async getOneDailyPlan(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
     return this.dailyPlanService.fetchOneDailyPlan(travelPlanId, dailyPlanId);
   }
 
   // 일별 일정(DailyPlan) 생성
   @Post(':travelPlanId/daily-plan')
+  @ApiOperation({ summary: '일별 일정 생성' })
   async postDailyPlan(@Param('travelPlanId') travelPlanId: string, @Body() createDailyPlanDto: CreateDailyPlanDto) {
     return this.dailyPlanService.createDailyPlan(createDailyPlanDto, travelPlanId);
   }
 
   // 일별 일정 수정
   @Put(':travelPlanId/daily-plan/:dailyPlanId')
+  @ApiOperation({ summary: '일별 일정 수정' })
   async putDailyPlan(
     @Param('travelPlanId') travelPlanId: string,
     @Param('dailyPlanId') dailyPlanId: string,
@@ -37,6 +41,7 @@ export class TravelPlanController {
 
   // 일별 일정 삭제
   @Delete(':travelPlanId/daily-plan/:dailyPlanId')
+  @ApiOperation({ summary: '일별 일정 삭제' })
   async deleteDailyPlan(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
     return this.dailyPlanService.deleteDailyPlan(travelPlanId, dailyPlanId);
   }

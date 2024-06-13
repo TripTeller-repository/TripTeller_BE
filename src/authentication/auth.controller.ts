@@ -26,6 +26,7 @@ export class AuthController {
 
   // 로그인
   @Post('sign-in')
+  @ApiOperation({ summary: '로그인' })
   async postSignIn(@Body() signInDto: SignInDto, @Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
@@ -48,6 +49,7 @@ export class AuthController {
 
   // 액세스 토큰 재발급
   @Post('refresh-accessToken')
+  @ApiOperation({ summary: '액세스 토큰 재발급' })
   async postRefreshAccessToken(@Req() req: expReq, @Res({ passthrough: true }) res) {
     try {
       // 헤더의 쿠키에서 리프레시 토큰 확인
@@ -78,6 +80,7 @@ export class AuthController {
 
   // 카카오 로그인
   @Post('sign-in/kakao')
+  @ApiOperation({ summary: '카카오 로그인' })
   async postSignInKakao(@Body('code') code: string, @Res({ passthrough: true }) res: expRes) {
     try {
       // 카카오에서 인증토큰 받아오기
@@ -100,6 +103,7 @@ export class AuthController {
 
   // 회원탈퇴
   @Delete('withdraw')
+  @ApiOperation({ summary: '회원탈퇴' })
   async deleteWithdraw(@Req() req: expReq) {
     try {
       const userId = req.user?.userId;

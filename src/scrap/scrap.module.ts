@@ -7,6 +7,7 @@ import { FeedExtractor } from 'src/utils/feed-extractor';
 import { FeedSchema } from 'src/feed/feed.schema';
 import { UserSchema } from 'src/user/user.schema';
 import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
+import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
       { name: 'Feed', schema: FeedSchema },
       { name: 'User', schema: UserSchema },
       { name: 'TravelPlan', schema: TravelPlanSchema },
+      { name: 'DailyPlan', schema: DailyPlanSchema },
     ]),
   ],
   providers: [ScrapService, FeedExtractor],

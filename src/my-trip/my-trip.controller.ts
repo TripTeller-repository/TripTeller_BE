@@ -7,7 +7,7 @@ import { CreateTravelPlanDto } from '../travel-plan/dto/create-travel-plan.dto';
 import { PutTravelPlanDto } from '../travel-plan/dto/put-travel-plan.dto';
 import { PostCoverImageDto } from '../feed/dto/post-cover-Image.dto';
 import { CustomAuthGuard } from 'src/authentication/auth.guard';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('my-trip')
 @UseGuards(CustomAuthGuard)
@@ -17,8 +17,8 @@ export class MyTripController {
     private readonly travelPlanService: TravelPlanService,
   ) {}
 
-  // 본인의 모든 게시물 조회
   // my-trip?pageNumber=1
+  @ApiTags('MyTrip')
   @Get()
   @ApiOperation({ summary: '본인의 모든 게시물 조회' })
   async getAllFeeds(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
@@ -26,8 +26,8 @@ export class MyTripController {
     return await this.myTripService.fetchAllMyFeedsPaginated(pageNumber, userId);
   }
 
-  // 본인이 쓴 게시물 기간별 조회
   // my-trip/date?startDate=2023-01-01&endDate=2023-01-31&pageNumber=1
+  @ApiTags('MyTrip')
   @Get('/date')
   @ApiOperation({ summary: '본인이 쓴 게시물 기간별 조회' })
   async getFeedsByDate(
@@ -40,8 +40,8 @@ export class MyTripController {
     return await this.myTripService.fetchMyFeedsByDate(startDate, endDate, pageNumber, userId);
   }
 
-  // 본인의 공개 게시물 조회
   // my-trip/public?pageNumber=1
+  @ApiTags('MyTrip')
   @Get('public')
   @ApiOperation({ summary: '본인의 공개 게시물 조회' })
   async getMyPublicFeed(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
@@ -49,8 +49,8 @@ export class MyTripController {
     return await this.myTripService.fetchMyPublicFeeds(pageNumber, userId);
   }
 
-  // 본인의 비공개 게시물 조회
   // my-trip/private?pageNumber=1
+  @ApiTags('MyTrip')
   @Get('private')
   @ApiOperation({ summary: '본인의 비공개 게시물 조회' })
   async getMyPrivateFeed(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
@@ -58,8 +58,8 @@ export class MyTripController {
     return await this.myTripService.fetchMyPrivateFeeds(pageNumber, userId);
   }
 
-  // 본인의 특정 게시물을 게시물 ID로 조회
   // my-trip/:feedId
+  @ApiTags('MyTrip')
   @Get(':feedId')
   @ApiOperation({ summary: '본인의 특정 게시물을 게시물 ID로 조회' })
   async getOneFeed(@Req() req, @Param('feedId') feedId: string) {
@@ -67,8 +67,8 @@ export class MyTripController {
     return await this.myTripService.fetchMyFeedByFeedId(feedId, userId);
   }
 
-  // 특정 게시물의 커버 이미지 url 불러오기
   // my-trip/:feedId/cover-image
+  @ApiTags('MyTrip')
   @Get(':feedId/cover-image')
   @ApiOperation({ summary: '특정 게시물의 커버 이미지 url 불러오기' })
   async getFeedCoverImage(@Req() req, @Param('feedId') feedId: string) {
@@ -76,8 +76,8 @@ export class MyTripController {
     return await this.myTripService.fetchMyFeedImgUrl(feedId, userId);
   }
 
-  // AWS S3 프로필 이미지 Signed URL 불러오기
   // my-trip/cover-image-signed-url/:fileName
+  @ApiTags('MyTrip')
   @Get('cover-image-signed-url/:fileName')
   @ApiOperation({ summary: 'AWS S3 프로필 이미지 Signed URL 불러오기' })
   async getCoverImageSignedUrl(@Req() req, @Param('fileName') fileName) {
@@ -86,8 +86,8 @@ export class MyTripController {
     return { signedUrl };
   }
 
-  // 본인의 모든 게시글 정렬 : 최신순
   // my-trip/order-by/recent
+  @ApiTags('MyTrip')
   @Get('order-by/recent')
   @ApiOperation({ summary: '본인의 모든 게시글 정렬 : 최신순' })
   async getMyFeedOrderedByRecent(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
@@ -95,8 +95,8 @@ export class MyTripController {
     return this.myTripService.sortMyFeedsByRecent(pageNumber, userId);
   }
 
-  // 본인의 모든 게시글 정렬 : 인기순
   // my-trip/order-by/like-count
+  @ApiTags('MyTrip')
   @Get('order-by/like-count')
   @ApiOperation({ summary: '본인의 모든 게시글 정렬 : 인기순' })
   async getMyFeedOrderedByLikeCount(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req) {
@@ -104,7 +104,7 @@ export class MyTripController {
     return this.myTripService.sortMyFeedsByLikeCount(pageNumber, userId);
   }
 
-  // 게시물 등록
+  @ApiTags('MyTrip')
   @Post()
   @ApiOperation({ summary: '게시물 등록' })
   async postOneFeed(@Req() req, @Body() createFeedDto: CreateFeedDto) {
@@ -112,7 +112,7 @@ export class MyTripController {
     return await this.myTripService.createFeed(createFeedDto, userId);
   }
 
-  // 커버 이미지 변경
+  @ApiTags('MyTrip')
   @Post(':feedId/cover-image')
   @ApiOperation({ summary: '커버 이미지 변경' })
   async postProfileImage(@Req() req, @Param('feedId') feedId: string, @Body() postCoverImageDto: PostCoverImageDto) {
@@ -134,7 +134,7 @@ export class MyTripController {
     }
   }
 
-  // 게시물 수정
+  @ApiTags('MyTrip')
   @Put(':feedId')
   @ApiOperation({ summary: '게시물 수정' })
   async putOneFeed(@Req() req, @Param('feedId') feedId: string, @Body() updateFeedDto: UpdateFeedDto) {
@@ -142,7 +142,7 @@ export class MyTripController {
     return await this.myTripService.updateFeed(feedId, userId, updateFeedDto);
   }
 
-  // 게시물 삭제
+  @ApiTags('MyTrip')
   @Delete(':feedId')
   @ApiOperation({ summary: '게시물 삭제' })
   async deleteOneFeed(@Req() req, @Param('feedId') feedId: string) {
@@ -154,7 +154,7 @@ export class MyTripController {
   //////////// travelPlan ////////////
   ////////////////////////////////////
 
-  // 여행 일정 등록
+  @ApiTags('TravelPlan')
   @Post(':feedId/travel-plan')
   @ApiOperation({ summary: '여행 일정 등록' })
   async postTravelPlan(@Req() req, @Param('feedId') feedId: string, @Body() createTravelPlanDto: CreateTravelPlanDto) {
@@ -162,7 +162,7 @@ export class MyTripController {
     return await this.travelPlanService.createTravelPlan(feedId, createTravelPlanDto, userId);
   }
 
-  // 특정 여행 일정을 여행 일정 ID로 조회
+  @ApiTags('TravelPlan')
   @Get(':feedId/travel-plan/:travelPlanId')
   @ApiOperation({ summary: '특정 여행 일정을 여행 일정 ID로 조회' })
   async getTravelPlan(@Req() req, @Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {
@@ -170,7 +170,7 @@ export class MyTripController {
     return await this.travelPlanService.fetchTravelPlan(feedId, travelPlanId, userId);
   }
 
-  // 여행 일정 수정
+  @ApiTags('TravelPlan')
   @Put(':feedId/travel-plan/:travelPlanId')
   @ApiOperation({ summary: '여행 일정 수정' })
   async putTravelPlan(
@@ -183,7 +183,7 @@ export class MyTripController {
     return await this.travelPlanService.updateTravelPlan(feedId, travelPlanId, putTravelPlanDto, userId);
   }
 
-  // 여행 일정 삭제
+  @ApiTags('TravelPlan')
   @Delete(':feedId/travel-plan/:travelPlanId')
   @ApiOperation({ summary: '여행 일정 삭제' })
   async deleteTravelPlan(@Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {

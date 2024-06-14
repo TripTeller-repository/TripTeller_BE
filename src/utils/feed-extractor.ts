@@ -85,52 +85,23 @@ export class FeedExtractor {
   };
 
   // 원하는 형태로 리턴값 추출
-  // 우리의 여행에서의 게시글 형태
-  // travelPlan이 없는 경우는 제외
-  // async addVirtualsToTravelPlan(travelPlan: TravelPlan): Promise<[Date | null, Date | null]> {
-  //   let tempStartDate;
-  //   let tempEndDate;
-
-  //   if (travelPlan.dailyPlans) {
-  //     const dates = travelPlan.dailyPlans
-  //       .filter((dailyPlan) => dailyPlan.dateType === 'DATE')
-  //       .map((dailyPlan) => dailyPlan.date)
-  //       .sort((a, b) => a.getTime() - b.getTime());
-
-  //     tempStartDate = dates[0] || null;
-  //     tempEndDate = dates[dates.length - 1] || null;
-  //     console.log('extract 함수의 startDate', tempStartDate);
-  //     console.log('extract 함수의 startDate', tempEndDate);
-  //     return [tempStartDate, tempEndDate];
-  //   }
-  // }
-
   extractFeeds = async (feeds: FeedDocument[], userId?: string) => {
     const extractFeed = async (feed: FeedDocument) => {
       const { likeCount, travelPlan: _travelPlan, coverImage, isPublic } = feed;
+
       if (!_travelPlan) return null;
 
       const travelPlan = await this.travelPlanModel.findOne({ _id: _travelPlan['_id'] }).exec();
-      if (!travelPlan) {
-        console.error('★★★travelPlan not found: ', _travelPlan['_id']);
-        return;
+
+      if (travelPlan === null || travelPlan === undefined) {
+        console.error('travelPlan not found: ', _travelPlan['_id']);
+        return null;
       }
-
-      // console.log(_travelPlan.dailyPlans);
-      // console.log(travelPlan.dailyPlans);
-
-      // console.log('★★★feed 출력', feed);
-
-      // const dailyPlansIds = travelPlan.dailyPlans.map((plan) => plan['_id']);
-      // const dailyPlans = await this.dailyPlanModel.find({ _id: { $in: dailyPlansIds } }).exec();
 
       // 이 TravelPlan의 모든 DailySchedule을 가져옴
       const dailySchedules: DailySchedule[] = travelPlan.dailyPlans // => DailyPlan[]
         .map((dailyPlan) => dailyPlan.dailySchedules) // => DailySchedule[][]
         .flat(); // => DailySchedule[]
-
-      // console.log('★★★travelPlan.dailyPlans', dailyPlans);
-      // console.log('★★★dailySchedules', dailySchedules);
 
       let thumbnailUrl = null; // 썸네일 URL
       // DailySchedule 중 썸네일 이미지가 있고, isThumbnail이 true인 DailySchedule을 찾아 썸네일 URL을 추출
@@ -141,22 +112,12 @@ export class FeedExtractor {
       const startDate = travelPlan.startDate;
       const endDate = travelPlan.endDate;
 
-      console.log('★★★FeedExtractor startDate', startDate);
-      console.log('★★★FeedExtractor endDate', endDate);
-
       // isThumnbail이 true인 DailySchedule이 없을 경우
       if (!thumbnailUrl) {
         // imgUrl이 있는 아무 DailySchedule을 찾아 썸네일 URL을 추출
         const dailySchedule = dailySchedules.find((dailySchedule) => dailySchedule.imageUrl);
-
-        // console.log('★★★if문 안에서 dailySchedule', dailySchedule);
-
         thumbnailUrl = dailySchedule?.imageUrl ?? null;
-
-        // console.log('★★★if문 안에서 썸네일Url', thumbnailUrl);
       }
-
-      // console.log('★★★썸네일Url', thumbnailUrl);
 
       // 해당 게시물 스크랩 여부 확인
       const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId || null);

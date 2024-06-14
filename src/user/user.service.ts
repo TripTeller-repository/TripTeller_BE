@@ -61,9 +61,9 @@ export class UserService {
   // Email로 닉네임 수정
   async updateNicknameByEmail(email: string, updateUserDto: UpdateUserDto) {
     const { nickname } = updateUserDto;
-
+    console.log('updateNicknameByEmail 서비스 nickname', nickname);
     const newNickname = await this.generateUniqueNickname(nickname);
-
+    console.log('updateNicknameByEmail 서비스 new nickname', newNickname);
     const updatedUser = await this.userModel
       .findOneAndUpdate({ email }, { nickname: newNickname }, { runValidators: true, new: true })
       .exec();
@@ -93,6 +93,8 @@ export class UserService {
     if (existingUsers.length > 0) {
       const count = existingUsers.length;
       newNickname = `${nickname}${count}`;
+    } else {
+      newNickname = nickname;
     }
 
     return newNickname;

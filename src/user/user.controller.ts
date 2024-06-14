@@ -70,6 +70,7 @@ export class UserController {
 
       // 닉네임 변경된 사용자 정보 업데이트
       const updatedUser = await this.userService.updateNickNameById(userId, { nickname: dto.nickname });
+      
       if (updatedUser) {
         return { message: '닉네임이 성공적으로 변경되었습니다.', user: updatedUser };
       } else {

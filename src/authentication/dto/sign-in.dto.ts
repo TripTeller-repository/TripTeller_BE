@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -7,10 +8,12 @@ const passwordMessage = {
 };
 
 export class SignInDto {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   email: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @Matches(passwordRegex, passwordMessage)

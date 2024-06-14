@@ -3,44 +3,45 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PostProfileImageDto } from './dto/post-profile-image.dto';
 import { CustomAuthGuard } from 'src/authentication/auth.guard';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('user')
 @UseGuards(CustomAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // 회원정보 전체 조회
-  // 정보 : 이메일, 프로필 이미지 URL, 닉네임
   @Get('info')
+  @ApiOperation({ summary: '회원정보(이메일, 프로필 이미지 URL, 닉네임) 전체 조회' })
   async getUserInfoMyTrip(@Req() req) {
     const { userId } = req.user;
     return this.userService.findUserInfoById(userId);
   }
 
-  // 프로필 이미지 불러오기
   @Get('profile-image')
+  @ApiOperation({ summary: '프로필 이미지 불러오기' })
   async getProfileImage(@Req() req) {
     const { userId } = req.user;
     return this.userService.fetchProfileImage(userId);
   }
 
-  // 닉네임 조회
   @Get('nickname')
+  @ApiOperation({ summary: '닉네임 조회' })
   async getNickname(@Req() req) {
     const { userId } = req.user;
     return this.userService.findNickname(userId);
   }
 
-  // AWS S3 프로필 이미지 Signed URL 불러오기
   @Get('profile-image-signed-url/:fileName')
+  @ApiOperation({ summary: 'AWS S3 프로필 이미지 Signed URL 불러오기' })
   async getProfileImageSignedUrl(@Req() req, @Param('fileName') fileName) {
     const { userId } = req.user;
     const signedUrl = await this.userService.fetchProfileImageSignedUrl(fileName, userId);
     return { signedUrl };
   }
 
-  // 프로필 이미지 변경
   @Post('profile-image')
+  @ApiOperation({ summary: '프로필 이미지 변경' })
   async postProfileImage(@Req() req, @Body() postProfileImageDto: PostProfileImageDto) {
     try {
       // 사용자 ID를 사용하여 해당 사용자를 찾아 프로필 이미지 변경
@@ -60,8 +61,8 @@ export class UserController {
     }
   }
 
-  // 닉네임 변경
   @Post('nickname')
+  @ApiOperation({ summary: '닉네임 변경' })
   async postNickname(@Req() req, @Body() dto: UpdateUserDto) {
     try {
       // 사용자 ID를 사용하여 해당 사용자를 찾아 닉네임 변경

@@ -3,14 +3,18 @@ import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreatedUserDto } from './dto/created-user.dto';
 
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // 회원가입
   @Post('sign-up')
-  async postSignUp(@Body() createUserDto: CreateUserDto) {
+  @ApiOperation({ summary: '회원가입', description: '유저를 생성한다!' })
+  @ApiCreatedResponse({ description: '유저 생성', type: CreatedUserDto })
+  async postSignUp(@Body() createUserDto: CreateUserDto): Promise<CreatedUserDto> {
     const newUser = await this.authService.createUser(createUserDto);
     return {
       email: newUser.email, // 이메일
@@ -20,13 +24,20 @@ export class AuthController {
     };
   }
 
-  // 로그인
   @Post('sign-in')
+  @ApiOperation({ summary: '로그인' })
   async postSignIn(@Body() signInDto: SignInDto, @Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
 
-      this.setRefreshTokenCookie(res, refreshToken);
+      // this.setRefreshTokenCookie(res, refreshToken);
+      // console.log('컨트롤러에서 전달한 accessToken', accessToken);
+      const domain = '.localhost';
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: false,
+        domain: domain,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
 
       return { accessToken };
     } catch (error) {
@@ -42,8 +53,8 @@ export class AuthController {
     }
   }
 
-  // 액세스 토큰 재발급
   @Post('refresh-accessToken')
+  @ApiOperation({ summary: '액세스 토큰 재발급' })
   async postRefreshAccessToken(@Req() req: expReq, @Res({ passthrough: true }) res) {
     try {
       // 헤더의 쿠키에서 리프레시 토큰 확인
@@ -72,19 +83,21 @@ export class AuthController {
     }
   }
 
-  // 카카오 로그인
   @Post('sign-in/kakao')
+  @ApiOperation({ summary: '카카오 로그인' })
   async postSignInKakao(@Body('code') code: string, @Res({ passthrough: true }) res: expRes) {
     try {
       // 카카오에서 인증토큰 받아오기
       const kakaoToken = await this.authService.fetchKakaoToken(code);
-
+      console.log('카카오 로그인 코드', code);
+      console.log('카카오 로그인 카카오토큰', kakaoToken);
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
-
+      console.log('카카오 로그인 유저정보', kakaoUserInfo);
       // 우리 서버의 토큰 발행하기
       const { accessToken, refreshToken } = await this.authService.oauthSignIn(kakaoUserInfo);
-
+      console.log('우리 서버 액세스토큰', accessToken);
+      console.log('우리 서버 리프레시토큰', refreshToken);
       this.setRefreshTokenCookie(res, refreshToken);
 
       return { accessToken };
@@ -94,8 +107,8 @@ export class AuthController {
     }
   }
 
-  // 회원탈퇴
   @Delete('withdraw')
+  @ApiOperation({ summary: '회원탈퇴' })
   async deleteWithdraw(@Req() req: expReq) {
     try {
       const userId = req.user?.userId;
@@ -116,29 +129,27 @@ export class AuthController {
   // 쿠키 환경 설정
   private setRefreshTokenCookie(res: expRes, refreshToken: string) {
     const commonOptions = {
-      httpOnly: true,
+      domain: process.env.COOKIE_DOMAIN,
       maxAge: 60 * 60 * 1000, // 1시간
     };
 
-    let domain;
     let additionalOptions = {};
 
-    // 개발, 스테이지 환경
+    // 배포환경
     if (process.env.NODE_ENV === 'production') {
-      domain = '.trip-teller.com';
       additionalOptions = {
         secure: true,
+        httpOnly: true,
         sameSite: 'none',
       };
-      // 개발환경 환경
+      // 개발 환경
     } else {
-      domain = '.localhost';
       additionalOptions = {
+        httpOnly: false,
         sameSite: true,
       };
     }
     res.cookie('refreshToken', refreshToken, {
-      domain: domain,
       ...commonOptions,
       ...additionalOptions,
     });

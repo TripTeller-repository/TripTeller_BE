@@ -10,7 +10,7 @@ import { User } from 'src/user/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 
 // 소셜 로그인 사용자 정보 제공자
-enum AuthProvider {
+export enum EAuthProvider {
   GOOGLE = 'Google',
   NAVER = 'Naver',
   KAKAO = 'Kakao',
@@ -176,7 +176,7 @@ export class AuthService {
         throw new UnauthorizedException('닉네임 혹은 이메일이 없습니다.');
       }
 
-      const userInfo = { email, nickname, authProvider: AuthProvider.KAKAO };
+      const userInfo = { email, nickname, authProvider: EAuthProvider.KAKAO };
       return userInfo;
     } catch (error) {
       throw new UnauthorizedException('카카오 유저 정보 요청 실패');

@@ -19,7 +19,7 @@ export class AppService {
   }
 
   getHealthCheck(): string {
-    return 'Health Check!';
+    return 'Health Checked!';
   }
 
   getTestError(): string {

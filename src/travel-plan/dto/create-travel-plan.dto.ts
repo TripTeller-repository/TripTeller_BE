@@ -1,6 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Max } from 'class-validator';
 
 export class CreateTravelPlanDto {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @Max(20)

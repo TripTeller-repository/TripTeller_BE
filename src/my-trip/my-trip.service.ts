@@ -136,6 +136,7 @@ export class MyTripService {
       isPublic: false,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
+
     const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
     const sortedFeeds = paginatedResult.feeds.data;
     paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
@@ -150,24 +151,27 @@ export class MyTripService {
       userId,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
-    const sortedFeeds = paginatedResult.feeds.data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
+    const sort = { createdAt: -1 }; // 최신순으로 정렬
+
+    // 최신순으로 정렬 후 페이지네이션
+    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria, sort);
+    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     return paginatedResult;
   }
 
   // 본인이 쓴 게시물 정렬 : 인기순
-  // feed 스키마의 likeCount 필드의 개수가 많은 것부터 내림차순 정렬
+  // feed 스키마의 likeCount 필드의 개수대로 내림차순 정렬
   async sortMyFeedsByLikeCount(pageNumber: number = 1, userId: string) {
     const pageSize = 9;
     const criteria = {
       userId,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
-    const sortedFeeds = paginatedResult.feeds.data.sort((a, b) => b.likeCount - a.likeCount);
-    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
+    const sort = { likeCount: -1 }; // 인기순 정렬
+
+    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria, sort);
+    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     return paginatedResult;
   }
@@ -177,7 +181,8 @@ export class MyTripService {
     const pageSize = 9;
     const InputStartDate: Date = new Date(startDate);
     const InputEndDate: Date = new Date(endDate);
-
+    console.log('서비스 InputStartDate', InputStartDate);
+    console.log('서비스 InputEndDate', InputEndDate);
     if (InputStartDate > InputEndDate) {
       throw new BadRequestException('startDate는 endDate보다 이전이어야 합니다.');
     }
@@ -191,28 +196,42 @@ export class MyTripService {
       };
 
       const AllFeeds = await this.feedModel.find(criteria).exec();
+      console.log('서비스 AllFeeds', AllFeeds);
 
       const filteredFeeds = AllFeeds.filter((feed) => {
         if (feed.isPublic === false) return false;
+        console.log('서비스 feed.isPublic', feed.isPublic);
 
         if (!feed.travelPlan) return false;
+        console.log('서비스 feed.travelPlan', feed.travelPlan);
 
         if (!feed.travelPlan.dailyPlans) return false;
+        console.log('서비스 feed.travelPlan.dailyPlans', feed.travelPlan.dailyPlans);
 
         for (const dailyPlan of feed.travelPlan.dailyPlans) {
           if (dailyPlan.date < InputStartDate || dailyPlan.date > InputEndDate) return false;
         }
-        return true;
+        return feed.travelPlan.dailyPlans.some((dailyPlan) => {
+          const planDate = new Date(dailyPlan.date);
+          return planDate >= InputStartDate && planDate <= InputEndDate;
+        });
       });
 
       if (!filteredFeeds || filteredFeeds.length === 0) {
         return { message: '게시물이 해당 날짜 사이에 존재하지 않습니다.' };
       }
+      console.log('서비스 filteredFeeds', filteredFeeds);
+      console.log('filteredFeeds.length', filteredFeeds.length);
 
       // 필터링된 배열의 id목록과 일치하는 게시글을 가져오도록 함.
       const paginationCriteria = { _id: { $in: filteredFeeds.map((feed) => feed._id) } };
+      console.log('서비스 paginationCriteria', paginationCriteria);
+
       const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, paginationCriteria);
+      console.log('서비스 paginatedResult', paginatedResult);
+
       paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
+      console.log('서비스 paginatedResult.feeds.data', paginatedResult.feeds.data);
 
       return paginatedResult;
     } catch (error) {

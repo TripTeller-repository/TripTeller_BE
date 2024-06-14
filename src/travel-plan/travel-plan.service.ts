@@ -87,6 +87,7 @@ export class TravelPlanService {
       runValidators: true,
       new: true,
     });
+    console.log('updatePlan', updatePlan);
     if (!updatePlan) {
       throw new NotFoundException('해당 여행 일정을 수정할 수 없습니다.');
     }

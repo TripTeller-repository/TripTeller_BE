@@ -41,19 +41,37 @@ export class FeedExtractor {
   };
 
   // 페이지네이션 설정하는 함수
-  getFeedPaginated = async (pageNumber: number = 1, pageSize: number = 9, criteria: any = {}) => {
+  getFeedPaginated = async (pageNumber: number = 1, pageSize: number = 9, criteria: any = {}, sort: any = {}) => {
     const skip = (pageNumber - 1) * pageSize;
 
     try {
-      const feeds = await this.feedModel.aggregate([
-        { $match: criteria },
-        {
-          $facet: {
-            metadata: [{ $count: 'totalCount' }],
-            data: [{ $skip: skip }, { $limit: pageSize }],
-          },
+      // 기본 파이프라인 설정
+      const pipeline: any[] = [{ $match: criteria }];
+
+      // sort가 제공되었을 경우 정렬 단계 추가
+      if (Object.keys(sort).length) {
+        pipeline.push({ $sort: sort });
+      }
+
+      // 페이지네이션 설정
+      pipeline.push({
+        $facet: {
+          metadata: [
+            {
+              $match: {
+                $and: [
+                  { travelPlan: { $ne: null } },
+                  { $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] },
+                ],
+              },
+            },
+            { $count: 'totalCount' },
+          ],
+          data: [{ $skip: skip }, { $limit: pageSize }],
         },
-      ]);
+      });
+
+      const feeds = await this.feedModel.aggregate(pipeline);
 
       const totalCount = feeds[0].metadata.length > 0 ? feeds[0].metadata[0].totalCount : 0;
 
@@ -87,14 +105,13 @@ export class FeedExtractor {
   // 원하는 형태로 리턴값 추출
   extractFeeds = async (feeds: FeedDocument[], userId?: string) => {
     const extractFeed = async (feed: FeedDocument) => {
-
       const { likeCount, coverImage, isPublic } = feed;
 
       const travelPlanId = feed.travelPlan;
       const travelPlan = await this.travelPlanModel.findById(travelPlanId);
 
       if (!travelPlan) return null;
-      
+
       // 이 TravelPlan의 모든 DailySchedule을 가져옴
       const dailySchedules: DailySchedule[] = travelPlan['dailyPlans'] // => DailyPlan[]
         .map((dailyPlan) => dailyPlan.dailySchedules) // => DailySchedule[][]

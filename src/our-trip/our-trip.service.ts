@@ -42,31 +42,34 @@ export class OurTripService {
   }
 
   // 공개 게시물 정렬 : 최신순 (페이지네이션)
-  // feed 스키마의 createdAt 필드의 개수가 많은 것부터 내림차순 정렬
+  // feed 스키마의 createdAt 필드의 날짜를 내림차순 정렬
   async sortOurFeedsByRecent(pageNumber: number = 1, userId?: string) {
     const pageSize = 9;
     const criteria = {
       isPublic: true,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
-    const sortedFeeds = paginatedResult.feeds.data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds, userId || null);
+    const sort = { createdAt: -1 }; // 최신순으로 정렬
+
+    // 최신순으로 정렬 후 페이지네이션
+    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria, sort);
+    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     return paginatedResult;
   }
 
   // 공개 게시물 정렬 : 인기순 (페이지네이션)
-  // feed 스키마의 likeCount 필드의 개수가 많은 것부터 오름차순 정렬
+  // feed 스키마의 likeCount 필드의 개수를 내림차순 정렬
   async sortOurFeedsByLikeCount(pageNumber: number = 1, userId?: string) {
     const pageSize = 9;
     const criteria = {
       isPublic: true,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
-    const sortedFeeds = paginatedResult.feeds.data.sort((a, b) => b.likeCount - a.likeCount);
-    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds, userId || null);
+    const sort = { likeCount: -1 }; // 인기순 정렬
+
+    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria, sort);
+    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     return paginatedResult;
   }

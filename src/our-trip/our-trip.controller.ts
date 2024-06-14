@@ -77,7 +77,6 @@ export class OurTripController {
     }
   }
 
-
   // our-trip/order-by/like-count?pageNumber=1
   @Get('order-by/like-count')
   @ApiOperation({ summary: '모든 공개 게시글 정렬 : 인기순' })

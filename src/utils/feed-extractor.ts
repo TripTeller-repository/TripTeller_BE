@@ -89,11 +89,15 @@ export class FeedExtractor {
   // travelPlan이 없는 경우는 제외
   extractFeeds = async (feeds: FeedDocument[], userId?: string) => {
     const extractFeed = async (feed: FeedDocument) => {
-      const { likeCount, travelPlan, coverImage, isPublic } = feed;
+      const { likeCount, coverImage, isPublic } = feed;
+
+      const travelPlanId = feed.travelPlan;
+      const travelPlan = await this.travelPlanModel.findById(travelPlanId);
+
       if (!travelPlan) return null;
 
       // 이 TravelPlan의 모든 DailySchedule을 가져옴
-      const dailySchedules: DailySchedule[] = travelPlan.dailyPlans // => DailyPlan[]
+      const dailySchedules: DailySchedule[] = travelPlan['dailyPlans'] // => DailyPlan[]
         .map((dailyPlan) => dailyPlan.dailySchedules) // => DailySchedule[][]
         .flat(); // => DailySchedule[]
 
@@ -103,8 +107,8 @@ export class FeedExtractor {
       if (isThumbnailDailySchedule && isThumbnailDailySchedule.imageUrl) {
         thumbnailUrl = isThumbnailDailySchedule.imageUrl;
       }
-      const startDate = travelPlan.startDate;
-      const endDate = travelPlan.endDate;
+      const startDate = travelPlan['startDate'];
+      const endDate = travelPlan['endDate'];
 
       // isThumnbail이 true인 DailySchedule이 없을 경우
       if (!thumbnailUrl) {
@@ -123,8 +127,8 @@ export class FeedExtractor {
         createdAt: feed.createdAt, // 게시물 작성일
         isPublic, // 공개 여부
         likeCount, // 좋아요(스크랩) 개수
-        title: travelPlan.title, // 제목
-        region: travelPlan.region as RegionName, // 지역
+        title: travelPlan['title'], // 제목
+        region: travelPlan['region'] as RegionName, // 지역
         startDate, // 시작일
         endDate, // 종료일
         thumbnailUrl, // TravelLog 이미지 중 썸네일 URL

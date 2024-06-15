@@ -110,7 +110,11 @@ export class FeedExtractor {
       const travelPlanId = feed.travelPlan;
       const travelPlan = await this.travelPlanModel.findById(travelPlanId);
 
-      if (!travelPlan) return null;
+      // if (!travelPlan) return null;
+      if (!travelPlan) {
+        console.log(`Feed ${feed._id} has no associated travel plan.`);
+        return null;
+      }
 
       // 이 TravelPlan의 모든 DailySchedule을 가져옴
       const dailySchedules: DailySchedule[] = travelPlan['dailyPlans'] // => DailyPlan[]
@@ -155,14 +159,15 @@ export class FeedExtractor {
 
     return (
       await Promise.all(
-        feeds
-          .filter((feed) => !feed.deletedAt) // deletedAt이 없는 경우 = 삭제되지 않은 경우
-          .map(async (feed) => {
-            // feed를 extractFeed로 만드는 함수
-            const _extractedFeed = await extractFeed(feed);
+        feeds.map(async (feed) => {
+          const _extractedFeed = await extractFeed(feed);
 
-            return _extractedFeed;
-          }), // => ExtractedFeed[]
+          // 필터링 된 게시물 확인
+          if (_extractedFeed === null) {
+            console.log(`Feed ${feed._id} was filtered out.`);
+          }
+          return _extractedFeed;
+        }), // => ExtractedFeed[]
       )
     ).filter((feed) => feed !== null); // null인 경우는 제외
   };

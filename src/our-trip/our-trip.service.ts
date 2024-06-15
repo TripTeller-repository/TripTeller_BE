@@ -22,7 +22,7 @@ export class OurTripService {
     };
     const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
     const extractedFeeds = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
-    // console.log('우리의 여행 게시글', extractedFeeds);
+
     paginatedResult.feeds.data = extractedFeeds;
 
     return paginatedResult;

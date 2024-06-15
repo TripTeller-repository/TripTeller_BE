@@ -181,8 +181,7 @@ export class MyTripService {
     const pageSize = 9;
     const InputStartDate: Date = new Date(startDate);
     const InputEndDate: Date = new Date(endDate);
-    console.log('서비스 InputStartDate', InputStartDate);
-    console.log('서비스 InputEndDate', InputEndDate);
+
     if (InputStartDate > InputEndDate) {
       throw new BadRequestException('startDate는 endDate보다 이전이어야 합니다.');
     }
@@ -196,17 +195,13 @@ export class MyTripService {
       };
 
       const AllFeeds = await this.feedModel.find(criteria).exec();
-      console.log('서비스 AllFeeds', AllFeeds);
 
       const filteredFeeds = AllFeeds.filter((feed) => {
         if (feed.isPublic === false) return false;
-        console.log('서비스 feed.isPublic', feed.isPublic);
 
         if (!feed.travelPlan) return false;
-        console.log('서비스 feed.travelPlan', feed.travelPlan);
 
         if (!feed.travelPlan.dailyPlans) return false;
-        console.log('서비스 feed.travelPlan.dailyPlans', feed.travelPlan.dailyPlans);
 
         for (const dailyPlan of feed.travelPlan.dailyPlans) {
           if (dailyPlan.date < InputStartDate || dailyPlan.date > InputEndDate) return false;
@@ -220,18 +215,13 @@ export class MyTripService {
       if (!filteredFeeds || filteredFeeds.length === 0) {
         return { message: '게시물이 해당 날짜 사이에 존재하지 않습니다.' };
       }
-      console.log('서비스 filteredFeeds', filteredFeeds);
-      console.log('filteredFeeds.length', filteredFeeds.length);
 
       // 필터링된 배열의 id목록과 일치하는 게시글을 가져오도록 함.
       const paginationCriteria = { _id: { $in: filteredFeeds.map((feed) => feed._id) } };
-      console.log('서비스 paginationCriteria', paginationCriteria);
 
       const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, paginationCriteria);
-      console.log('서비스 paginatedResult', paginatedResult);
 
       paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
-      console.log('서비스 paginatedResult.feeds.data', paginatedResult.feeds.data);
 
       return paginatedResult;
     } catch (error) {

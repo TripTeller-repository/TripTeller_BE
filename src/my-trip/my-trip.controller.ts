@@ -37,10 +37,6 @@ export class MyTripController {
     @Query('pageNumber', ParseIntPipe) pageNumber: number,
   ) {
     const { userId } = req.user;
-    console.log('컨트롤러 userId', userId);
-    console.log('컨트롤러 startDate', startDate);
-    console.log('컨트롤러 endDate', endDate);
-    console.log('컨트롤러 pageNumber', pageNumber);
     return await this.myTripService.fetchMyFeedsByDate(startDate, endDate, pageNumber, userId);
   }
 

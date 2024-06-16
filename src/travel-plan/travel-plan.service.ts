@@ -83,6 +83,7 @@ export class TravelPlanService {
   // 여행 일정 수정
   async updateTravelPlan(feedId: string, travelPlanId: string, putTravelPlanDto: PutTravelPlanDto, userId: string) {
     await this.feedExtractor.checkUser(feedId, userId);
+
     const updatePlan = await this.travelPlanModel.findByIdAndUpdate({ _id: travelPlanId }, putTravelPlanDto, {
       runValidators: true,
       new: true,

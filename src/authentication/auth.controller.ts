@@ -65,12 +65,6 @@ export class AuthController {
         throw new UnauthorizedException('Refresh token not found');
       }
 
-      // 리프레시 토큰이 만료된 경우 에러
-      const isRefreshTokenExpired = await this.authService.isRefreshTokenExpired(refreshToken);
-      if (isRefreshTokenExpired) {
-        throw new UnauthorizedException('Refresh token has expired');
-      }
-
       // 리프레시 토큰 검증
       const { userId, authProvider } = await this.authService.verifyToken(refreshToken);
 
@@ -88,6 +82,7 @@ export class AuthController {
   async postSignInKakao(@Body('code') code: string, @Res({ passthrough: true }) res: expRes) {
     try {
       // 카카오에서 인증토큰 받아오기
+      console.log('카카오 로그인 코드', code);
       const kakaoToken = await this.authService.fetchKakaoToken(code);
       console.log('카카오 로그인 코드', code);
       console.log('카카오 로그인 카카오토큰', kakaoToken);

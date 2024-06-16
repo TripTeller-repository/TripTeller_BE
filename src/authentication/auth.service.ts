@@ -136,7 +136,6 @@ export class AuthService {
   // 카카오에서 토큰 받아오기
   async fetchKakaoToken(code: string | null) {
     try {
-      console.log('fetchKakaoToken 함수에 전달된 코드', code);
       const url = 'https://kauth.kakao.com/oauth/token';
       const data = {
         grant_type: 'authorization_code',

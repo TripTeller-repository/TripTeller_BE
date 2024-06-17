@@ -51,10 +51,10 @@ export class AuthService {
     const payload = { userId, authProvider };
 
     // Access Token 생성
-    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1m' }); // 실)5m, 테)1h
+    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '6h' }); // 실)5m, 테)1h
 
     // Refresh Token 생성 (쿠키)
-    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '2m' }); // 실)1h, 테)4h
+    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '6h' }); // 실)1h, 테)4h
 
     return { accessToken, refreshToken };
   }

@@ -21,7 +21,7 @@ export class TravelPlanService {
   // 특정 여행 일정 조회
   async fetchTravelPlan(feedId: string, travelPlanId: string, userId: string) {
     await this.feedExtractor.checkUser(feedId, userId);
-    const plan = await this.travelPlanModel.findById({ _id: travelPlanId }).exec();
+    const plan = await (await this.travelPlanModel.findById({ _id: travelPlanId })).populate('dailyPlans');
 
     if (!plan) {
       throw new NotFoundException('해당 여행 일정을 조회할 수 없습니다.');

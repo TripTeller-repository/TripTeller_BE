@@ -141,6 +141,7 @@ export class FeedExtractor {
       return {
         feedId: feed._id, // 게시물 ID 값
         travelPlanId: feed.travelPlan['_id'], // travelPlan ID값
+        travelPlan: feed.travelPlan, // travelPlan 데이터
         userId: feed.userId, // 회원 ID 값
         createdAt: feed.createdAt, // 게시물 작성일
         isPublic, // 공개 여부

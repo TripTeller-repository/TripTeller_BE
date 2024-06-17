@@ -30,14 +30,14 @@ export class AuthController {
     try {
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
 
-      // this.setRefreshTokenCookie(res, refreshToken);
-      // console.log('컨트롤러에서 전달한 accessToken', accessToken);
-      const domain = '.localhost';
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: false,
-        domain: domain,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+      this.setRefreshTokenCookie(res, refreshToken);
+      console.log('컨트롤러에서 전달한 accessToken', accessToken);
+      // const domain = '.localhost';
+      // res.cookie('refreshToken', refreshToken, {
+      //   httpOnly: false,
+      //   domain: domain,
+      //   maxAge: 24 * 60 * 60 * 1000,
+      // });
 
       return { accessToken };
     } catch (error) {

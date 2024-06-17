@@ -131,11 +131,9 @@ export class FeedExtractor {
       const endDate = travelPlan['endDate'];
 
       // isThumnbail이 true인 DailySchedule이 없을 경우
-      if (!thumbnailUrl) {
-        // imgUrl이 있는 아무 DailySchedule을 찾아 썸네일 URL을 추출
-        const dailySchedule = dailySchedules.find((dailySchedule) => dailySchedule.imageUrl);
-        thumbnailUrl = dailySchedule?.imageUrl ?? null;
-      }
+      // imgUrl이 있는 아무 DailySchedule을 찾아 썸네일 URL을 추출
+      const dailySchedule = dailySchedules.find((dailySchedule) => dailySchedule.imageUrl);
+      thumbnailUrl = dailySchedule?.imageUrl ?? null;
 
       // 해당 게시물 스크랩 여부 확인
       const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId || null);

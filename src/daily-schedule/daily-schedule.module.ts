@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DailyPlanController } from 'src/daily-plan/daily-plan.controller';
 import { DailyScheduleSchema } from './daily-schedule.schema';
 import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
 import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
@@ -9,6 +8,13 @@ import { DailyPlanService } from 'src/daily-plan/daily-plan.service';
 import { ExpenseService } from 'src/expense/expense.service';
 import { ExpenseSchema } from 'src/expense/expense.schema';
 import { DailyScheduleIndexService } from './daily-schedule-index.service';
+import { AuthModule } from 'src/authentication/auth.module';
+import { CustomAuthGuard } from 'src/authentication/auth.guard';
+import { AuthService } from 'src/authentication/auth.service';
+import { UserSchema } from 'src/user/user.schema';
+import { UserService } from 'src/user/user.service';
+import { DailyScheduleController } from './daily-schedule.controller';
+import { TravelLogService } from 'src/travel-log/travel-log.service';
 
 @Module({
   imports: [
@@ -17,9 +23,20 @@ import { DailyScheduleIndexService } from './daily-schedule-index.service';
       { name: 'TravelPlan', schema: TravelPlanSchema },
       { name: 'DailySchedule', schema: DailyScheduleSchema },
       { name: 'Expense', schema: ExpenseSchema },
+      { name: 'User', schema: UserSchema },
     ]),
+    AuthModule,
   ],
-  providers: [DailyPlanService, DailyScheduleService, ExpenseService, DailyScheduleIndexService],
-  controllers: [DailyPlanController],
+  providers: [
+    DailyPlanService,
+    DailyScheduleService,
+    ExpenseService,
+    DailyScheduleIndexService,
+    CustomAuthGuard,
+    AuthService,
+    UserService,
+    TravelLogService,
+  ],
+  controllers: [DailyScheduleController],
 })
-export class DailyscheduleModule {}
+export class DailyScheduleModule {}

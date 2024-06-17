@@ -8,6 +8,10 @@ import { ExpenseService } from 'src/expense/expense.service';
 import { ExpenseSchema } from 'src/expense/expense.schema';
 import { DailyScheduleService } from 'src/daily-schedule/daily-schedule.service';
 import { DailyScheduleSchema } from 'src/daily-schedule/daily-schedule.schema';
+import { AuthService } from 'src/authentication/auth.service';
+import { AuthModule } from 'src/authentication/auth.module';
+import { UserSchema } from 'src/user/user.schema';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -16,9 +20,11 @@ import { DailyScheduleSchema } from 'src/daily-schedule/daily-schedule.schema';
       { name: 'TravelPlan', schema: TravelPlanSchema },
       { name: 'Expense', schema: ExpenseSchema },
       { name: 'DailySchedule', schema: DailyScheduleSchema },
+      { name: 'User', schema: UserSchema },
     ]),
+    AuthModule,
   ],
-  providers: [DailyPlanService, ExpenseService, DailyScheduleService],
+  providers: [DailyPlanService, ExpenseService, DailyScheduleService, AuthService, UserService],
   controllers: [DailyPlanController],
 })
 export class DailyPlanModule {}

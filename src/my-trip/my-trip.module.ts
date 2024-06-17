@@ -10,6 +10,8 @@ import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
 import { UserSchema } from 'src/user/user.schema';
 import { ScrapSchema } from 'src/scrap/scrap.schema';
 import { FeedModule } from 'src/feed/feed.module';
+import { AuthService } from 'src/authentication/auth.service';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -22,7 +24,7 @@ import { FeedModule } from 'src/feed/feed.module';
     ]),
     FeedModule,
   ],
-  providers: [MyTripService, TravelPlanService, FeedExtractor],
+  providers: [MyTripService, TravelPlanService, FeedExtractor, AuthService, UserService],
   controllers: [MyTripController],
 })
 export class MyTripModule {}

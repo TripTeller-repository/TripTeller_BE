@@ -7,7 +7,7 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
 import mongoose from 'mongoose';
 import { AuthModule } from './authentication/auth.module';
 import { DailyPlanModule } from './daily-plan/daily-plan.module';
-import { DailyscheduleModule } from './daily-schedule/daily-schedule.module';
+import { DailyScheduleModule } from './daily-schedule/daily-schedule.module';
 import { MyTripModule } from './my-trip/my-trip.module';
 import { OurTripModule } from './our-trip/our-trip.module';
 import { ScrapModule } from './scrap/scrap.module';
@@ -50,7 +50,7 @@ import * as winston from 'winston';
     }),
     AuthModule,
     DailyPlanModule,
-    DailyscheduleModule,
+    DailyScheduleModule,
     MyTripModule,
     OurTripModule,
     ScrapModule,

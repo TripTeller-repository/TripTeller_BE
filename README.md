@@ -1,6 +1,6 @@
 # 🌸TripTeller BackEnd Repository
 
-> **<span style="background-color:#FFE6E6">"당신의 여행이 우리의 이야기가 되는 공간"</span>**
+> <b>"당신의 여행이 우리의 이야기가 되는 공간"</b>
 
 > "여러분의 여행을 흥미로운 이야기로 바꿀 준비가 되셨나요?<br>
 > 지금 여행을 시작하고, 트립텔러와 이야기를 공유하세요."
@@ -18,7 +18,7 @@
 - [프로젝트 개요](#프로젝트-개요)<br>
 - [프로젝트 아키텍쳐](#프로젝트-아키텍쳐)<br>
 - [구현 내용](#구현-내용)<br>
-- [이슈 해결 과정](#이슈-해결-과정)<br>
+- [이슈 해결](#이슈-해결)<br>
 - [배포전략](#배포전략)<br>
 - [프로젝트 성찰](#프로젝트-성찰)<br>
 
@@ -60,12 +60,12 @@
   - 배포 : AWS S3, Route53, Cloudfront, EC2
   - 기타 : AWS presigned URL
 
-| 기술    | 선정 이유                                                                                                                                                                                                                                                                                                                                                                                    |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 기술    | 선정 이유                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | NestJS  | • NestJS는 Express의 높은 자유도에 비해 <u>설계 부담을 크게 줄이는 구조화된 모듈식 아키텍처</u> 때문에 채택함. <br> • 또한 종속성 주입, 직관적인 CLI, TypeScript 지원 등 다양한 기능이 있어서 개발자의 편의를 돕는 다양한 기능을 제공함.                                                                                                                                                            |
 | MongoDB | • MongoDB의 유연한 스키마 구조는 대규모 데이터를 분산처리하는 데 이상적이지만 본 프로젝트에서는 대용량 데이터를 특별히 다루고 있지는 않음.<br>• 그러나 스키마 변경이 되어도 큰 문제가 발생하지 않는 <u>유연한 데이터 모델링이 가능</u>한 mongoDB의 특성을 활용함.<br> • 이 결정은 프로젝트의 상호 연결된 CRUD 작업으로 인해 설계 단계에서 스키마 조정이 필요할 수 있다는 점을 염두하여 내려진 것임. |
-| JWT     | • stateless(상태 비저장) 인증인 JWT는 서버 로드를 줄이고 인증 프로세스 속도를 높임.                                                                                                                                                                                                                                                                                                          |
-| AWS     | • AWS에서 웹 애플리케이션 호스팅 및 배포의 거의 모든 측면을 포괄하는 <u>광범위한 서비스</u>를 제공하며, <u>대량의 트래픽 처리</u>를 쉽게 할 수 있도록 설계되어 활용함.                                                                                                                                                                                                                                     |
+| JWT     | • stateless(상태 비저장) 인증인 JWT는 서버 로드를 줄이고 인증 프로세스 속도를 높임.                                                                                                                                                                                                                                                                                                                 |
+| AWS     | • AWS에서 웹 애플리케이션 호스팅 및 배포의 거의 모든 측면을 포괄하는 <u>광범위한 서비스</u>를 제공하며, <u>대량의 트래픽 처리</u>를 쉽게 할 수 있도록 설계되어 활용함.                                                                                                                                                                                                                              |
 
 <br>
 
@@ -166,8 +166,8 @@ Tool : GitMind
   - <b>Aggregation Pipeline</b> : MongoDB의 Aggregation Pipeline을 사용하여 트랜잭션 없이 일관된 데이터를 제공gka.
   - <b>$facet 스테이지</b> : 단일 쿼리로 metadata와 data를 병렬로 처리하여 성능을 최적화함.
   - <b>비동기 처리</b> : async/await를 사용하여 비동기적으로 작업을 수행함으로써 Node.js의 이벤트 루프를 블록하지 않음.
-  <br>
-  <br>
+    <br>
+    <br>
 
 <details>
 <summary>가상속성(Virtuals) - travelPlan/travel-plan.schema.ts</summary>
@@ -205,7 +205,6 @@ TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
 
 </div>
 </details>
-
 
 <details>
 <summary>페이지네이션 - utils/feed-extractor.ts</summary>
@@ -259,7 +258,7 @@ TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
     } catch (error) {
       throw new Error('페이지네이션 작업이 실패하였습니다.');
     }
-  }; 
+  };
 ```
 
 </div>
@@ -269,7 +268,7 @@ TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
 ### 4. 정렬, 검색 및 필터링 기능을 갖춘 데이터 관리
 
 - 게시물 최신순/인기순 정렬 및 스크랩 API 구현
-- 검색(제목, 작성자, 내용별) 기능 및 지역별 필터링 API 구현 
+- 검색(제목, 작성자, 내용별) 기능 및 지역별 필터링 API 구현
 - 다양한 스키마에서 데이터를 선택하고 추출, 정렬, 필터링하는 기능 구현
   - <b>이유</b> : 다양한 스키마에서 데이터를 추출하고, 이를 원하는 형태로 변환하여 사용자에게 제공하기 위함.
   - <b>효과</b> : 편리한 데이터 변환과 유연한 데이터 처리(추출된 데이터를 원하는 형태로 변환하여 사용자에게 제공할 수 있음.)
@@ -348,11 +347,13 @@ TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
     ).filter((feed) => feed !== null); // null인 경우는 제외
   };
 ```
+
 </div>
 </details>
   <br>
 
 ### 5. dotenv를 사용해 실행 환경에 따라 환경 변수를 다르게 설정
+
 - <b>설명</b> : Node.js 실행 환경을 기반으로 자동으로 적용되는 production 및 developmenet .env 파일을 각각 별도로 생성함. package.json에서 실행환경에 맞는 스크립트를 각각 설정함.
 - <b>이유</b> : 배포환경과 로컬환경에서 필요한 정보들(쿠키 세팅값, 카카오 리다이렉트 URI 등)이 달라서 다르게 적용할 필요가 생김.
 - <b>효과</b> : 다양한 환경에서 잘못된 설정을 사용할 위험을 줄이고 유지 관리를 용이하게 함.
@@ -391,6 +392,7 @@ TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
     });
   }
 ```
+
 </div>
 </details>
 
@@ -398,9 +400,11 @@ TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
 <br>
 
 ### 6. 리퀘스트와 에러를 Winston Logger로 로깅 처리
+
 - <b>사용자가 요청한 기록을 Logging</b>
+
   - <b>설명</b> : 로거 미들웨어를 설정하여 request를 로깅함.
-  - <b>이유</b> :  내부 서버 오류보다는 잘못된 클라이언트 요청으로 인해 발생하는 오류를 식별할 수 있기 때문임.
+  - <b>이유</b> : 내부 서버 오류보다는 잘못된 클라이언트 요청으로 인해 발생하는 오류를 식별할 수 있기 때문임.
   - <b>효과</b> : 가시성이 향상되고 문제 해결이 단순화됨.
 
 - <b>Error가 발생했을 때 기록을 Logging</b>
@@ -434,6 +438,7 @@ export class LoggerMiddleware implements NestMiddleware {
   }
 }
 ```
+
 </div>
 </details>
 <details>
@@ -483,34 +488,139 @@ export class AllExceptionsFilter implements ExceptionFilter {
 }
 
 ```
+
 </div>
 </details>
 
 <br>
 
-
-
 ---
 
-## 🔷 이슈 해결 과정<br>
+## 🔷 이슈 해결<br>
 
-| 문제                                                                                                                                           |
-| ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| 사용자가 입력한 여행 시작일(startDate)과 종료일(endDate)를 travelPlan 스키마의 필드에 직접 넣어서 저장함. 이 데이터를 클라이언트 측에서 받아서 매번 UI를 동적으로 생성하였음. |
+ ### 1. 입력받는 여행 시작일과 종료일 데이터를 Mongoose 가상속성으로 변경
 
-| 해결 과정                                                                                                                                             |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. `travelPlan` 스키마의 `startDate` 및 `endDate` 필드를 가상 속성으로 사용합니다. 동적 계산으로 수동으로 날짜를 입력하고 계산하는 필요성을 없앱니다. |
-| 2. `DailyPlan` 스키마를 도입하여 날짜별로 구성된 하위 데이터 입력을 용이하게 합니다.                                                                  |
+|    |     | 
+|--------------|------------|
+| 상황 | • 사용자가 입력한 여행 시작일(startDate)과 종료일(endDate)를 travelPlan 스키마의 필드에 직접 넣어서 저장함. <br> • 이 데이터를 클라이언트 측에서 받아서 매번 UI를 동적으로 생성하였음. |
+| 문제 | • 해당 날짜가 자주 변경되거나 여러 문서에 동일한 데이터가 여러 개 표시되는 경우 데이터 중복이 발생할 수 있고, 입출력이 늘어남.<br> • 클라이언트 측에서는 사용자가 입력한 날짜를 수정할 때마다 직접 통신을 통해 변경된 데이터를 서버에서 받아와야 하므로, 비효율적으로 API 호출을 자주하게 됨. |
+| 해결 | • travelPlan 스키마의 startDate 및 endDate 필드를 가상 속성으로 활용함. 이러한 속성을 동적으로 계산함으로써 수동으로 날짜를 계산하고 입력할 필요가 없어짐.<br> • 이후 DailyPlan 스키마를 생성하여 날짜에 따른 하위 데이터의 입력이 수월하게 이루어짐. |
+| 느낀점 | • 가상 스키마를 사용하면 유연하고 동적인 필드를 생성할 수 있음.<br>• 하지만 가상 속성을 사용할 때는 성능 및 데이터 무결성 문제를 고려해야 함.<br>ex) 기간별 조회 API 개발 시, startDate와 endDate를 직접 접근하지 못하여 쿼리문이 인식되지 않은 문제가 있었음. |
+<br>
 
-| 느낀점                                                                                                                                                                                      |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| - 스키마의 가상 속성을 사용하면 유연하고 동적인 필드 생성이 가능합니다.                                                                                                                              |
-| - 고려할 점: 가상 속성 사용 시 성능 및 데이터 무결성 문제가 발생할 수 있습니다. 예를 들어, 직접적으로 `startDate` 및 `endDate`에 접근할 수 없어서 기간 검색 API 개발 시 문제가 발생한 적이 있습니다. |
+### 2. 동시성 문제를 고려하여 페이지네이션 쿼리를 수정
+|    |     | 
+|--------------|------------|
+| 상황 | • skip 및 limit 메소드를 사용하여 페이지별로 게시물 조회하도록 함. |
+| 문제 | • 기존 코드는 두 개의 독립적인 요청을 보내는 구조로, 이로 인해 동시성 문제가 발생할 수 있음.<br> • 즉, 한 요청이 보내진 후에 그 사이에 데이터베이스 내용이 변경된다면, 해당 변경 사항이 반영되지 않음.<br> → 데이터 일관성에 영향을 줄 수 있음.<br> (실제로 데이터가 일관되게 로드되지 않는 것을 확인함.) |
+| 해결 | • travelPlan 스키마의 startDate 및 endDate 필드를 가상 속성으로 활용함. 이러한 속성을 동적으로 계산함으로써 수동으로 날짜를 계산하고 입력할 필요가 없어짐.<br> • 이후 DailyPlan 스키마를 생성하여 날짜에 따른 하위 데이터의 입력이 수월하게 이루어짐. |
+| 느낀점 | • 가상 스키마를 사용하면 유연하고 동적인 필드를 생성할 수 있음.<br>• 하지만 가상 속성을 사용할 때는 성능 및 데이터 무결성 문제를 고려해야 함.<br>ex) 기간별 조회 API 개발 시, startDate와 endDate를 직접 접근하지 못하여 쿼리문이 인식되지 않은 문제가 있었음. |
+
+<details>
+<summary>페이지네이션 쿼리 수정 전</summary>
+<div markdown="1">
+
+```
+  // 본인이 작성한 모든 게시물 조회 (페이지네이션)
+  async getAllFeedsPagination(userId: string, pageNumber: number = 1) {
+    const pageSize = 9; // 한 페이지당 최대 게시물 수
+    const skip = (pageNumber - 1) * pageSize;
+    const criteria = {
+      userId,
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    };
+    try {
+      const feeds = await this.feedModel.find(criteria).sort({ createdAt: -1 }).skip(skip).limit(pageSize).exec();
+      return this.feedExtractor.extractFeeds(feeds);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+```
+
+</div>
+</details>
+<details>
+<summary>페이지네이션 쿼리 수정 후</summary>
+<div markdown="1">
+
+```
+// 페이지네이션 설정하는 함수
+  getFeedPaginated = async (pageNumber: number = 1, pageSize: number = 9, criteria: any = {}, sort: any = {}) => {
+    const skip = (pageNumber - 1) * pageSize;
+
+    try {
+      // 기본 파이프라인 설정
+      const pipeline: any[] = [{ $match: criteria }];
+
+      // sort가 제공되었을 경우 정렬 단계 추가
+      if (Object.keys(sort).length) {
+        pipeline.push({ $sort: sort });
+      }
+
+      // 페이지네이션 설정
+      pipeline.push({
+        $facet: {
+          metadata: [
+            {
+              $match: {
+                $and: [
+                  { travelPlan: { $ne: null } },
+                  { $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] },
+                ],
+              },
+            },
+            { $count: 'totalCount' },
+          ],
+          data: [{ $skip: skip }, { $limit: pageSize }],
+        },
+      });
+
+      const feeds = await this.feedModel.aggregate(pipeline);
+
+      const totalCount = feeds[0].metadata.length > 0 ? feeds[0].metadata[0].totalCount : 0;
+
+      const result = {
+        success: true,
+        feeds: {
+          metadata: { totalCount, pageNumber, pageSize },
+          data: feeds[0].data,
+        },
+      };
+
+      return result;
+    } catch (error) {
+      throw new Error('페이지네이션 작업이 실패하였습니다.');
+    }
+  };
+
+
+```
+
+</div>
+</details>
+<br>
 
 ---
 
 ## 🔷 배포 전략<br>
+
+### 프론트엔드 배포
+1. AWS S3에서 파일 빌드 및 저장 
+2. SSL 인증서로 CloudFront 설정
+3. Github Action을 사용하여 자동배포 스크립트 실행
+<br>
+
+### 백엔드 배포
+1. EC2 인스턴스 생성
+2. HTTPS용 로드 밸런서(Elastic Load Balancer, ELB) 설정
+3. EC2에 Node.js 및 PM2 설치
+4. PM2를 프로젝트 저장소와 연결
+5. 환경변수 파일을 FTP 소프트웨어를 통해 추가함.
+6. 실행을 위해 TypeScript 파일을 JavaScript(dist 폴더)로 컴파일함.
+7. HTTPS(https://api.trip-teller.com)를 통해 백엔드와 통신하도록 프론트엔드를 설정
+8. Github Action을 사용하여 자동배포 스크립트 실행
 
 ---
 

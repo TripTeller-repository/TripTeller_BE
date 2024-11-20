@@ -76,17 +76,13 @@ export class AuthController {
   async postSignInKakao(@Body('code') code: string, @Res({ passthrough: true }) res: expRes) {
     try {
       // 카카오에서 인증토큰 받아오기
-      console.log('카카오 로그인 코드', code);
       const kakaoToken = await this.authService.fetchKakaoToken(code);
-      console.log('카카오 로그인 코드', code);
-      console.log('카카오 로그인 카카오토큰', kakaoToken);
+
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
-      console.log('카카오 로그인 유저정보', kakaoUserInfo);
+
       // 우리 서버의 토큰 발행하기
       const { accessToken, refreshToken } = await this.authService.oauthSignIn(kakaoUserInfo);
-      console.log('우리 서버 액세스토큰', accessToken);
-      console.log('우리 서버 리프레시토큰', refreshToken);
       this.setRefreshTokenCookie(res, refreshToken);
 
       return { accessToken };
@@ -119,6 +115,7 @@ export class AuthController {
   private setRefreshTokenCookie(res: expRes, refreshToken: string) {
     const commonOptions = {
       domain: process.env.COOKIE_DOMAIN,
+      httpOnly: true,
       maxAge: 60 * 60 * 1000, // 1시간
     };
 
@@ -128,14 +125,13 @@ export class AuthController {
     if (process.env.NODE_ENV === 'production') {
       additionalOptions = {
         secure: true,
-        httpOnly: false,
         sameSite: 'none',
       };
       // 개발 환경
     } else {
       additionalOptions = {
-        httpOnly: false,
-        sameSite: true,
+        secure: false,
+        sameSite: 'lax',
       };
     }
     res.cookie('refreshToken', refreshToken, {

@@ -8,12 +8,19 @@ const passwordMessage = {
 };
 
 export class SignInDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: '회원의 이메일 주소',
+    example: 'user@example.com',
+  })
   @IsNotEmpty()
   @IsString()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: '회원의 비밀번호 (최소 8자 이상, 영문자, 숫자, 특수문자 포함)',
+    example: 'Password@123',
+    pattern: passwordRegex.source,
+  })
   @IsNotEmpty()
   @IsString()
   @Matches(passwordRegex, passwordMessage)

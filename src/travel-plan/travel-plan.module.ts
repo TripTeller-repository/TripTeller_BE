@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TravelPlanSchema } from './travel-plan.schema';
-import { TravelPlanController } from './travel-plan.controller';
 import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
-import { DailyPlanService } from 'src/daily-plan/daily-plan.service';
 import { TravelPlanIndexService } from './travel-plan-index.service';
 import { AuthService } from 'src/authentication/auth.service';
 import { UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
+import { TravelPlanController } from './travel-plan.controller';
+import { TravelPlanService } from './travel-plan.service';
+import { FeedExtractor } from 'src/utils/feed-extractor';
+import { FeedSchema } from 'src/feed/feed.schema';
+import { ScrapSchema } from 'src/scrap/scrap.schema';
 
 @Module({
   imports: [
@@ -15,9 +18,11 @@ import { UserService } from 'src/user/user.service';
       { name: 'TravelPlan', schema: TravelPlanSchema },
       { name: 'DailyPlan', schema: DailyPlanSchema },
       { name: 'User', schema: UserSchema },
+      { name: 'Feed', schema: FeedSchema },
+      { name: 'Scrap', schema: ScrapSchema },
     ]),
   ],
-  providers: [DailyPlanService, TravelPlanIndexService, AuthService, UserService],
+  providers: [TravelPlanService, TravelPlanIndexService, AuthService, UserService, FeedExtractor],
   controllers: [TravelPlanController],
 })
 export class TravelPlanModule {}

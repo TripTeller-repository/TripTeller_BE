@@ -3,7 +3,7 @@ import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatedUserDto } from './dto/created-user.dto';
 
 @ApiTags('Authentication')
@@ -12,8 +12,23 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('sign-up')
-  @ApiOperation({ summary: '회원가입', description: '유저를 생성한다!' })
-  @ApiCreatedResponse({ description: '유저 생성', type: CreatedUserDto })
+  @ApiOperation({ summary: '회원가입', description: '사용자가 이메일과 비밀번호를 입력하면 회원가입을 한다.' })
+  @ApiBody({
+    description: '회원가입에 필요한 사용자 정보',
+    type: CreateUserDto,
+  })
+  @ApiCreatedResponse({
+    description: '유저 생성 성공',
+    type: CreatedUserDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: '잘못된 요청',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '이미 가입된 계정입니다.',
+  })
   async postSignUp(@Body() createUserDto: CreateUserDto): Promise<CreatedUserDto> {
     const newUser = await this.authService.createUser(createUserDto);
     return {
@@ -25,7 +40,26 @@ export class AuthController {
   }
 
   @Post('sign-in')
-  @ApiOperation({ summary: '로그인' })
+  @ApiOperation({ summary: '로그인', description: '회원 정보를 조회하여 로그인에 성공하면 토큰을 발행한다.' })
+  @ApiBody({
+    description: '로그인에 필요한 사용자 정보',
+    type: SignInDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '로그인 성공, 토큰 반환',
+    schema: {
+      example: { accessToken: 'your-jwt-access-token' },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '로그인 실패, 유효하지 않은 이메일 또는 비밀번호',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '리프레시 토큰 만료',
+  })
   async postSignIn(@Body() signInDto: SignInDto, @Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
       const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
@@ -48,7 +82,37 @@ export class AuthController {
   }
 
   @Post('refresh-accessToken')
-  @ApiOperation({ summary: '액세스 토큰 재발급' })
+  @ApiOperation({
+    summary: '액세스 토큰 재발급',
+    description: '리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급한다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '액세스 토큰 재발급 성공',
+    schema: {
+      example: { accessToken: 'new-access-token' },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '리프레시 토큰이 없거나 유효하지 않음',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Refresh token not found',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '리프레시 토큰 만료',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Refresh token has expired',
+      },
+    },
+  })
   async postRefreshAccessToken(@Req() req: expReq, @Res({ passthrough: true }) res) {
     try {
       // 헤더의 쿠키에서 리프레시 토큰 확인
@@ -72,7 +136,34 @@ export class AuthController {
   }
 
   @Post('sign-in/kakao')
-  @ApiOperation({ summary: '카카오 로그인' })
+  @ApiOperation({
+    summary: '카카오 로그인',
+    description: '카카오 인증을 통해 로그인하고, 서버에서 새로운 토큰을 발급한다.',
+  })
+  @ApiBody({
+    description: '카카오 로그인에 필요한 인증 코드',
+    type: String,
+    schema: {
+      example: '3e4a1f0b-34fd-4d2f-abc1-8e23f91a1e88',
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '카카오 로그인 성공',
+    schema: {
+      example: { accessToken: 'new-access-token' },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '카카오 로그인 실패',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: '카카오 로그인에 실패하였습니다.',
+      },
+    },
+  })
   async postSignInKakao(@Body('code') code: string, @Res({ passthrough: true }) res: expRes) {
     try {
       // 카카오에서 인증토큰 받아오기
@@ -93,7 +184,39 @@ export class AuthController {
   }
 
   @Delete('withdraw')
-  @ApiOperation({ summary: '회원탈퇴' })
+  @ApiOperation({
+    summary: '회원 탈퇴',
+    description: '회원 탈퇴를 요청하여 해당 사용자의 계정을 삭제한다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '회원 탈퇴 성공',
+    schema: {
+      example: {
+        message: '회원탈퇴가 성공적으로 완료되었습니다.',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '회원 탈퇴 실패 (인증되지 않은 사용자)',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'request에 userId가 존재하지 않습니다.',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: '회원 없음 (존재하지 않는 회원)',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: '해당 ID를 가진 회원이 없습니다.',
+      },
+    },
+  })
   async deleteWithdraw(@Req() req: expReq) {
     try {
       const userId = req.user?.userId;

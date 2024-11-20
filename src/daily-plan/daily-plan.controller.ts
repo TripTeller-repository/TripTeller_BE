@@ -1,107 +1,179 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
-import { CreateDailyScheduleDto } from '../daily-schedule/dto/create-daily-schedule.dto';
-import { PutDailyScheduleDto } from '../daily-schedule/dto/put-daily-schedule.dto';
-import { ExpenseService } from '../expense/expense.service';
-import { DailyScheduleService } from '../daily-schedule/daily-schedule.service';
-import { CreateExpenseDto } from 'src/expense/dto/create-expense.dto';
-import { PutExpenseDto } from 'src/expense/dto/put-expense.dto';
-import { CustomAuthGuard } from '../authentication/auth.guard';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CustomAuthGuard } from 'src/authentication/auth.guard';
+import { DailyPlanService } from 'src/daily-plan/daily-plan.service';
+import { CreateDailyPlanDto } from 'src/daily-plan/dto/create-daily-plan.dto';
+import { PutDailyPlanDto } from 'src/daily-plan/dto/put-daily-plan.dto';
 
-@Controller('daily-plan')
+@ApiTags('DailyPlan')
+@Controller('travel-plan')
 @UseGuards(CustomAuthGuard)
 export class DailyPlanController {
-  constructor(
-    private readonly dailyScheduleService: DailyScheduleService,
-    private readonly expenseService: ExpenseService,
-  ) {}
+  constructor(private readonly dailyPlanService: DailyPlanService) {}
 
-  //////////////////////////////////
-  ///////// DailySchedule //////////
-  //////////////////////////////////
+  @Get(':travelPlanId/daily-plan/:dailyPlanId')
+  @ApiOperation({ summary: '일별 일정 조회', description: '특정 여행 계획에 대한 일별 일정을 조회한다.' })
+  @ApiParam({
+    name: 'travelPlanId',
+    description: '여행 계획 ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'dailyPlanId',
+    description: '일별 일정 ID',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '일별 일정 조회 성공',
+    schema: {
+      example: {
+        _id: '607d1f77bcf86cd799439011',
+        travelPlanId: '607d1f77bcf86cd799439012',
+        dateType: 'DATE',
+        date: '2024-12-15',
+        dateString: '2024-12-15',
+        deletedAt: null,
+        dailySchedules: [
+          {
+            _id: '607d1f77bcf86cd799439013',
+            time: '2024-12-15T08:00:00Z',
+            location: '여행지1',
+            memo: '기타 정보',
+            postContent: '긴 여행 로그 내용',
+            imageUrl: 'https://example.com/image.jpg',
+            isThumbnail: true,
+            deletedAt: null,
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: '일별 일정을 찾을 수 없습니다.',
+  })
+  async getOneDailyPlan(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
+    return this.dailyPlanService.fetchOneDailyPlan(travelPlanId, dailyPlanId);
+  }
 
-  @ApiTags('DailySchedule')
-  @Get(':dailyPlanId/daily-schedule/:dailyScheduleId')
-  @ApiOperation({ summary: '개별 일정 조회' })
-  async getOneDailySchedule(
+  @Post(':travelPlanId/daily-plan')
+  @ApiOperation({ summary: '일별 일정 생성', description: '새로운 일별 일정을 생성한다.' })
+  @ApiParam({
+    name: 'travelPlanId',
+    description: '여행 계획 ID',
+    type: String,
+  })
+  @ApiBody({
+    description: '새로운 일별 일정의 날짜를 포함하는 객체 (date만 수정됨)',
+    type: CreateDailyPlanDto,
+    examples: {
+      'application/json': {
+        value: {
+          date: '2024-12-15',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: '새로운 일별 일정 생성 성공',
+    schema: {
+      example: {
+        _id: '607d1f77bcf86cd799439011',
+        travelPlanId: '607d1f77bcf86cd799439012',
+        dateType: 'DATE',
+        date: '2024-12-15',
+        dateString: '2024-12-15',
+        deletedAt: null,
+        dailySchedules: [],
+        expenses: [],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: '여행 계획을 찾을 수 없습니다.',
+  })
+  async postDailyPlan(@Param('travelPlanId') travelPlanId: string, @Body() createDailyPlanDto: CreateDailyPlanDto) {
+    return this.dailyPlanService.createDailyPlan(createDailyPlanDto, travelPlanId);
+  }
+
+  @Put(':travelPlanId/daily-plan/:dailyPlanId')
+  @ApiOperation({ summary: '일별 일정 수정', description: '기존 일별 일정을 수정한다.' })
+  @ApiParam({
+    name: 'travelPlanId',
+    description: '여행 계획 ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'dailyPlanId',
+    description: '수정할 일별 일정 ID',
+    type: String,
+  })
+  @ApiBody({
+    description: '수정할 일별 일정의 날짜만 포함하는 객체 (date만 수정됨)',
+    type: PutDailyPlanDto,
+    examples: {
+      'application/json': {
+        value: {
+          date: '2024-05-15',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '일별 일정 수정 성공',
+    schema: {
+      example: {
+        _id: '607d1f77bcf86cd799439011',
+        travelPlanId: '607d1f77bcf86cd799439012',
+        dateType: 'DATE',
+        date: '2024-05-15',
+        dateString: '2024-05-15',
+        deletedAt: null,
+        dailySchedules: [],
+        expenses: [],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 일별 일정이 존재하지 않습니다.',
+  })
+  async putDailyPlan(
+    @Param('travelPlanId') travelPlanId: string,
     @Param('dailyPlanId') dailyPlanId: string,
-    @Param('dailyScheduleId') dailyScheduleId: string,
+    @Body() putDailyPlanDto: PutDailyPlanDto,
   ) {
-    return this.dailyScheduleService.fetchOneDailySchedule(dailyScheduleId);
+    return this.dailyPlanService.updateDailyPlan(travelPlanId, dailyPlanId, putDailyPlanDto);
   }
 
-  @ApiTags('DailySchedule')
-  @Post(':dailyPlanId/daily-schedule')
-  @ApiOperation({ summary: '개별 일정 생성' })
-  async postDailySchedule(
-    @Param('dailyPlanId') dailyPlanId: string,
-    @Body() createDailyScheduleDto: CreateDailyScheduleDto,
-  ) {
-    const createdSchedule = this.dailyScheduleService.createDailySchedule(createDailyScheduleDto, dailyPlanId);
-    return createdSchedule;
-  }
-
-  @ApiTags('DailySchedule')
-  @Put(':dailyPlanId/daily-schedule/:dailyScheduleId')
-  @ApiOperation({ summary: '개별 일정 수정' })
-  async putDailySchedule(
-    @Param('dailyPlanId') dailyPlanId: string,
-    @Param('dailyScheduleId') dailyScheduleId: string,
-    @Body() putDailyScheduleDto: PutDailyScheduleDto,
-  ) {
-    return this.dailyScheduleService.updateDailySchedule(dailyScheduleId, putDailyScheduleDto);
-  }
-
-  @ApiTags('DailySchedule')
-  @Delete(':dailyPlanId/daily-schedule/:dailyScheduleId')
-  @ApiOperation({ summary: '개별 일정 삭제' })
-  async deleteDailySchedule(
-    @Param('dailyPlanId') dailyPlanId: string,
-    @Param('dailyScheduleId') dailyScheduleId: string,
-  ) {
-    return this.dailyScheduleService.deleteDailySchedule(dailyPlanId, dailyScheduleId);
-  }
-
-  /////////////////////////////
-  ///////// Expense ///////////
-  /////////////////////////////
-
-  @ApiTags('Expense')
-  @Get(':dailyPlanId')
-  @ApiOperation({ summary: '일별 전체 지출내역 조회' })
-  async getAllExpenses(@Param('dailyPlanId') dailyPlanId: string) {
-    return this.expenseService.fetchAllExpenses(dailyPlanId);
-  }
-
-  @ApiTags('Expense')
-  @Get(':dailyPlanId/expense/:expenseId')
-  @ApiOperation({ summary: '지출내역 조회' })
-  async getOneExpense(@Param('dailyPlanId') dailyPlanId: string, @Param('expenseId') expenseId: string) {
-    return this.expenseService.fetchOneExpense(dailyPlanId, expenseId);
-  }
-
-  @ApiTags('Expense')
-  @Post(':dailyPlanId/expense')
-  @ApiOperation({ summary: '지출내역 생성' })
-  async postExpense(@Req() req, @Param('dailyPlanId') dailyPlanId: string, @Body() createExpenseDto: CreateExpenseDto) {
-    return this.expenseService.createExpense(createExpenseDto, dailyPlanId);
-  }
-
-  @ApiTags('Expense')
-  @Put(':dailyPlanId/expense/:expenseId')
-  @ApiOperation({ summary: '지출내역 수정' })
-  async putExpense(
-    @Param('dailyPlanId') dailyPlanId: string,
-    @Param('expenseId') expenseId: string,
-    @Body() putExpenseDto: PutExpenseDto,
-  ) {
-    return this.expenseService.updateExpense(dailyPlanId, expenseId, putExpenseDto);
-  }
-
-  @ApiTags('Expense')
-  @Delete(':dailyPlanId/expense/:expenseId')
-  @ApiOperation({ summary: '지출내역 삭제' })
-  async deleteExpense(@Param('dailyPlanId') dailyPlanId: string, @Param('expenseId') expenseId: string) {
-    return this.expenseService.removeExpense(dailyPlanId, expenseId);
+  @Delete(':travelPlanId/daily-plan/:dailyPlanId')
+  @ApiOperation({ summary: '일별 일정 삭제', description: '특정 일별 일정을 삭제한다.' })
+  @ApiParam({
+    name: 'travelPlanId',
+    description: '여행 계획 ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'dailyPlanId',
+    description: '삭제할 일별 일정 ID',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '일별 일정 삭제 성공',
+    schema: {
+      example: { message: '날짜별 일정이 삭제되었습니다.' },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 일별 일정이 존재하지 않습니다.',
+  })
+  async deleteDailyPlan(@Param('travelPlanId') travelPlanId: string, @Param('dailyPlanId') dailyPlanId: string) {
+    return this.dailyPlanService.deleteDailyPlan(travelPlanId, dailyPlanId);
   }
 }

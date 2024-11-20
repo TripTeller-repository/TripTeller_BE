@@ -100,12 +100,14 @@ Tool : Moon Modeler
 
 ### 로그인 시퀀스 다이어그램
 
+![트립텔러일반](https://github.com/user-attachments/assets/061745d0-fe33-437a-adbf-88efaa71e041)
 Tool : Plant UML
 <br>
 <br>
 
 ### 카카오 로그인 시퀀스 다이어그램
 
+![트립텔러카카오](https://github.com/user-attachments/assets/6903b943-c3a8-44e1-a7d4-ef3196cf716f)
 Tool : Plant UML
 <br>
 
@@ -117,6 +119,7 @@ Tool : Plant UML
 > - 정렬, 검색 및 필터링 기능을 갖춘 데이터 관리
 > - dotenv를 사용해 실행 환경에 따라 환경 변수를 다르게 설정
 > - 리퀘스트와 에러를 Winston Logger로 로깅 처리
+> - class-validator 라이브러리를 사용하여 커스텀 유효성 검사 사용
 
 <br>
 
@@ -500,6 +503,45 @@ export class AllExceptionsFilter implements ExceptionFilter {
 </details>
 
 <br>
+
+## 7) class-validator 라이브러리를 사용하여 커스텀 유효성 검사를 구현
+
+- <b>class-validator의 ValidatorConstraint를 사용하여 입력 값의 데이터타입을 제한</b>
+  - <b>설명</b> : 
+    - nestJS는 pipeline을 통해 요청받은 json을 class-transformer로 지정된 타입으로 변환하여 class-validator로 유효성 검사를 수행함.
+    - class-validator의 ValidatorConstraint를 사용하여 입력 값을 날짜(Date) 또는 문자열(string)로만 제한하는 커스텀 유효성 검사를 구현함.
+  - <b>이유</b> : 
+    - 데이터 무결성을 강화하기 위해 입력 데이터의 타입을 엄격하게 제어
+    - 간단하고 빠른 동기적 유효성 검사를 통해 성능 최적화 <i>(async: false)</i>
+  - <b>효과</b> : 
+    - 잘못된 형식의 데이터 유입 차단
+    - 명확하고 즉각적인 오류 피드백 제공 ("날짜 혹은 문자열이 들어가야 합니다.")
+    <br>
+
+<details>
+<summary><i>daily-schedule/date-or-string-validator.ts</i></summary>
+<div markdown="1">
+
+```
+import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
+
+@ValidatorConstraint({ name: 'dateOrString', async: false })
+export class DateOrStringValidator implements ValidatorConstraintInterface {
+  validate(value: any, args: ValidationArguments) {
+    if (typeof value === 'string' || value instanceof Date) {
+      return true;
+    }
+    return false;
+  }
+
+  defaultMessage(args: ValidationArguments) {
+    return '날짜 혹은 문자열이 들어가야 합니다.';
+  }
+}
+```
+
+</div>
+</details>
 
 ---
 

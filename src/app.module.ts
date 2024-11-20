@@ -20,19 +20,45 @@ import { AllExceptionsFilter } from './utils/all-exceptions.filter';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
+import { ExpenseModule } from './expense/expense.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // 비동기 실행을 위해 forRootAsync 함수 사용
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      // 다른 모듈에서 imports 에 등록 안해도 사용할 수 있도록 함.
       useFactory: async (configService: ConfigService) => {
         const uri = configService.get<string>('MONGODB_URL');
-        const conn = await mongoose.createConnection(uri);
-        console.log('◆ 접속한 MongoDB 주소: ', uri);
-        console.log('◆ MongoDB 연결 상태: ', conn.readyState);
+        const logger = winston.createLogger({
+          level: 'info',
+          transports: [
+            new winston.transports.Console({
+              format: winston.format.combine(winston.format.timestamp(), winston.format.simple()),
+            }),
+          ],
+        });
+
+        const conn = mongoose.createConnection(uri);
+
+        // MongoDB 연결 상태에 따른 로그 출력
+        let connectionStatus = '비정상';
+        switch (conn.readyState) {
+          case 0:
+            connectionStatus = 'disconnected';
+            break;
+          case 1:
+            connectionStatus = 'connected';
+            break;
+          case 2:
+            connectionStatus = 'connecting';
+            break;
+          case 3:
+            connectionStatus = 'disconnecting';
+            break;
+        }
+
+        logger.info(`◆ 접속한 MongoDB 주소: ${uri}`);
+        logger.info(`◆ MongoDB 연결 상태: ${conn.readyState}, ${connectionStatus}`);
         return { uri };
       },
       inject: [ConfigService],
@@ -58,6 +84,7 @@ import * as winston from 'winston';
     UserModule,
     TravelPlanModule,
     TravelLogModule,
+    ExpenseModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthService, { provide: 'APP_FILTER', useClass: AllExceptionsFilter }],

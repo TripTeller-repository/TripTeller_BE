@@ -16,10 +16,10 @@
 # 바로가기
 
 #### 1. [프로젝트 개요](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#1-프로젝트-개요-1)
-#### 2. [프로젝트 아키텍쳐](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#3-프로젝트-아키텍쳐-1)
-#### 3. [구현 내용](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#4-구현-내용-1)
-#### 4. [이슈 해결](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#5-이슈-해결-1)
-#### 5. [배포](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#5-배포-1)
+#### 2. [프로젝트 아키텍쳐](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#2-프로젝트-아키텍쳐-1)
+#### 3. [구현 내용](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#3-구현-내용-1)
+#### 4. [이슈 해결](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#4-이슈-해결-1)
+#### 5. [배포](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#5-배포-)
 #### 6. [느낀점](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#6-느낀점-1)
 
 ---
@@ -49,8 +49,8 @@
 
   | 이름   | 담당 업무                                                                                                                                                                                                 |
   | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | 이가린 | • User, Authentication, Feed, Scrap, Search 스키마 및 API 생성<br> • Swagger 작성, 클라이언트 및 서버 자동 배포<br> • NestJS에서 제공하는 기능 활용(필터, 로거, 가드, 파이프, 미들웨어) 설정, 인증 고도화 |
-  | 문채영 | • DailyPlan, DailySchedule, Expense, TravelLog 스키마 및 API 생성<br> • POSTMAN 및 Thunder Client로 API 테스트 후, 노션으로 문서화 진행                                                                   |
+  | [이가린](https://github.com/devellybutton) | • User, Authentication, Feed, Scrap, Search 스키마 및 API 생성<br> • Swagger 작성, 클라이언트 및 서버 자동 배포<br> • NestJS에서 제공하는 기능 활용(필터, 로거, 가드, 파이프, 미들웨어) 설정, 인증 고도화 |
+  | [문채영](https://github.com/yoocho) | • DailyPlan, DailySchedule, Expense, TravelLog 스키마 및 API 생성<br> • POSTMAN 및 Thunder Client로 API 테스트 후, 노션으로 문서화 진행                                                                   |
 
     <br>
 
@@ -611,7 +611,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 </details>
 <br>
 
-## 3)클라이언트 UI에 입력한 시간과 서버/DB 시간대 불일치 문제 해결
+## 3) 클라이언트 UI에 입력한 시간과 서버/DB 시간대 불일치 문제 해결
 
 | 항목   | 내용                                                                                                                                                                                                                                                                                                      |
 | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

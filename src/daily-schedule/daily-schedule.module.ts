@@ -13,8 +13,8 @@ import { CustomAuthGuard } from 'src/authentication/auth.guard';
 import { AuthService } from 'src/authentication/auth.service';
 import { UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
-import { DailyScheduleController } from './daily-schedule.controller';
 import { TravelLogService } from 'src/travel-log/travel-log.service';
+import { DailyScheduleController } from './daily-schedule.controller';
 
 @Module({
   imports: [
@@ -22,7 +22,6 @@ import { TravelLogService } from 'src/travel-log/travel-log.service';
       { name: 'DailyPlan', schema: DailyPlanSchema },
       { name: 'TravelPlan', schema: TravelPlanSchema },
       { name: 'DailySchedule', schema: DailyScheduleSchema },
-      { name: 'Expense', schema: ExpenseSchema },
       { name: 'User', schema: UserSchema },
     ]),
     AuthModule,
@@ -30,7 +29,6 @@ import { TravelLogService } from 'src/travel-log/travel-log.service';
   providers: [
     DailyPlanService,
     DailyScheduleService,
-    ExpenseService,
     DailyScheduleIndexService,
     CustomAuthGuard,
     AuthService,

@@ -82,7 +82,6 @@
 
 # 2. 프로젝트 아키텍쳐<br>
 > - <b>[전체 프로젝트 구조](#1-전체-프로젝트-구조)</b>
-> - <b>[MongoDB 스키마](#2-mongodb-스키마)</b>
 > - <b>[로그인 시퀀스 다이어그램](#3-로그인-시퀀스-다이어그램)</b>
 > - <b>[카카오 로그인 시퀀스 다이어그램](#4-카카오-로그인-시퀀스-다이어그램)</b>
 
@@ -92,21 +91,14 @@
 <br>
 <br>
 
-## 2) MongoDB 스키마
-
-![mongodb스키마](https://github.com/TripTeller-repository/TripTeller_BE/assets/127278410/c5805478-632d-4d37-8d1f-7c1d541bb07a)
-Tool : Moon Modeler
-<br>
-<br>
-
-## 3) 로그인 시퀀스 다이어그램
+## 2) 로그인 시퀀스 다이어그램
 
 ![트립텔러일반](https://github.com/user-attachments/assets/061745d0-fe33-437a-adbf-88efaa71e041)
 Tool : Plant UML
 <br>
 <br>
 
-## 4) 카카오 로그인 시퀀스 다이어그램
+## 3) 카카오 로그인 시퀀스 다이어그램
 
 ![트립텔러카카오](https://github.com/user-attachments/assets/6903b943-c3a8-44e1-a7d4-ef3196cf716f)
 Tool : Plant UML

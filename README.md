@@ -1,30 +1,31 @@
 # 🌸TripTeller BackEnd Repository
 
-> <b>"당신의 여행이 우리의 이야기가 되는 공간"</b>
+📌 <b><a href="https://www.trip-teller.com/">배포 링크</a></b><br> 📌 <b><a href="https://github.com/TripTeller-repository">서비스 소개</a></b><br> 📌 <b><a href="https://api.trip-teller.com/api">스웨거</a></b><br> 📌 <b><a href="https://www.postman.com/tripteller/workspace/tripteller-prod/folder/32621611-481f263e-7597-4405-9cd9-9d0dfb22d124?action=share&creator=32621611&ctx=documentation">포스트맨</a></b><br>
+📌 <b><a href="https://github.com/TripTeller-repository/TripTeller_BE/wiki/MongoDB-%EC%8A%A4%ED%82%A4%EB%A7%88">MongoDB 스키마</a></b>
 
-> "여러분의 여행을 흥미로운 이야기로 바꿀 준비가 되셨나요?<br>
-> 지금 여행을 시작하고, 트립텔러와 이야기를 공유하세요."
+---
 
-> 📌 <b>TripTeller URL</b> : https://www.trip-teller.com/<br>
-> 📌 <b>TripTeller ReadMe</b> : https://github.com/TripTeller-repository<br>
-> 📌 <b>BackEnd Github</b> : https://github.com/TripTeller-repository/TripTeller_BE
-
-![리드미최상단](https://github.com/TripTeller-repository/TripTeller_BE/assets/127278410/b352ffe2-4031-4e95-91e8-544906929139)
+### 테스트 계정
+- 이메일 : `trip@teller.com` <br>
+- 비밀번호 : `letsgotrip1234!` <br>
 
 ---
 
 # 바로가기
 
-#### 1. [프로젝트 개요](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#1-프로젝트-개요-1)
-#### 2. [프로젝트 아키텍쳐](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#2-프로젝트-아키텍쳐-1)
-#### 3. [구현 내용](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#3-구현-내용-1)
-#### 4. [이슈 해결](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#4-이슈-해결-1)
-#### 5. [배포](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#5-배포-)
-#### 6. [느낀점](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#6-느낀점-1)
+### 1. [프로젝트 개요](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#1-프로젝트-개요-1)
+### 2. [프로젝트 아키텍쳐](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#2-프로젝트-아키텍쳐-1)
+### 3. [구현 내용](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#3-구현-내용-1)
+### 4. [이슈 해결](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#4-이슈-해결-1)
+### 5. [배포](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#5-배포-)
+### 6. [느낀점](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#6-느낀점-1)
 
 ---
 
 # 1. 프로젝트 개요<br>
+> - <b>[기간 및 방식](#기간-및-방식)</b>
+> - <b>[인원 및 역할](#인원-및-역할)</b>
+> - <b>[기술스택](#기술스택)</b>
 
 - ### 기간 및 방식 <br>
 
@@ -60,12 +61,12 @@
   - <b>배포</b> : AWS S3, Route53, Cloudfront, EC2
   - <b>기타</b> : AWS presigned URL
 
-  | 기술           | 선정 이유                                                                                                                                                                                                                                                                                                                                                                                           |
-  | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | <b>NestJS</b>  | • Express의 자유로운 구조에서 오는 설계 부담을 해소하고, <b>`TypeScript`</b>와 <b>`객체지향`</b> 기반의 체계적인 아키텍처를 제공하기 때문에 채택하였음. <br> • 또한 종속성 주입, 직관적인 CLI, TypeScript 지원 등 다양한 기능이 있어서 개발자의 편의를 돕는 다양한 기능을 제공함.                                                                                                                                                            |
-  | <b>MongoDB</b> | • 스키마리스(Schema-less) 구조로 <b>`읽기 연산`</b>에 최적화되어 있고, <b>`유연한 데이터 모델링`</b>이 가능함. <br> • 프로젝트의 잦은 스키마 변경 요구사항에 효과적으로 대응할 수 있다고 판단하여 채택함. |
-  | <b>JWT</b>     | • stateless(상태 비저장) 인증인 JWT는 <b>`서버 로드`</b>를 줄이고 인증 프로세스 속도를 높임.                                                                                                                                                                                                                                                                                                                 |
-  | <b>AWS</b>     | • AWS에서 웹 애플리케이션 호스팅 및 배포의 거의 모든 측면을 포괄하는 <b>`광범위한 서비스`</b>를 제공하며, <b>`대량의 트래픽 처리`</b>를 쉽게 할 수 있도록 설계되어 활용함.                                                                                                                                                                                                                              |
+    | 기술           | 선정 이유                                                                                                                                                                                                                                                                                                                                                                                           |
+    | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | <b>NestJS</b>  | • Express의 자유로운 구조에서 오는 설계 부담을 해소하고, <b>`TypeScript`</b>와 <b>`객체지향`</b> 기반의 체계적인 아키텍처를 제공하기 때문에 채택하였음. <br> • 또한 종속성 주입, 직관적인 CLI, TypeScript 지원 등 다양한 기능이 있어서 개발자의 편의를 돕는 다양한 기능을 제공함.                                                                                                                                                            |
+    | <b>MongoDB</b> | • 스키마리스(Schema-less) 구조로 <b>`읽기 연산`</b>에 최적화되어 있고, <b>`유연한 데이터 모델링`</b>이 가능함. <br> • 프로젝트의 잦은 스키마 변경 요구사항에 효과적으로 대응할 수 있다고 판단하여 채택함. |
+    | <b>JWT</b>     | • stateless(상태 비저장) 인증인 JWT는 <b>`서버 로드`</b>를 줄이고 인증 프로세스 속도를 높임.                                                                                                                                                                                                                                                                                                                 |
+    | <b>AWS</b>     | • AWS에서 웹 애플리케이션 호스팅 및 배포의 거의 모든 측면을 포괄하는 <b>`광범위한 서비스`</b>를 제공하며, <b>`대량의 트래픽 처리`</b>를 쉽게 할 수 있도록 설계되어 활용함.                                                                                                                                                                                                                              |
 
 <br>
 
@@ -77,35 +78,35 @@
   - <b>@nestjs/common</b> : ^10.3.8<br>
     <br>
 
-- ### 관련 링크 <br>
-  - <b>Swagger</b> : https://api.trip-teller.com/api
-  - <b>POSTMAN</b> : https://www.postman.com/tripteller/workspace/tripteller-prod/folder/32621611-481f263e-7597-4405-9cd9-9d0dfb22d124?action=share&creator=32621611&ctx=documentation
-
 ---
 
 # 2. 프로젝트 아키텍쳐<br>
+> - <b>[전체 프로젝트 구조](#1-전체-프로젝트-구조)</b>
+> - <b>[MongoDB 스키마](#2-mongodb-스키마)</b>
+> - <b>[로그인 시퀀스 다이어그램](#3-로그인-시퀀스-다이어그램)</b>
+> - <b>[카카오 로그인 시퀀스 다이어그램](#4-카카오-로그인-시퀀스-다이어그램)</b>
 
-### 전체 프로젝트 구조
+## 1) 전체 프로젝트 구조
 
 ![트립텔러구조(ver 2)](https://github.com/TripTeller-repository/TripTeller_BE/assets/127278410/758d47b3-3036-48e4-9aaf-af51ee00bbe6)
 <br>
 <br>
 
-### MongoDB 스키마
+## 2) MongoDB 스키마
 
 ![mongodb스키마](https://github.com/TripTeller-repository/TripTeller_BE/assets/127278410/c5805478-632d-4d37-8d1f-7c1d541bb07a)
 Tool : Moon Modeler
 <br>
 <br>
 
-### 로그인 시퀀스 다이어그램
+## 3) 로그인 시퀀스 다이어그램
 
 ![트립텔러일반](https://github.com/user-attachments/assets/061745d0-fe33-437a-adbf-88efaa71e041)
 Tool : Plant UML
 <br>
 <br>
 
-### 카카오 로그인 시퀀스 다이어그램
+## 4) 카카오 로그인 시퀀스 다이어그램
 
 ![트립텔러카카오](https://github.com/user-attachments/assets/6903b943-c3a8-44e1-a7d4-ef3196cf716f)
 Tool : Plant UML
@@ -516,7 +517,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
   - <b>효과</b> : 
     - 잘못된 형식의 데이터 유입 차단
     - 명확하고 즉각적인 오류 피드백 제공 ("날짜 혹은 문자열이 들어가야 합니다.")
-    <br>
 
 <details>
 <summary><i>daily-schedule/date-or-string-validator.ts</i></summary>
@@ -546,112 +546,6 @@ export class DateOrStringValidator implements ValidatorConstraintInterface {
 ---
 
 # 4. 이슈 해결<br>
-
-## 1) 입력받는 여행 시작일과 종료일 데이터를 Mongoose 가상속성으로 변경
-
-| 항목   | 내용                                                                                                                                                                                                                                                                                          |
-| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 상황   | • 사용자가 입력한 여행 시작일(startDate)과 종료일(endDate)를 travelPlan 스키마의 필드에 직접 넣어서 저장함. <br> • <b>`클라이언트 측`</b>에서 이 데이터를 받아서 매번 UI를 직접 동적으로 생성하였음.                                                                                                        |
-| 문제   | • 해당 날짜가 자주 변경되거나 여러 문서에 동일한 데이터가 여러 개 표시되는 경우 <b>`데이터 중복`</b>이 발생할 수 있고, 입출력이 늘어남.<br> • 클라이언트 측에서는 사용자가 입력한 날짜를 수정할 때마다 직접 통신을 통해 변경된 데이터를 서버에서 받아와야 하므로, <b>`비효율적으로 API 호출을 자주`</b>하게 됨. |
-| 해결   | • travelPlan 스키마의 startDate 및 endDate 필드를 <b>`가상 속성`</b>으로 활용함. 이러한 속성을 동적으로 계산함으로써 수동으로 날짜를 계산하고 입력할 필요가 없어짐.<br> • 이후 DailyPlan 스키마를 생성하여 <b>`날짜에 따른 하위 데이터의 입출력`</b>이 수월하게 이루어짐.                                         |
-| 느낀점 | • 가상 스키마를 사용하면 유연하고 동적인 필드를 생성할 수 있음.<br>• 하지만 가상 속성을 사용할 때는 <b>`성능 및 데이터 무결성 문제`</b>를 고려해야 함.<br>ex) 기간별 조회 API 개발 시, startDate와 endDate를 직접 접근하지 못하여 쿼리문이 인식되지 않은 문제가 있었음.                                |
-
-<br>
-
-## 2) 동시성 문제를 고려하여 페이지네이션 쿼리를 수정
-
-| 항목   | 내용                                                                                                                                                                                                                                                                                                      |
-| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 상황   | • skip 및 limit 메소드를 사용하여 페이지별로 게시물 조회하도록 함.                                                                                                                                                                                                                                        |
-| 문제   | • 기존 코드는 두 개의 독립적인 요청을 보내는 구조로, 이로 인해 <b>`동시성 문제`</b>가 발생할 수 있음.<br> • 즉, 한 요청이 보내진 후에 그 사이에 데이터베이스 내용이 변경된다면, 해당 변경 사항이 반영되지 않음.<br> → <b>`데이터 일관성`</b>에 영향을 줄 수 있음.<br> (실제로 데이터가 일관되게 로드되지 않는 것을 확인함.) |
-| 해결   | • <b>`aggregate 메소드`</b>를 사용하여 두 개의 쿼리를 한 번에 처리하도록 개선 <br> • <b>`$facet 연산자`</b>를 사용하여 메타데이터(총 게시물 수)와 실제 데이터 조회를 동시에 처리 <br> → 동시에 데이터 변경 사항을 정확히 반영할 수 있도록 처리.                                                     |
-| 느낀점 | • 데이터 일관성을 유지하는 것이 매우 중요하며, 동시성 문제를 해결하는 방법이 성능 개선뿐만 아니라 시스템 안정성에도 큰 영향을 미친다는 점을 배움. <br> • 쿼리를 개선하는 과정에서 **aggregate**와 **$facet**의 유용성을 이해하게 되었음.                                       |
-
-<details>
-<summary><i>페이지네이션 쿼리 수정 전</i></summary>
-<div markdown="1">
-
-```
-  // 본인이 작성한 모든 게시물 조회 (페이지네이션)
-  async getAllFeedsPagination(userId: string, pageNumber: number = 1) {
-    const pageSize = 9; // 한 페이지당 최대 게시물 수
-    const skip = (pageNumber - 1) * pageSize;
-    const criteria = {
-      userId,
-      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
-    };
-    try {
-      const feeds = await this.feedModel.find(criteria).sort({ createdAt: -1 }).skip(skip).limit(pageSize).exec();
-      return this.feedExtractor.extractFeeds(feeds);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-```
-
-</div>
-</details>
-<details>
-<summary><i>페이지네이션 쿼리 수정 후</i></summary>
-<div markdown="1">
-
-```
-// 페이지네이션 설정하는 함수
-  getFeedPaginated = async (pageNumber: number = 1, pageSize: number = 9, criteria: any = {}, sort: any = {}) => {
-    const skip = (pageNumber - 1) * pageSize;
-
-    try {
-      // 기본 파이프라인 설정
-      const pipeline: any[] = [{ $match: criteria }];
-
-      // sort가 제공되었을 경우 정렬 단계 추가
-      if (Object.keys(sort).length) {
-        pipeline.push({ $sort: sort });
-      }
-
-      // 페이지네이션 설정
-      pipeline.push({
-        $facet: {
-          metadata: [
-            {
-              $match: {
-                $and: [
-                  { travelPlan: { $ne: null } },
-                  { $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] },
-                ],
-              },
-            },
-            { $count: 'totalCount' },
-          ],
-          data: [{ $skip: skip }, { $limit: pageSize }],
-        },
-      });
-
-      const feeds = await this.feedModel.aggregate(pipeline);
-
-      const totalCount = feeds[0].metadata.length > 0 ? feeds[0].metadata[0].totalCount : 0;
-
-      const result = {
-        success: true,
-        feeds: {
-          metadata: { totalCount, pageNumber, pageSize },
-          data: feeds[0].data,
-        },
-      };
-
-      return result;
-    } catch (error) {
-      throw new Error('페이지네이션 작업이 실패하였습니다.');
-    }
-  };
-
-
-```
-
-</div>
-</details>
-<br>
 
 ## 3) 클라이언트 UI에 입력한 시간과 서버/DB 시간대 불일치 문제 해결
 

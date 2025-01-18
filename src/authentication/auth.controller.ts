@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Req, Res, UnauthorizedException, Get, Query } from '@nestjs/common';
 import { Request as expReq, Response as expRes } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
@@ -135,23 +135,19 @@ export class AuthController {
     }
   }
 
-  @Post('sign-in/kakao')
+  @Get('sign-in/kakao')
   @ApiOperation({
     summary: '카카오 로그인',
     description: '카카오 인증을 통해 로그인하고, 서버에서 새로운 토큰을 발급한다.',
   })
-  @ApiBody({
-    description: '카카오 로그인에 필요한 인증 코드',
-    type: String,
-    schema: {
-      example: '3e4a1f0b-34fd-4d2f-abc1-8e23f91a1e88',
-    },
-  })
   @ApiResponse({
-    status: 200,
-    description: '카카오 로그인 성공',
-    schema: {
-      example: { accessToken: 'new-access-token' },
+    status: 302,
+    description: '카카오 로그인 성공 후 프론트엔드 리다이렉트 페이지로 이동',
+    headers: {
+      Location: {
+        description: '리다이렉션 URL',
+        example: 'https://www.trip-teller.com/login/redirect',
+      },
     },
   })
   @ApiResponse({
@@ -164,7 +160,7 @@ export class AuthController {
       },
     },
   })
-  async postSignInKakao(@Body('code') code: string, @Res({ passthrough: true }) res: expRes) {
+  async postSignInKakao(@Query('code') code: string, @Res({ passthrough: true }) res: expRes) {
     try {
       // 카카오에서 인증토큰 받아오기
       const kakaoToken = await this.authService.fetchKakaoToken(code);
@@ -175,8 +171,9 @@ export class AuthController {
       // 우리 서버의 토큰 발행하기
       const { accessToken, refreshToken } = await this.authService.oauthSignIn(kakaoUserInfo);
       this.setRefreshTokenCookie(res, refreshToken);
+      this.setAccessTokenCookie(res, accessToken);
 
-      return { accessToken };
+      return res.redirect(process.env.KAKAO_REDIRECT_URI);
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException('카카오 로그인에 실패하였습니다.');
@@ -234,7 +231,35 @@ export class AuthController {
     }
   }
 
-  // 쿠키 환경 설정
+  // 액세스 토큰 쿠키 환경 설정
+  private setAccessTokenCookie(res: expRes, accessToken: string) {
+    const commonOptions = {
+      domain: process.env.COOKIE_DOMAIN,
+      maxAge: 60 * 1000 * 2, // 2분
+    };
+
+    let additionalOptions = {};
+
+    // 배포환경
+    if (process.env.NODE_ENV === 'production') {
+      additionalOptions = {
+        secure: true,
+        sameSite: 'none',
+      };
+      // 개발 환경
+    } else {
+      additionalOptions = {
+        secure: false,
+        sameSite: 'lax',
+      };
+    }
+    res.cookie('accessToken', accessToken, {
+      ...commonOptions,
+      ...additionalOptions,
+    });
+  }
+
+  // 리프레시 토큰 쿠키 설정
   private setRefreshTokenCookie(res: expRes, refreshToken: string) {
     const commonOptions = {
       domain: process.env.COOKIE_DOMAIN,

@@ -19,14 +19,24 @@ import { AllExceptionsFilter } from './utils/all-exceptions.filter';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // 비동기 실행을 위해 forRootAsync 함수 사용
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        config: {
+          host: configService.get('REDIS_HOST'),
+          port: configService.get('REDIS_PORT'),
+          password: configService.get('REDIS_PASSWORD'),
+        },
+      }),
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      // 다른 모듈에서 imports 에 등록 안해도 사용할 수 있도록 함.
       useFactory: async (configService: ConfigService) => {
         const uri = configService.get<string>('MONGODB_URL');
         const conn = await mongoose.createConnection(uri);

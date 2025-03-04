@@ -12,7 +12,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('sign-up')
-  @ApiOperation({ summary: '회원가입', description: '유저를 생성한다!' })
+  @ApiOperation({ summary: '회원가입', description: '유저를 생성한다.' })
   @ApiCreatedResponse({ description: '유저 생성', type: CreatedUserDto })
   async postSignUp(@Body() createUserDto: CreateUserDto): Promise<CreatedUserDto> {
     const newUser = await this.authService.createUser(createUserDto);

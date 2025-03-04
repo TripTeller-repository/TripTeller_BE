@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthMiddleware } from './middlewares/auth.middleware';
 import mongoose from 'mongoose';
 import { AuthModule } from './authentication/auth.module';
 import { DailyPlanModule } from './daily-plan/daily-plan.module';
@@ -65,6 +64,5 @@ import * as winston from 'winston';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
-    consumer.apply(AuthMiddleware).forRoutes('*');
   }
 }

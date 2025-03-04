@@ -1,24 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-// 소셜 로그인 사용자 정보 제공자 (Auth 공급자)
-enum AuthProvider {
-  GOOGLE = 'Google',
-  NAVER = 'Naver',
-  KAKAO = 'Kakao',
-}
-
 const defaultProfileImage =
   'https://tripteller.s3.ap-southeast-2.amazonaws.com/travel-log-image/6622249e858c86125a25a648_1713530880079.webp';
 
 @Schema({ timestamps: true, collection: 'User' })
 export class User extends Document {
-  // OAuth 공급자
-  @Prop({ enum: AuthProvider, default: null })
-  authProvider: AuthProvider | null;
-
   // 이메일 주소
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true, index: true })
   email: string;
 
   // 비밀번호
@@ -38,6 +27,34 @@ export class User extends Document {
   // 삭제일
   @Prop({ default: null })
   deletedAt: Date | null;
+
+  // 계정 상태
+  @Prop({ default: true })
+  isActive: boolean;
+
+  // 마지막 로그인 정보
+  @Prop({ default: null })
+  lastLoginAt: Date | null;
+
+  @Prop({ default: null })
+  lastLoginIp: string | null;
+
+  // 이메일 인증 관련
+  @Prop({ default: false })
+  emailVerified: boolean;
+
+  @Prop({ default: null })
+  emailVerificationToken: string | null;
+
+  @Prop({ default: null })
+  emailVerificationExpires: Date | null;
+
+  // 비밀번호 재설정 관련
+  @Prop({ default: null })
+  resetPasswordToken: string | null;
+
+  @Prop({ default: null })
+  resetPasswordExpires: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

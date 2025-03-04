@@ -22,23 +22,11 @@ export class UserOAuth extends Document {
   @Prop({ required: true })
   providerId: string;
 
-  // 액세스 토큰
-  @Prop({ default: null })
-  accessToken: string | null;
-
-  // 리프레시 토큰
-  @Prop({ default: null })
-  refreshToken: string | null;
-
-  // 토큰 만료일
-  @Prop({ default: null })
-  tokenExpires: Date | null;
-
-  // 공급자에서 제공받은 이메일
+  // 제공받은 이메일
   @Prop()
   email: string;
 
-  // 공급자에서 제공받은 프로필 데이터
+  // 제공받은 프로필 데이터
   @Prop({ type: Object, default: {} })
   profile: Record<string, any>;
 

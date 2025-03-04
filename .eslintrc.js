@@ -25,5 +25,7 @@ module.exports = {
         endOfLine: 'auto',
       },
     ],
+    // CommonJS 방식의 require() 사용을 제한
+    '@typescript-eslint/no-var-requires': 'off',
   },
 };

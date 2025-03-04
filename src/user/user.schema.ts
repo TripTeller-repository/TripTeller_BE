@@ -38,23 +38,6 @@ export class User extends Document {
 
   @Prop({ default: null })
   lastLoginIp: string | null;
-
-  // 이메일 인증 관련
-  @Prop({ default: false })
-  emailVerified: boolean;
-
-  @Prop({ default: null })
-  emailVerificationToken: string | null;
-
-  @Prop({ default: null })
-  emailVerificationExpires: Date | null;
-
-  // 비밀번호 재설정 관련
-  @Prop({ default: null })
-  resetPasswordToken: string | null;
-
-  @Prop({ default: null })
-  resetPasswordExpires: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

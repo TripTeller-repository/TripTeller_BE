@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dto/sign-in.dto';
 import * as jwt from 'jsonwebtoken';
@@ -8,20 +8,35 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/user/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
-
-// 소셜 로그인 사용자 정보 제공자
-export enum EAuthProvider {
-  GOOGLE = 'Google',
-  NAVER = 'Naver',
-  KAKAO = 'Kakao',
-}
+import { ConfigService } from '@nestjs/config';
+import { OAuthService } from './oauth.service';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
-    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly userService: UserService,
-  ) {}
+    private readonly oauthService: OAuthService,
+    private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
+  ) {
+    // 서비스 시작 시 필수 환경 변수 검증
+    this.validateEnvironmentVariables();
+  }
+
+  // 환경 변수 검증
+  private validateEnvironmentVariables(): void {
+    const requiredEnvVars = ['SECRET_KEY', 'COOKIE_DOMAIN'];
+
+    const missingEnvVars = requiredEnvVars.filter((envVar) => !this.configService.get<string>(envVar));
+
+    if (missingEnvVars.length > 0) {
+      this.logger.error(`Missing required environment variables: ${missingEnvVars.join(', ')}`);
+    }
+  }
 
   // 회원 가입
   async createUser(createUserDto: CreateUserDto) {

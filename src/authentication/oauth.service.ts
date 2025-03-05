@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException, BadRequestExcepti
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User } from 'src/user/user.schema';
-import { UserOAuth, AuthProvider } from 'src/user/user-oauth.schema';
+import { UserOAuth, EAuthProvider } from 'src/user/user-oauth.schema';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
@@ -12,7 +12,7 @@ export interface OAuthUserInfo {
   nickname?: string;
   profileImage?: string;
   providerId: string;
-  provider: AuthProvider;
+  provider: EAuthProvider;
   profile: any;
 }
 
@@ -252,7 +252,7 @@ export class OAuthService {
         nickname: data.name || data.email.split('@')[0],
         profileImage: data.picture || undefined,
         providerId: data.id || data.sub,
-        provider: AuthProvider.GOOGLE,
+        provider: EAuthProvider.GOOGLE,
         profile: data,
       };
     } catch (error) {
@@ -311,7 +311,7 @@ export class OAuthService {
         nickname: nickname || email.split('@')[0],
         profileImage: profile_image || undefined,
         providerId: id,
-        provider: AuthProvider.NAVER,
+        provider: EAuthProvider.NAVER,
         profile: data.response,
       };
     } catch (error) {
@@ -365,7 +365,7 @@ export class OAuthService {
         nickname: nickname || email.split('@')[0],
         profileImage: data.properties.profile_image || undefined,
         providerId: data.id.toString(),
-        provider: AuthProvider.KAKAO,
+        provider: EAuthProvider.KAKAO,
         profile: data,
       };
     } catch (error) {
@@ -375,7 +375,7 @@ export class OAuthService {
   }
 
   // OAuth 계정 연결 해제
-  async disconnectOAuthProvider(userId: string, provider: AuthProvider): Promise<void> {
+  async disconnectOAuthProvider(userId: string, provider: EAuthProvider): Promise<void> {
     try {
       // 사용자 확인
       const user = await this.userModel.findById(userId);

@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-// 소셜 로그인 사용자 정보 제공자 (Auth 공급자)
-export enum AuthProvider {
+// 소셜 로그인 사용자 정보 제공자 (OAuth 공급자)
+export enum EAuthProvider {
   GOOGLE = 'Google',
   NAVER = 'Naver',
   KAKAO = 'Kakao',
@@ -15,8 +15,8 @@ export class UserOAuth extends Document {
   userId: MongooseSchema.Types.ObjectId;
 
   // OAuth 공급자
-  @Prop({ enum: AuthProvider, required: true })
-  provider: AuthProvider;
+  @Prop({ enum: EAuthProvider, required: true })
+  provider: EAuthProvider;
 
   // 공급자에서 제공하는 ID
   @Prop({ required: true })

@@ -4,13 +4,9 @@ import { RedisService } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
 import * as jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import { IUser } from 'src/types/user.interface';
 
-interface TokenPayload {
-  userId: string;
-  tokenId: string;
-  ip?: string;
-  deviceInfo?: any;
-}
+interface TokenPayload extends Pick<IUser, 'userId' | 'tokenId' | 'ip' | 'deviceInfo'> {}
 
 @Injectable()
 export class TokenService {

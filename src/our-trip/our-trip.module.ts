@@ -11,6 +11,7 @@ import { UserService } from 'src/user/user.service';
 import { AuthService } from 'src/authentication/auth.service';
 import { FeedModule } from 'src/feed/feed.module';
 import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
+import { LoginSchema } from 'src/authentication/login.schema';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
       { name: 'User', schema: UserSchema },
       { name: 'Scrap', schema: ScrapSchema },
       { name: 'DailyPlan', schema: DailyPlanSchema },
+      { name: 'Login', schema: LoginSchema },
     ]),
     FeedModule,
   ],

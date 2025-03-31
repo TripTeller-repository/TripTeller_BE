@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CustomAuthGuard } from 'src/authentication/auth.guard';
+import { AuthGuard } from 'src/authentication/auth.guard';
 import { PutTravelLogImageDto } from 'src/travel-log/dto/put-travel-log-image.dto';
 import { PutTravelLogPostContentDto } from 'src/travel-log/dto/put-travel-log-post-content.dto';
 import { TravelLogService } from 'src/travel-log/travel-log.service';
 
 @ApiTags('TravelLog')
 @Controller('')
-@UseGuards(CustomAuthGuard)
+@UseGuards(AuthGuard)
 export class TravelLogController {
   constructor(private readonly travelLogService: TravelLogService) {}
 
@@ -39,7 +39,10 @@ export class TravelLogController {
   }
 
   @Get('travel-log-image-signed-url/:fileName')
-  @ApiOperation({ summary: 'AWS S3 프로필 이미지 Signed URL 불러오기', description: 'AWS S3에서 여행 로그 이미지를 위한 Signed URL을 생성합니다.' })
+  @ApiOperation({
+    summary: 'AWS S3 프로필 이미지 Signed URL 불러오기',
+    description: 'AWS S3에서 여행 로그 이미지를 위한 Signed URL을 생성합니다.',
+  })
   @ApiParam({
     name: 'fileName',
     description: '이미지 파일 이름',
@@ -51,7 +54,8 @@ export class TravelLogController {
     description: '이미지의 Signed URL이 성공적으로 반환됩니다.',
     schema: {
       example: {
-        signedUrl: 'https://my-bucket.s3.us-west-2.amazonaws.com/travel-log-image.jpg?AWSAccessKeyId=AKIA...&Expires=...&Signature=...',
+        signedUrl:
+          'https://my-bucket.s3.us-west-2.amazonaws.com/travel-log-image.jpg?AWSAccessKeyId=AKIA...&Expires=...&Signature=...',
       },
     },
   })

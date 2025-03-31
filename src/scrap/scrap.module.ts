@@ -10,6 +10,7 @@ import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
 import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
 import { AuthService } from 'src/authentication/auth.service';
 import { UserService } from 'src/user/user.service';
+import { LoginSchema } from 'src/authentication/login.schema';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UserService } from 'src/user/user.service';
       { name: 'User', schema: UserSchema },
       { name: 'TravelPlan', schema: TravelPlanSchema },
       { name: 'DailyPlan', schema: DailyPlanSchema },
+      { name: 'Login', schema: LoginSchema },
     ]),
   ],
   providers: [ScrapService, FeedExtractor, AuthService, UserService],

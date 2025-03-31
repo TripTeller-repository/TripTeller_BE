@@ -1,19 +1,19 @@
 import { Controller, Post, Delete, Get, Param, Body, Req, UseGuards } from '@nestjs/common';
 import { ScrapService } from './scrap.service';
 import { CreateScrapDto } from './dto/create-scrap.dto';
-import { CustomAuthGuard } from 'src/authentication/auth.guard';
+import { AuthGuard } from 'src/authentication/auth.guard';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Scrap')
 @Controller('scrap')
-@UseGuards(CustomAuthGuard)
+@UseGuards(AuthGuard)
 export class ScrapController {
   constructor(private readonly scrapService: ScrapService) {}
 
   @Get()
-  @ApiOperation({ 
-    summary: '스크랩한 게시물 조회', 
-    description: '특정 회원이 스크랩한 게시물을 모두 조회한다.'
+  @ApiOperation({
+    summary: '스크랩한 게시물 조회',
+    description: '특정 회원이 스크랩한 게시물을 모두 조회한다.',
   })
   @ApiResponse({
     status: 200,
@@ -40,16 +40,16 @@ export class ScrapController {
   }
 
   @Post()
-  @ApiOperation({ 
-    summary: '스크랩 등록', 
-    description: '게시물을 스크랩 목록에 등록한다. 이미 스크랩한 게시물은 다시 스크랩할 수 없다.'
+  @ApiOperation({
+    summary: '스크랩 등록',
+    description: '게시물을 스크랩 목록에 등록한다. 이미 스크랩한 게시물은 다시 스크랩할 수 없다.',
   })
   @ApiBody({
     description: '스크랩할 게시물의 고유 ID',
     type: CreateScrapDto,
     schema: {
       example: {
-        feedId: '507f191e810c19729de860ea', 
+        feedId: '507f191e810c19729de860ea',
       },
     },
   })
@@ -72,9 +72,9 @@ export class ScrapController {
   }
 
   @Delete(':feedId')
-  @ApiOperation({ 
-    summary: '스크랩 취소', 
-    description: '스크랩한 게시물을 취소한다. 취소 후 게시물의 좋아요 수는 1 감소한다.'
+  @ApiOperation({
+    summary: '스크랩 취소',
+    description: '스크랩한 게시물을 취소한다. 취소 후 게시물의 좋아요 수는 1 감소한다.',
   })
   @ApiParam({
     name: 'feedId',

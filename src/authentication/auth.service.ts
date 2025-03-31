@@ -8,6 +8,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/user/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserDevice } from './user-device.interface';
+import { Login } from './login.schema';
 
 // 소셜 로그인 사용자 정보 제공자
 export enum EAuthProvider {
@@ -20,6 +22,7 @@ export enum EAuthProvider {
 export class AuthService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Login') private readonly loginModel: Model<Login>,
     private readonly userService: UserService,
   ) {}
 
@@ -45,33 +48,90 @@ export class AuthService {
   }
 
   // 토큰 생성
-  // userId, authProvider을 기반으로 JWT 토큰을 생성
-  async createTokens(userId: string, authProvider: string) {
-    // JWT payload 생성
-    const payload = { userId, authProvider };
+  // userId, authProvider 및 디바이스 정보를 기반으로 JWT 토큰을 생성
+  async createTokens(userId: string, authProvider: string, deviceInfo: UserDevice, ip: string) {
+    const loginAt = new Date();
 
-    // Access Token 생성
-    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '6h' }); // 실)5m, 테)1h
+    // 로그인 세션 저장
+    const loginSession = await this.loginModel.create({
+      userId,
+      deviceInfo,
+      ipAddress: ip,
+      lastLoginAt: loginAt,
+    });
+    await loginSession.save();
 
-    // Refresh Token 생성 (쿠키)
-    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '6h' }); // 실)1h, 테)4h
+    // JWT payload 생성 (디바이스 및 IP 정보 포함)
+    const payload = {
+      userId,
+      authProvider,
+      deviceId: deviceInfo.deviceId,
+      browser: deviceInfo.browser,
+      os: deviceInfo.os,
+      ip,
+      loginAt: loginAt.toISOString(),
+      sessionId: loginSession._id.toString(),
+    };
+
+    // Access Token 생성 (10분)
+    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '10m' });
+
+    // Refresh Token 생성 (1시간)
+    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
 
     return { accessToken, refreshToken };
   }
 
   // 액세스 토큰 재발급
-  async createAccessTokenAgain(userId: string, authProvider: string) {
-    // JWT payload 생성
-    const payload = { userId, authProvider };
+  async refreshAccessToken(refreshToken: string, deviceInfo: UserDevice, ip: string) {
+    try {
+      // Refresh 토큰 검증
+      const decoded = jwt.verify(refreshToken, process.env.SECRET_KEY) as jwt.JwtPayload;
+      const { userId, authProvider, sessionId } = decoded;
 
-    // Access Token 생성
-    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1m' });
+      // 로그인 세션 확인
+      const session = await this.loginModel.findById(sessionId);
+      if (!session) {
+        throw new UnauthorizedException('유효하지 않은 세션입니다.');
+      }
 
-    return { accessToken };
+      // 의심스러운 로그인 감지 (IP나 디바이스 정보가 다를 경우)
+      const isSuspicious = this.detectSuspiciousLogin(session, deviceInfo, ip);
+
+      // 로그인 세션 업데이트
+      session.lastLoginAt = new Date();
+      session.ipAddress = ip;
+      session.deviceInfo = deviceInfo;
+      await session.save();
+
+      // 새 페이로드 생성
+      const payload = {
+        userId,
+        authProvider,
+        deviceId: deviceInfo.deviceId,
+        browser: deviceInfo.browser,
+        os: deviceInfo.os,
+        ip,
+        loginAt: new Date().toISOString(),
+        sessionId: session._id.toString(),
+        suspicious: isSuspicious,
+      };
+
+      // 새 액세스 토큰 생성 (10분)
+      const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '10m' });
+
+      return { accessToken, suspicious: isSuspicious };
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new UnauthorizedException('Refresh token has expired');
+      } else {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+    }
   }
 
-  ////// 로그인
-  async signIn(signInDto: SignInDto) {
+  // 로그인
+  async signIn(signInDto: SignInDto, deviceInfo: UserDevice, ip: string) {
     try {
       // 이메일로 특정 회원 조회
       const user = await this.userService.findUserByEmail(signInDto.email);
@@ -86,49 +146,69 @@ export class AuthService {
         throw new UnauthorizedException('탈퇴한 회원입니다.');
       }
 
-      // 비밀번호 생성
-      const isPasswordValid = await this.verifyPassword(signInDto.password, user.password);
-
       // 비밀번호 확인
+      const isPasswordValid = await this.verifyPassword(signInDto.password, user.password);
       if (!isPasswordValid) {
         throw new UnauthorizedException('잘못된 비밀번호입니다.');
       }
 
-      // 해당 유저가 DB에 존재하고, user의 고유 ID가 있는 경우에는 토큰 발행
-      if (user && user._id) {
-        const userIdString = user._id.toString();
+      // 토큰 발행
+      const userIdString = user._id.toString();
+      const { accessToken, refreshToken } = await this.createTokens(
+        userIdString,
+        user.authProvider || null,
+        deviceInfo,
+        ip,
+      );
 
-        return this.createTokens(userIdString, (user.authProvider = null));
-      }
+      // 로그인 성공 시 액세스 토큰과 리프레시 토큰 반환
+      return { accessToken, refreshToken };
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');
     }
   }
 
-  // 액세스 토큰 만료 여부 확인
-  async isAccessTokenExpired(accessToken: string): Promise<boolean> {
-    try {
-      jwt.verify(accessToken, process.env.SECRET_KEY);
-      return false;
-    } catch (error) {
-      if (error instanceof jwt.TokenExpiredError) {
-        return true;
-      } else {
-        throw new UnauthorizedException('Access token verification error');
-      }
+  // 의심스러운 로그인 감지
+  private detectSuspiciousLogin(session: Login, deviceInfo: UserDevice, ip: string): boolean {
+    // IP 주소가 다를 경우
+    if (session.ipAddress !== ip) {
+      return true;
     }
+
+    // 디바이스 ID가 다를 경우
+    if (session.deviceInfo.deviceId !== deviceInfo.deviceId) {
+      return true;
+    }
+
+    // 브라우저나 OS가 변경된 경우
+    if (session.deviceInfo.browser !== deviceInfo.browser || session.deviceInfo.os !== deviceInfo.os) {
+      return true;
+    }
+
+    return false;
   }
 
-  // 리프레시 토큰 만료 여부 확인
-  async isRefreshTokenExpired(refreshToken: string): Promise<boolean> {
+  // 토큰 검증
+  async verifyToken(token: string): Promise<jwt.JwtPayload> {
     try {
-      jwt.verify(refreshToken, process.env.SECRET_KEY);
-      return false;
+      const decoded = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
+
+      // 세션 ID가 있는 경우 세션 유효성 확인
+      if (decoded.sessionId) {
+        const session = await this.loginModel.findById(decoded.sessionId);
+        if (!session) {
+          throw new UnauthorizedException('Invalid session');
+        }
+      }
+
+      return decoded;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        return true;
+        throw new UnauthorizedException('Token has expired');
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        throw new UnauthorizedException('Invalid token');
       } else {
-        throw new UnauthorizedException('Refresh token verification error');
+        throw new UnauthorizedException('Token verification error');
       }
     }
   }
@@ -182,8 +262,8 @@ export class AuthService {
     }
   }
 
-  // 소셜 로그인 성공 후 우리 서버로 로그인 처리
-  async oauthSignIn(userInfo) {
+  // 소셜 로그인 처리
+  async oauthSignIn(userInfo, deviceInfo: UserDevice, ip: string) {
     try {
       // 이메일로 회원 조회
       const existingUser = await this.userModel.findOne({ email: userInfo.email });
@@ -191,11 +271,7 @@ export class AuthService {
       let user;
       if (!existingUser) {
         // 가입되지 않은 경우 회원가입 진행
-        const newUser: {
-          email: string;
-          authProvider: string;
-          nickname: string;
-        } = {
+        const newUser = {
           email: userInfo.email,
           authProvider: userInfo.authProvider,
           nickname: userInfo.nickname,
@@ -207,31 +283,18 @@ export class AuthService {
         user = existingUser;
       }
 
-      // 우리 서버 토큰 발행
-      const tokens = await this.createTokens(user._id, userInfo.authProvider);
-      return tokens;
+      // 토큰 발행
+      const { accessToken, refreshToken } = await this.createTokens(
+        user._id.toString(),
+        userInfo.authProvider,
+        deviceInfo,
+        ip,
+      );
+
+      return { accessToken, refreshToken };
     } catch (error) {
       console.error('OAuth sign-in failed:', error);
       throw new Error('OAuth sign-in failed.');
-    }
-  }
-
-  // 토큰 검증
-  async verifyToken(token: string): Promise<{ userId: string; authProvider: string }> {
-    try {
-      const { userId, authProvider } = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
-
-      return { userId, authProvider };
-    } catch (error) {
-      if (error instanceof jwt.TokenExpiredError) {
-        // 토큰 기한 만료
-        throw new UnauthorizedException('Token has expired');
-      } else if (error instanceof jwt.JsonWebTokenError) {
-        // 토큰 형식 문제
-        throw new UnauthorizedException('Invalid token');
-      } else {
-        throw new UnauthorizedException('Token verification error');
-      }
     }
   }
 
@@ -259,10 +322,33 @@ export class AuthService {
       // DB에 있는 회원 id에서 deletedAt의 값을 현재 시각(date)로 만들기
       await this.userService.deleteUserById(userId, new Date());
 
+      // 모든 로그인 세션 삭제
+      await this.loginModel.deleteMany({ userId });
+
       return { message: '해당 회원의 탈퇴처리가 완료되었습니다.' };
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException('회원 탈퇴 중 오류가 발생하였습니다.');
+    }
+  }
+
+  // 로그아웃
+  async logout(userId: string, sessionId: string) {
+    // 특정 세션 삭제
+    await this.loginModel.findByIdAndDelete(sessionId);
+    return { message: '로그아웃 되었습니다.' };
+  }
+
+  // 로그인 이력 조회
+  async getLoginHistory(userId: string) {
+    try {
+      // 해당 사용자의 로그인 이력 조회 (최근 10개)
+      const loginHistory = await this.loginModel.find({ userId }).sort({ lastLoginAt: -1 }).limit(10);
+
+      return loginHistory;
+    } catch (error) {
+      console.error('Failed to get login history:', error);
+      throw new Error('로그인 이력 조회에 실패했습니다.');
     }
   }
 

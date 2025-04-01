@@ -65,7 +65,7 @@ export class AuthService {
     const payload = {
       userId,
       authProvider,
-      deviceId: deviceInfo.deviceId,
+      // deviceId: deviceInfo.deviceId,
       browser: deviceInfo.browser,
       os: deviceInfo.os,
       ip,
@@ -108,7 +108,7 @@ export class AuthService {
       const payload = {
         userId,
         authProvider,
-        deviceId: deviceInfo.deviceId,
+        // deviceId: deviceInfo.deviceId,
         browser: deviceInfo.browser,
         os: deviceInfo.os,
         ip,
@@ -152,6 +152,15 @@ export class AuthService {
         throw new UnauthorizedException('잘못된 비밀번호입니다.');
       }
 
+      // 최근 로그인 세션 확인
+      const lastSession = await this.loginModel.findOne({ userId: user._id }).sort({ lastLoginAt: -1 });
+
+      // 의심스러운 로그인 감지
+      let suspicious = false;
+      if (lastSession) {
+        suspicious = this.detectSuspiciousLogin(lastSession, deviceInfo, ip);
+      }
+
       // 토큰 발행
       const userIdString = user._id.toString();
       const { accessToken, refreshToken } = await this.createTokens(
@@ -162,7 +171,7 @@ export class AuthService {
       );
 
       // 로그인 성공 시 액세스 토큰과 리프레시 토큰 반환
-      return { accessToken, refreshToken };
+      return { accessToken, refreshToken, suspicious };
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');
     }
@@ -172,11 +181,6 @@ export class AuthService {
   private detectSuspiciousLogin(session: Login, deviceInfo: UserDevice, ip: string): boolean {
     // IP 주소가 다를 경우
     if (session.ipAddress !== ip) {
-      return true;
-    }
-
-    // 디바이스 ID가 다를 경우
-    if (session.deviceInfo.deviceId !== deviceInfo.deviceId) {
       return true;
     }
 

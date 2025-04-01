@@ -1,11 +1,24 @@
-import { Body, Controller, Delete, Post, Req, Res, UnauthorizedException, Get, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  Get,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Request as expReq, Response as expRes, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatedUserDto } from './dto/created-user.dto';
+import { PasswordSerializerInterceptor } from './password.interceptor';
 
+@UseInterceptors(PasswordSerializerInterceptor)
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -67,11 +80,19 @@ export class AuthController {
       const ip = req.ip || req.socket.remoteAddress;
 
       // 로그인 시도
-      const { accessToken, refreshToken } = await this.authService.signIn(signInDto, deviceInfo, ip);
+      const { accessToken, refreshToken, suspicious } = await this.authService.signIn(signInDto, deviceInfo, ip);
 
       // 쿠키에 토큰 설정
       this.setRefreshTokenCookie(res, refreshToken);
-      this.setAccessTokenCookie(res, accessToken);
+
+      // 의심스러운 로그인이면 클라이언트에 알림
+      if (suspicious) {
+        return {
+          accessToken,
+          suspicious: true,
+          message: '의심스러운 로그인이 감지되었습니다. 본인이 아니라면 비밀번호를 변경해주세요.',
+        };
+      }
 
       return { accessToken };
     } catch (error) {
@@ -289,13 +310,14 @@ export class AuthController {
   // 디바이스 정보 추출 메서드
   private extractDeviceInfo(req: expReq): any {
     const userAgent = req.headers['user-agent'] || '';
+    console.log('***************userAgent', userAgent);
 
     // 간단한 디바이스 정보 추출 로직
     const browser = this.detectBrowser(userAgent);
     const os = this.detectOS(userAgent);
 
     return {
-      deviceId: req.cookies.deviceId || `device_${Date.now()}`,
+      deviceId: req.cookies.deviceId || `device_${this.detectBrowser(userAgent)}_${Date.now()}`,
       browser,
       os,
       userAgent,
@@ -304,11 +326,56 @@ export class AuthController {
 
   // 브라우저 감지
   private detectBrowser(userAgent: string): string {
-    if (userAgent.includes('Chrome')) return 'Chrome';
-    if (userAgent.includes('Firefox')) return 'Firefox';
-    if (userAgent.includes('Safari')) return 'Safari';
-    if (userAgent.includes('Edge')) return 'Edge';
-    if (userAgent.includes('MSIE') || userAgent.includes('Trident/')) return 'Internet Explorer';
+    console.log('컨트롤러 브라우저 감지 userAgent', userAgent);
+    // Edge (Chromium 기반) - 반드시 가장 먼저 확인해야 함
+    if (/Edg\//.test(userAgent)) {
+      return 'Edge';
+    }
+
+    // Edge (레거시)
+    if (/Edge\//.test(userAgent)) {
+      return 'Edge';
+    }
+
+    // Firefox
+    if (/Firefox\//.test(userAgent) && !/ Seamonkey\//.test(userAgent)) {
+      return 'Firefox';
+    }
+
+    // Chrome - Edge 및 다른 Chromium 기반 브라우저 체크 후에 확인
+    if (
+      /Chrome\//.test(userAgent) &&
+      !/Chromium\//.test(userAgent) &&
+      !/Edg\//.test(userAgent) &&
+      !/OPR\//.test(userAgent)
+    ) {
+      return 'Chrome';
+    }
+
+    // Safari - Chrome 체크 후 확인 (Safari는 Chrome UA 문자열에도 포함됨)
+    if (/Safari\//.test(userAgent) && !/Chrome\//.test(userAgent) && !/Chromium\//.test(userAgent)) {
+      return 'Safari';
+    }
+
+    // Internet Explorer
+    if (/MSIE(\d+\.\d+);/.test(userAgent) || /Trident\//.test(userAgent)) {
+      return 'Internet Explorer';
+    }
+
+    // Thunder Client
+    if (/Thunder Client/.test(userAgent)) {
+      return 'Thunder Client';
+    }
+
+    // 기타 API 클라이언트
+    if (/Postman/.test(userAgent)) {
+      return 'Postman';
+    }
+
+    if (/curl/.test(userAgent)) {
+      return 'curl';
+    }
+
     return 'Unknown';
   }
 
@@ -324,8 +391,13 @@ export class AuthController {
 
   // 쿠키에서 모든 토큰 제거
   private clearTokenCookies(res: expRes) {
-    res.clearCookie('refreshToken', this.getCookieOptions());
-    res.clearCookie('accessToken', this.getCookieOptions());
+    const options = {
+      ...this.getCookieOptions(),
+      httpOnly: true,
+      expires: new Date(0),
+    };
+
+    res.clearCookie('refreshToken', options);
   }
 
   // 쿠키 옵션 공통 부분

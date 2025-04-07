@@ -2,18 +2,21 @@ import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/comm
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PostProfileImageDto } from './dto/post-profile-image.dto';
-import { CustomAuthGuard } from 'src/authentication/auth.guard';
+import { AuthGuard } from 'src/authentication/auth.guard';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserInfoDto } from './dto/user-info.dto';
 
 @ApiTags('User')
 @Controller('user')
-@UseGuards(CustomAuthGuard)
+@UseGuards(AuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('info')
-  @ApiOperation({ summary: '회원정보(이메일, 프로필 이미지 URL, 닉네임) 전체 조회', description: '클라이언트에게 반환해야할 회원 정보를 조회한다.' })
+  @ApiOperation({
+    summary: '회원정보(이메일, 프로필 이미지 URL, 닉네임) 전체 조회',
+    description: '클라이언트에게 반환해야할 회원 정보를 조회한다.',
+  })
   @ApiResponse({
     status: 200,
     description: '회원 정보 조회 성공',
@@ -38,7 +41,7 @@ export class UserController {
       properties: {
         profileImage: {
           type: 'string',
-          example: 'https://my-bucket.s3.amazonaws.com/profile-image.jpg', 
+          example: 'https://my-bucket.s3.amazonaws.com/profile-image.jpg',
         },
       },
     },
@@ -69,11 +72,14 @@ export class UserController {
   }
 
   @Get('profile-image-signed-url/:fileName')
-  @ApiOperation({ summary: 'AWS S3 프로필 이미지 Signed URL 불러오기', description: '프로필 이미지 presigned URL을 AWS SDK에서 불러온다.' })
+  @ApiOperation({
+    summary: 'AWS S3 프로필 이미지 Signed URL 불러오기',
+    description: '프로필 이미지 presigned URL을 AWS SDK에서 불러온다.',
+  })
   @ApiParam({
     name: 'fileName',
     description: 'AWS S3에 저장된 프로필 이미지 파일명',
-    example: 'user_profile_image.jpg', 
+    example: 'user_profile_image.jpg',
   })
   @ApiResponse({
     status: 200,
@@ -83,7 +89,7 @@ export class UserController {
       properties: {
         signedUrl: {
           type: 'string',
-          example: 'https://my-bucket.s3.amazonaws.com/signed-url'
+          example: 'https://my-bucket.s3.amazonaws.com/signed-url',
         },
       },
     },

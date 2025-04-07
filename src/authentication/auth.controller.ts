@@ -1,11 +1,24 @@
-import { Body, Controller, Delete, Post, Req, Res, UnauthorizedException, Get, Query } from '@nestjs/common';
-import { Request as expReq, Response as expRes } from 'express';
+import {
+  Body,
+  Controller,
+  Delete,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  Get,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
+import { Request as expReq, Response as expRes, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatedUserDto } from './dto/created-user.dto';
+import { PasswordSerializerInterceptor } from './password.interceptor';
 
+@UseInterceptors(PasswordSerializerInterceptor)
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -62,22 +75,28 @@ export class AuthController {
   })
   async postSignIn(@Body() signInDto: SignInDto, @Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
-      const { accessToken, refreshToken } = await this.authService.signIn(signInDto);
+      // 디바이스 정보 추출
+      const deviceInfo = this.extractDeviceInfo(req);
+      const ip = req.ip || req.socket.remoteAddress;
 
+      // 로그인 시도
+      const { accessToken, refreshToken, suspicious } = await this.authService.signIn(signInDto, deviceInfo, ip);
+
+      // 쿠키에 토큰 설정
       this.setRefreshTokenCookie(res, refreshToken);
-      console.log('컨트롤러에서 전달한 accessToken', accessToken);
+
+      // 의심스러운 로그인이면 클라이언트에 알림
+      if (suspicious) {
+        return {
+          accessToken,
+          suspicious: true,
+          message: '의심스러운 로그인이 감지되었습니다. 본인이 아니라면 비밀번호를 변경해주세요.',
+        };
+      }
 
       return { accessToken };
     } catch (error) {
-      // 쿠키의 리프레시 토큰 확인해서 만료 시 에러처리
-      if (error instanceof UnauthorizedException && error.message === 'Token has expired') {
-        const refreshToken = req.cookies?.refreshToken;
-        const isExpired = await this.authService.isRefreshTokenExpired(refreshToken);
-        if (isExpired) {
-          throw new UnauthorizedException('Refresh token has expired');
-        }
-      }
-      throw new UnauthorizedException('유효하지 않은 이메일이나 비밀번호를 입력하여 로그인이 실패하였습니다.');
+      throw new UnauthorizedException('로그인에 실패하였습니다.');
     }
   }
 
@@ -113,7 +132,7 @@ export class AuthController {
       },
     },
   })
-  async postRefreshAccessToken(@Req() req: expReq, @Res({ passthrough: true }) res) {
+  async postRefreshToken(@Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
       // 헤더의 쿠키에서 리프레시 토큰 확인
       const refreshToken = req.cookies['refreshToken'];
@@ -123,15 +142,27 @@ export class AuthController {
         throw new UnauthorizedException('Refresh token not found');
       }
 
-      // 리프레시 토큰 검증
-      const { userId, authProvider } = await this.authService.verifyToken(refreshToken);
+      // 디바이스 정보 추출
+      const deviceInfo = this.extractDeviceInfo(req);
+      const ip = req.ip || req.socket.remoteAddress;
 
       // 액세스 토큰 재발급
-      const { accessToken } = await this.authService.createAccessTokenAgain(userId, authProvider);
+      const { accessToken, suspicious } = await this.authService.refreshAccessToken(refreshToken, deviceInfo, ip);
+
+      // 쿠키에 새 액세스 토큰 설정
+      this.setAccessTokenCookie(res, accessToken);
+
+      // 의심스러운 로그인 감지 시 추가 정보 반환
+      if (suspicious) {
+        return { accessToken, suspicious: true, message: '의심스러운 로그인이 감지되었습니다.' };
+      }
 
       return { accessToken };
     } catch (error) {
-      return res.status(401).json(error);
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('액세스 토큰 재발급에 실패했습니다.');
     }
   }
 
@@ -160,7 +191,7 @@ export class AuthController {
       },
     },
   })
-  async postSignInKakao(@Query('code') code: string, @Res({ passthrough: true }) res: expRes) {
+  async postSignInKakao(@Query('code') code: string, @Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
       // 카카오에서 인증토큰 받아오기
       const kakaoToken = await this.authService.fetchKakaoToken(code);
@@ -168,8 +199,13 @@ export class AuthController {
       // 토큰을 카카오에게 전달한 후 유저 정보 받아오기
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
 
+      // 디바이스 정보 추출
+      const deviceInfo = this.extractDeviceInfo(req);
+      const ip = req.ip || req.socket.remoteAddress;
+
       // 우리 서버의 토큰 발행하기
-      const { accessToken, refreshToken } = await this.authService.oauthSignIn(kakaoUserInfo);
+      const { accessToken, refreshToken } = await this.authService.oauthSignIn(kakaoUserInfo, deviceInfo, ip);
+
       this.setRefreshTokenCookie(res, refreshToken);
       this.setAccessTokenCookie(res, accessToken);
 
@@ -214,7 +250,7 @@ export class AuthController {
       },
     },
   })
-  async deleteWithdraw(@Req() req: expReq) {
+  async deleteWithdraw(@Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
       const userId = req.user?.userId;
 
@@ -224,6 +260,9 @@ export class AuthController {
 
       await this.authService.withdraw(userId);
 
+      // 쿠키에서 토큰 제거
+      this.clearTokenCookies(res);
+
       return { message: '회원탈퇴가 성공적으로 완료되었습니다.' };
     } catch (error) {
       console.error(error);
@@ -231,60 +270,163 @@ export class AuthController {
     }
   }
 
-  // 액세스 토큰 쿠키 환경 설정
-  private setAccessTokenCookie(res: expRes, accessToken: string) {
-    const commonOptions = {
-      domain: process.env.COOKIE_DOMAIN,
-      maxAge: 60 * 1000 * 2, // 2분
+  @Post('logout')
+  @ApiOperation({
+    summary: '로그아웃',
+    description: '현재 기기에서 로그아웃한다.',
+  })
+  async postLogout(@Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
+    try {
+      this.clearTokenCookies(res);
+
+      return { message: '로그아웃 되었습니다.' };
+    } catch (error) {
+      throw new UnauthorizedException('로그아웃에 실패했습니다.');
+    }
+  }
+
+  @Get('login-history')
+  @ApiOperation({
+    summary: '로그인 이력 조회',
+    description: '사용자의 로그인 이력을 조회한다.',
+  })
+  async getLoginHistory(@Req() req: expReq) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        throw new UnauthorizedException('유효하지 않은 사용자 정보입니다.');
+      }
+
+      // 로그인 이력 조회
+      const loginHistory = await this.authService.getLoginHistory(userId);
+
+      return { loginHistory };
+    } catch (error) {
+      throw new UnauthorizedException('로그인 이력 조회에 실패했습니다.');
+    }
+  }
+
+  // 디바이스 정보 추출 메서드
+  private extractDeviceInfo(req: expReq): any {
+    const userAgent = req.headers['user-agent'] || '';
+
+    // 간단한 디바이스 정보 추출 로직
+    const browser = this.detectBrowser(userAgent);
+    const os = this.detectOS(userAgent);
+
+    return {
+      deviceId: req.cookies.deviceId || `device_${this.detectBrowser(userAgent)}_${Date.now()}`,
+      browser,
+      os,
+      userAgent,
+    };
+  }
+
+  // 브라우저 감지
+  private detectBrowser(userAgent: string): string {
+    // Edge (Chromium 기반) - 반드시 가장 먼저 확인해야 함
+    if (/Edg\//.test(userAgent)) {
+      return 'Edge';
+    }
+
+    // Edge (레거시)
+    if (/Edge\//.test(userAgent)) {
+      return 'Edge';
+    }
+
+    // Firefox
+    if (/Firefox\//.test(userAgent) && !/ Seamonkey\//.test(userAgent)) {
+      return 'Firefox';
+    }
+
+    // Chrome - Edge 및 다른 Chromium 기반 브라우저 체크 후에 확인
+    if (
+      /Chrome\//.test(userAgent) &&
+      !/Chromium\//.test(userAgent) &&
+      !/Edg\//.test(userAgent) &&
+      !/OPR\//.test(userAgent)
+    ) {
+      return 'Chrome';
+    }
+
+    // Safari - Chrome 체크 후 확인 (Safari는 Chrome UA 문자열에도 포함됨)
+    if (/Safari\//.test(userAgent) && !/Chrome\//.test(userAgent) && !/Chromium\//.test(userAgent)) {
+      return 'Safari';
+    }
+
+    // Internet Explorer
+    if (/MSIE(\d+\.\d+);/.test(userAgent) || /Trident\//.test(userAgent)) {
+      return 'Internet Explorer';
+    }
+
+    // Thunder Client
+    if (/Thunder Client/.test(userAgent)) {
+      return 'Thunder Client';
+    }
+
+    // 기타 API 클라이언트
+    if (/Postman/.test(userAgent)) {
+      return 'Postman';
+    }
+
+    if (/curl/.test(userAgent)) {
+      return 'curl';
+    }
+
+    return 'Unknown';
+  }
+
+  // OS 감지
+  private detectOS(userAgent: string): string {
+    if (userAgent.includes('Windows')) return 'Windows';
+    if (userAgent.includes('Mac OS')) return 'MacOS';
+    if (userAgent.includes('Linux')) return 'Linux';
+    if (userAgent.includes('Android')) return 'Android';
+    if (userAgent.includes('iPhone') || userAgent.includes('iPad')) return 'iOS';
+    return 'Unknown';
+  }
+
+  // 쿠키에서 모든 토큰 제거
+  private clearTokenCookies(res: expRes) {
+    const options = {
+      ...this.getCookieOptions(),
+      httpOnly: true,
+      expires: new Date(0),
     };
 
-    let additionalOptions = {};
+    res.clearCookie('refreshToken', options);
+  }
 
-    // 배포환경
-    if (process.env.NODE_ENV === 'production') {
-      additionalOptions = {
-        secure: true,
-        sameSite: 'none',
-      };
-      // 개발 환경
-    } else {
-      additionalOptions = {
-        secure: false,
-        sameSite: 'lax',
-      };
-    }
-    res.cookie('accessToken', accessToken, {
-      ...commonOptions,
-      ...additionalOptions,
-    });
+  // 쿠키 옵션 공통 부분
+  private getCookieOptions(): CookieOptions {
+    const isProd = process.env.NODE_ENV === 'production';
+
+    return {
+      domain: process.env.COOKIE_DOMAIN,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+    };
+  }
+
+  // 액세스 토큰 쿠키 설정
+  private setAccessTokenCookie(res: expRes, accessToken: string) {
+    const options = {
+      ...this.getCookieOptions(),
+      maxAge: 60 * 1000 * 10, // 10분
+    };
+
+    res.cookie('accessToken', accessToken, options);
   }
 
   // 리프레시 토큰 쿠키 설정
   private setRefreshTokenCookie(res: expRes, refreshToken: string) {
-    const commonOptions = {
-      domain: process.env.COOKIE_DOMAIN,
+    const options: CookieOptions = {
+      ...this.getCookieOptions(),
       httpOnly: true,
       maxAge: 60 * 60 * 1000, // 1시간
     };
 
-    let additionalOptions = {};
-
-    // 배포환경
-    if (process.env.NODE_ENV === 'production') {
-      additionalOptions = {
-        secure: true,
-        sameSite: 'none',
-      };
-      // 개발 환경
-    } else {
-      additionalOptions = {
-        secure: false,
-        sameSite: 'lax',
-      };
-    }
-    res.cookie('refreshToken', refreshToken, {
-      ...commonOptions,
-      ...additionalOptions,
-    });
+    res.cookie('refreshToken', refreshToken, options);
   }
 }

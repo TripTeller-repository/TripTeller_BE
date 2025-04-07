@@ -230,10 +230,9 @@ export class AuthService {
       const headers = {
         'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
       };
+
       const response = await axios.post(url, data, { headers: headers });
-
       const accessToken = response.data.access_token;
-
       return accessToken;
     } catch (error) {
       console.error(error);

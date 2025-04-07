@@ -310,7 +310,6 @@ export class AuthController {
   // 디바이스 정보 추출 메서드
   private extractDeviceInfo(req: expReq): any {
     const userAgent = req.headers['user-agent'] || '';
-    console.log('***************userAgent', userAgent);
 
     // 간단한 디바이스 정보 추출 로직
     const browser = this.detectBrowser(userAgent);
@@ -326,7 +325,6 @@ export class AuthController {
 
   // 브라우저 감지
   private detectBrowser(userAgent: string): string {
-    console.log('컨트롤러 브라우저 감지 userAgent', userAgent);
     // Edge (Chromium 기반) - 반드시 가장 먼저 확인해야 함
     if (/Edg\//.test(userAgent)) {
       return 'Edge';
@@ -415,7 +413,6 @@ export class AuthController {
   private setAccessTokenCookie(res: expRes, accessToken: string) {
     const options = {
       ...this.getCookieOptions(),
-      httpOnly: true,
       maxAge: 60 * 1000 * 10, // 10분
     };
 

@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: tripteller-mongodb-dev
+    networks:
+      - tripteller-network-dev
+    volumes:
+      - mongodb-data-dev:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+    restart: unless-stopped
+    ports:
+      - '27018:27017'
+
+  api:
+    build:
+      context: .
+      dockerfile: deploy/dev.dockerfile
+    container_name: tripteller-api-dev
+    environment:
+      - NODE_ENV=development
+      - DATABASE_HOST=mongodb
+      - DATABASE_PORT=27017
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./.development.env:/usr/src/app/.development.env
+    networks:
+      - tripteller-network-dev
+    restart: unless-stopped
+    ports:
+      - '3001:3000'
+    depends_on:
+      - mongodb
+
+networks:
+  tripteller-network-dev:
+    driver: bridge
+
+volumes:
+  mongodb-data-dev:

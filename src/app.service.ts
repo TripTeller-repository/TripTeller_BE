@@ -15,7 +15,7 @@ export class AppService {
       this.logger.log('Welcome endpoint accessed');
 
       const serverInfo = {
-        name: '🌎 TripTeller API Server (PM2)',
+        name: '🌎 TripTeller API Server (Docker)',
         status: '✅ Running',
         environment: this.environment,
         timestamp: new Date().toISOString(),
@@ -28,7 +28,7 @@ export class AppService {
         <p>
         상태: ${serverInfo.status}<br>
         환경: ${serverInfo.environment}<br>
-        배포방식: PM2<br>
+        배포방식: Docker<br>
         시간: ${new Date().toLocaleString('ko-KR')}
         </p>
         
@@ -44,7 +44,7 @@ export class AppService {
     this.logger.log('Health check performed');
     return JSON.stringify({
       status: 'healthy',
-      deployment: 'pm2',
+      deployment: 'Docker',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
     });
@@ -54,7 +54,7 @@ export class AppService {
     this.logger.warn('Test error endpoint triggered');
     throw new InternalServerErrorException({
       code: 'TEST_ERROR',
-      message: '이 오류는 테스트 목적으로 발생되었습니다. (PM2 배포)',
+      message: '이 오류는 테스트 목적으로 발생되었습니다. (Docker 배포)',
       timestamp: new Date().toISOString(),
     });
   }

@@ -1,31 +1,5 @@
 version: '3.8'
 services:
-  mongodb:
-    image: mongo:latest
-    container_name: tripteller-mongodb
-    networks:
-      - tripteller-network
-    volumes:
-      - mongodb-data:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DATABASE=${MONGO_DATABASE}
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-      healthcheck:
-        test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
-        interval: 10s
-        timeout: 5s
-        retries: 5
-        start_period: 20s
-    ports:
-      - '27017:27017'
-
   api:
     build:
       context: .
@@ -49,10 +23,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    depends_on:
-      mongodb:
-        condition: service_healthy
-        restart: true
 
   nginx:
     image: nginx:stable-alpine
@@ -77,6 +47,3 @@ services:
 networks:
   tripteller-network:
     driver: bridge
-
-volumes:
-  mongodb-data:

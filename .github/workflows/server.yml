@@ -1,26 +1,89 @@
-name: TripTeller # 워크플로우의 이름을 설정
+name: TripTeller Docker Deployment # 워크플로우의 이름을 설정
 
 on: # 이벤트 트리거를 정의
   push: # push 이벤트를 기준으로 설정
     branches: # 푸시 이벤트가 발생하는 브랜치를 지정
-      - master # master 브랜치에 대해 설정
+      - prod-docker # 해당 브랜치에 대해 설정
 
 jobs: # 워크플로우 내에서 수행할 작업을 정의
   deploy: # 작업의 이름을 deploy로 지정
-    name: deploy # 해당 작업의 이름을 deploy로 설정
+    name: deploy-docker # 해당 작업의 이름
     runs-on: ubuntu-latest # 작업을 수행할 환경을 지정
 
     steps: # 작업 내에서 수행할 단계를 정의
-      - name: excusting remote ssh commands # 해당 단계의 이름을 원격 ssh 명령 실행으로 설정
-        uses: appleboy/ssh-action@master # appleboy/ssh-action 사용
-        with: #입력 변수 설정
-          host: ${{secrets.REMOTE_IP}} #호스트 주소 설정
-          username: ${{secrets.REMOTE_USER}} # 사용자의 이름 설정
-          key: ${{secrets.REMOTE_PRIVATE_KEY}} # 개인 키를 설정
-          port: ${{secrets.REMOTE_SSH_PORT}} # SSH 포트를 설정
-          script: | #실행할 스크림트 설정
+      # 1. 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 프로덕션 환경 변수 파일 생성
+      - name: Create Production Env File
+        run: |
+          cat > .production.env << EOF
+          # 카카오 소셜 로그인
+          KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CALLBACK_URL=${{ secrets.KAKAO_CALLBACK_URL }}
+          KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}
+
+          # MongoDB Atlas URL
+          MONGODB_URL=${{ secrets.MONGODB_URL }}
+
+          # 서버 비밀키
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+
+          # AWS S3 관련 비밀키
+          AWS_S3_ACCESSKEYID=${{ secrets.AWS_S3_ACCESSKEYID }}
+          AWS_S3_SECRETACCESSKEY=${{ secrets.AWS_S3_SECRETACCESSKEY }}
+          AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}
+          AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
+          AWS_S3_IMG_DIRECTORY=${{ secrets.AWS_S3_IMG_DIRECTORY }}
+
+          # 실행 환경, 쿠키 도메인 등
+          NODE_ENV=production
+          COOKIE_DOMAIN=${{ secrets.COOKIE_DOMAIN }}
+          EOF
+
+      # 3. Docker 환경 변수 파일 생성
+      - name: Create Docker Env File
+        run: |
+          cat > .env << EOF
+          MONGODB_URL=${{ secrets.MONGODB_URL }}
+          EOF
+
+      # 4. 서버로 환경 파일 및 기타 배포 파일 복사
+      - name: Copy environment files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_SSH_PORT }}
+          source: |
+            .production.env
+            docker-compose.yml
+            nginx/default.conf
+            nginx/nginx.conf
+            deploy/prod.dockerfile
+            scripts/deploy.sh
+          target: '/home/ubuntu/TripTeller_BE/'
+
+      # 5. 서버로 배포
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_SSH_PORT }}
+          script: |
             cd /home/ubuntu/TripTeller_BE
-            git pull origin master
-            pm2 kill
-            npm i
-            npm run pm2:prod
+            git checkout prod-docker
+            git pull origin prod-docker
+
+            # 필요한 디렉토리 생성
+            mkdir -p ./ssl ./logs/nginx ./nginx
+
+            # 실행 권한 설정
+            chmod +x ./scripts/deploy.sh
+
+            # 무중단 배포 스크립트 실행
+            ./scripts/deploy.sh

@@ -31,7 +31,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('health-check')
+  @Get('health')
   @ApiOperation({
     summary: 'Health Check API',
     description: '현재 서버의 상태가 정상인지 여부를 확인한다.',

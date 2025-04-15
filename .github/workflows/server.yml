@@ -1,4 +1,4 @@
-name: TripTeller # 워크플로우의 이름을 설정
+name: TripTeller PM2 Deployment # 워크플로우의 이름을 설정
 
 on: # 이벤트 트리거를 정의
   push: # push 이벤트를 기준으로 설정
@@ -7,7 +7,7 @@ on: # 이벤트 트리거를 정의
 
 jobs: # 워크플로우 내에서 수행할 작업을 정의
   deploy: # 작업의 이름을 deploy로 지정
-    name: deploy # 해당 작업의 이름을 deploy로 설정
+    name: deploy-pm2 # 해당 작업의 이름을 deploy로 설정
     runs-on: ubuntu-latest # 작업을 수행할 환경을 지정
 
     steps: # 작업 내에서 수행할 단계를 정의
@@ -18,9 +18,52 @@ jobs: # 워크플로우 내에서 수행할 작업을 정의
           username: ${{secrets.REMOTE_USER}} # 사용자의 이름 설정
           key: ${{secrets.REMOTE_PRIVATE_KEY}} # 개인 키를 설정
           port: ${{secrets.REMOTE_SSH_PORT}} # SSH 포트를 설정
-          script: | #실행할 스크림트 설정
+          script: |
+            # 1. Nginx 설치 확인 및 설치 (없는 경우)
+            if ! command -v nginx &> /dev/null; then
+              sudo apt update
+              sudo apt install -y nginx
+            fi
+
+            # 2. Nginx 설정 파일 생성 - 로드 밸런서 뒤에서 동작하는 설정
+            sudo tee /etc/nginx/sites-available/tripteller.conf > /dev/null << 'EOL'
+            server {
+                listen 80;
+                
+                # X-Forwarded-Proto 헤더가 https인 경우, AWS 로드 밸런서에서 HTTPS로 들어온 요청임
+                set $forwarded_proto $http_x_forwarded_proto;
+                
+                # API 서버로 프록시
+                location / {
+                    proxy_pass http://localhost:3000; # PM2로 실행된 앱 포트로 수정하세요
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection 'upgrade';
+                    proxy_set_header Host $host;
+                    proxy_cache_bypass $http_upgrade;
+                    
+                    # 로드 밸런서에서 전달된 원격 IP 주소 보존
+                    proxy_set_header X-Real-IP $http_x_forwarded_for;
+                    proxy_set_header X-Forwarded-For $http_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $forwarded_proto;
+                }
+            }
+            EOL
+
+            # 3. 심볼릭 링크 생성 (없는 경우)
+            if [ ! -f /etc/nginx/sites-enabled/tripteller.conf ]; then
+              sudo ln -s /etc/nginx/sites-available/tripteller.conf /etc/nginx/sites-enabled/
+              # default 설정 제거 (충돌 방지)
+              if [ -f /etc/nginx/sites-enabled/default ]; then
+                sudo rm /etc/nginx/sites-enabled/default
+              fi
+            fi
+
+            # 4. Nginx 설정 테스트 및 재시작
+            sudo nginx -t && sudo systemctl restart nginx
+
+            # 5. 앱 업데이트 및 무중단 배포
             cd /home/ubuntu/TripTeller_BE
             git pull origin master
-            pm2 kill
             npm i
-            npm run pm2:prod
+            npm run pm2:reload

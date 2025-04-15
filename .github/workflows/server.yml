@@ -3,7 +3,7 @@ name: TripTeller Docker Deployment # 워크플로우의 이름을 설정
 on: # 이벤트 트리거를 정의
   push: # push 이벤트를 기준으로 설정
     branches: # 푸시 이벤트가 발생하는 브랜치를 지정
-      - prod-docker # 해당 브랜치에 대해 설정
+      - master # 해당 브랜치에 대해 설정
 
 jobs: # 워크플로우 내에서 수행할 작업을 정의
   deploy: # 작업의 이름을 deploy로 지정

@@ -14,7 +14,7 @@ export class OurTripController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: '모든 게시글 조회 (공개)',     description: '공개된 모든 게시물을 조회한다.' })
+  @ApiOperation({ summary: '모든 게시글 조회 (공개)', description: '공개된 모든 게시물을 조회한다.' })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number, description: '페이지 번호' })
   @ApiResponse({
     status: 200,
@@ -53,9 +53,9 @@ export class OurTripController {
   }
 
   @Get('date')
-  @ApiOperation({ 
-    summary: '모든 공개 게시물 기간별 조회', 
-    description: '특정 기간 동안의 공개 게시물을 조회한다.' 
+  @ApiOperation({
+    summary: '모든 공개 게시물 기간별 조회',
+    description: '특정 기간 동안의 공개 게시물을 조회한다.',
   })
   @ApiQuery({ name: 'startDate', required: true, type: String, description: '시작 날짜 (YYYY-MM-DD)' })
   @ApiQuery({ name: 'endDate', required: true, type: String, description: '종료 날짜 (YYYY-MM-DD)' })
@@ -103,9 +103,9 @@ export class OurTripController {
   }
 
   @Get('order-by/recent')
-  @ApiOperation({ 
-    summary: '모든 공개 게시글 정렬 : 최신순', 
-    description: '공개 게시물들을 최신순으로 정렬하여 보여준다.' 
+  @ApiOperation({
+    summary: '모든 공개 게시글 정렬 : 최신순',
+    description: '공개 게시물들을 최신순으로 정렬하여 보여준다.',
   })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number, description: '페이지 번호' })
   @ApiResponse({
@@ -146,9 +146,9 @@ export class OurTripController {
 
   // our-trip/order-by/like-count?pageNumber=1
   @Get('order-by/like-count')
-  @ApiOperation({ 
-    summary: '모든 공개 게시글 정렬 : 인기순', 
-    description: '공개 게시물들을 인기순으로 정렬하여 보여준다.' 
+  @ApiOperation({
+    summary: '모든 공개 게시글 정렬 : 인기순',
+    description: '공개 게시물들을 인기순으로 정렬하여 보여준다.',
   })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number, description: '페이지 번호' })
   @ApiResponse({
@@ -188,9 +188,9 @@ export class OurTripController {
   }
 
   @Get(':feedId')
-  @ApiOperation({ 
-    summary: '게시물 ID로 특정 게시물 조회 (공개)', 
-    description: '게시물 ID를 이용해 특정 공개 게시물을 조회한다.' 
+  @ApiOperation({
+    summary: '게시물 ID로 특정 게시물 조회 (공개)',
+    description: '게시물 ID를 이용해 특정 공개 게시물을 조회한다.',
   })
   @ApiParam({
     name: 'feedId',
@@ -219,20 +219,20 @@ export class OurTripController {
   }
 
   @Post('user-info')
-  @ApiOperation({ 
-    summary: '회원 프로필 정보(이메일, 프로필 이미지 URL, 닉네임)를 회원 ID로 조회', 
-    description: '회원 ID를 통해 해당 회원의 이메일, 프로필 이미지 URL, 닉네임을 조회한다.' 
+  @ApiOperation({
+    summary: '회원 프로필 정보(이메일, 프로필 이미지 URL, 닉네임)를 회원 ID로 조회',
+    description: '회원 ID를 통해 해당 회원의 이메일, 프로필 이미지 URL, 닉네임을 조회한다.',
   })
   @ApiBody({
     description: '회원 ID',
     schema: {
       type: 'object',
       properties: {
-        userId: { type: 'string', format: 'objectid' }
+        userId: { type: 'string', format: 'objectid' },
       },
       example: {
-        userId: '507f191e810c19729de860ea'
-      }
+        userId: '507f191e810c19729de860ea',
+      },
     },
   })
   @ApiResponse({

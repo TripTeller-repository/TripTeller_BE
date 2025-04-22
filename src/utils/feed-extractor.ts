@@ -124,16 +124,20 @@ export class FeedExtractor {
       let thumbnailUrl = null; // 썸네일 URL
       // DailySchedule 중 썸네일 이미지가 있고, isThumbnail이 true인 DailySchedule을 찾아 썸네일 URL을 추출
       const isThumbnailDailySchedule = dailySchedules.find((dailySchedule) => dailySchedule.isThumbnail);
-      if (isThumbnailDailySchedule && isThumbnailDailySchedule.imageUrl) {
+
+      // isThumbnail이 true이고 imageUrl이 있는 DailySchedule이 있으면 해당 URL 사용
+      if (isThumbnailDailySchedule) {
         thumbnailUrl = isThumbnailDailySchedule.imageUrl;
+      } else {
+        // 2. isThumbnail이 true인 것이 없으면, imageUrl이 있는 첫 번째 DailySchedule 사용
+        const dailyScheduleWithImage = dailySchedules.find((dailySchedule) => dailySchedule.imageUrl);
+        if (dailyScheduleWithImage) {
+          thumbnailUrl = dailyScheduleWithImage.imageUrl;
+        }
       }
+
       const startDate = travelPlan['startDate'];
       const endDate = travelPlan['endDate'];
-
-      // isThumnbail이 true인 DailySchedule이 없을 경우
-      // imgUrl이 있는 아무 DailySchedule을 찾아 썸네일 URL을 추출
-      const dailySchedule = dailySchedules.find((dailySchedule) => dailySchedule.imageUrl);
-      thumbnailUrl = dailySchedule?.imageUrl ?? null;
 
       // 해당 게시물 스크랩 여부 확인
       const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId || null);

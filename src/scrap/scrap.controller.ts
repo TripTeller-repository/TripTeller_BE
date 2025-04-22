@@ -1,12 +1,12 @@
 import { Controller, Post, Delete, Get, Param, Body, Req, UseGuards } from '@nestjs/common';
 import { ScrapService } from './scrap.service';
 import { CreateScrapDto } from './dto/create-scrap.dto';
-import { CustomAuthGuard } from 'src/authentication/auth.guard';
+import { AuthGuard } from 'src/authentication/auth.guard';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Scrap')
 @Controller('scrap')
-@UseGuards(CustomAuthGuard)
+@UseGuards(AuthGuard)
 export class ScrapController {
   constructor(private readonly scrapService: ScrapService) {}
 

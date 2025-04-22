@@ -11,6 +11,7 @@ import { TravelPlanService } from './travel-plan.service';
 import { FeedExtractor } from 'src/utils/feed-extractor';
 import { FeedSchema } from 'src/feed/feed.schema';
 import { ScrapSchema } from 'src/scrap/scrap.schema';
+import { LoginSchema } from 'src/authentication/login.schema';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ScrapSchema } from 'src/scrap/scrap.schema';
       { name: 'User', schema: UserSchema },
       { name: 'Feed', schema: FeedSchema },
       { name: 'Scrap', schema: ScrapSchema },
+      { name: 'Login', schema: LoginSchema },
     ]),
   ],
   providers: [TravelPlanService, TravelPlanIndexService, AuthService, UserService, FeedExtractor],

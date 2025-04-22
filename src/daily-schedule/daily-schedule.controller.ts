@@ -1,13 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { CreateDailyScheduleDto } from '../daily-schedule/dto/create-daily-schedule.dto';
 import { PutDailyScheduleDto } from '../daily-schedule/dto/put-daily-schedule.dto';
 import { DailyScheduleService } from '../daily-schedule/daily-schedule.service';
-import { CustomAuthGuard } from '../authentication/auth.guard';
+import { AuthGuard } from '../authentication/auth.guard';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('DailySchedule')
 @Controller('daily-plan')
-@UseGuards(CustomAuthGuard)
+@UseGuards(AuthGuard)
 export class DailyScheduleController {
   constructor(private readonly dailyScheduleService: DailyScheduleService) {}
 

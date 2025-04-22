@@ -12,6 +12,7 @@ import { AuthModule } from 'src/authentication/auth.module';
 import { UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
 import { DailyPlanController } from './daily-plan.controller';
+import { LoginSchema } from 'src/authentication/login.schema';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { DailyPlanController } from './daily-plan.controller';
       { name: 'Expense', schema: ExpenseSchema },
       { name: 'DailySchedule', schema: DailyScheduleSchema },
       { name: 'User', schema: UserSchema },
+      { name: 'Login', schema: LoginSchema },
     ]),
     AuthModule,
   ],

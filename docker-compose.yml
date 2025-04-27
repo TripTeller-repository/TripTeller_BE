@@ -9,6 +9,8 @@ services:
     networks:
       - tripteller-network
     restart: unless-stopped
+    ports:
+      - '3000:3000'
     deploy:
       replicas: 2
       resources:

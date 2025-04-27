@@ -29,7 +29,7 @@ COPY --from=builder /usr/src/app/.production.env ./
 
 # 헬스체크 구성
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://api.trip-teller.com/health-check || exit 1
 
 EXPOSE 3000
 

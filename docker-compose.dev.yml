@@ -7,6 +7,8 @@ services:
       - tripteller-network-dev
     volumes:
       - mongodb-data-dev:/data/db
+    env_file:
+      - .development.env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}

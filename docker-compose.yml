@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: deploy/prod.dockerfile
     container_name: tripteller-api
+    env_file:
+      - .production.env
     environment:
       - NODE_ENV=production
       - MONGODB_URL=${MONGODB_URL}

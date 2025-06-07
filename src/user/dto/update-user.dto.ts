@@ -14,9 +14,9 @@ const message = {
 export class UpdateUserDto {
   @ApiProperty({
     description: '회원 닉네임',
-    example: '트립텔러', 
+    example: '트립텔러',
     maxLength: 6,
-    pattern: '^(?=.*[가-힣a-zA-Z])[가-힣\dA-Za-z]{1,6}$',
+    pattern: '^(?=.*[가-힣a-zA-Z])[가-힣dA-Za-z]{1,6}$',
   })
   @IsOptional()
   @IsString()

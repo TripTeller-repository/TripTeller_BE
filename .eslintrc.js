@@ -14,6 +14,7 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }], //  _는 무시
     'prettier/prettier': ['error', { printWidth: 120 }], // 줄바꿈 120 적용을 위해 해당 부분 추가
     '@typescript-eslint/interface-name-prefix': 'off', // 인터페이스의 이름에 접두사를 지정
     '@typescript-eslint/explicit-function-return-type': 'off', // 함수의 반환 타입을 명시적으로 지정할 것

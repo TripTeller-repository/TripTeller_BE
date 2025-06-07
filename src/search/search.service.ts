@@ -5,7 +5,7 @@ import { DailyPlan } from 'src/daily-plan/daily-plan.schema';
 import { DailySchedule } from 'src/daily-schedule/daily-schedule.schema';
 import Feed from 'src/feed/feed.schema';
 import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
-import { User } from 'src/user/user.schema';
+import { User } from 'src/user/schemas/user.schema';
 import { FeedExtractor } from 'src/utils/feed-extractor';
 
 @Injectable()

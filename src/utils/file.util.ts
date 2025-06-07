@@ -1,57 +1,139 @@
+import { Injectable, Logger } from '@nestjs/common';
 import { PutObjectCommand, S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import dayjs from 'dayjs';
 
-////// S3 클라이언트 설정 함수 //////
-export const setS3Client = () => {
-  // S3 클라이언트 구성
-  const config: S3ClientConfig = {
-    credentials: {
-      accessKeyId: process.env.AWS_S3_ACCESSKEYID, // AWS ACCESS KEY ID
-      secretAccessKey: process.env.AWS_S3_SECRETACCESSKEY, // AWS SECRET ACCESS KEY
-    },
-    region: process.env.AWS_S3_REGION, // AWS 지역
-  };
+/**
+ * S3 설정 및 클라이언트 관리
+ */
+@Injectable()
+export class S3Service {
+  private s3Client: S3Client | null = null;
+  private readonly logger = new Logger(S3Service.name);
 
-  // S3 클라이언트 반환
-  return new S3Client(config);
-};
+  private getS3Config() {
+    const config = {
+      accessKeyId: process.env.AWS_S3_ACCESSKEYID,
+      secretAccessKey: process.env.AWS_S3_SECRETACCESSKEY,
+      region: process.env.AWS_S3_REGION,
+      bucketName: process.env.AWS_S3_BUCKET_NAME,
+    };
 
-////// signedURL 생성 함수 //////
-export const createSignedUrl = async (filePath) => {
-  // PutObjectCommand 생성
-  const command = new PutObjectCommand({
-    Bucket: process.env.AWS_S3_BUCKET_NAME, // 버킷 이름
-    Key: filePath, // 파일 경로
-  });
+    const missingVars = Object.entries(config)
+      .filter(([_, value]) => !value)
+      .map(([key]) => key);
 
-  // S3 클라이언트 설정
-  const s3Client = setS3Client();
+    if (missingVars.length > 0) {
+      throw new Error(`Missing AWS S3 environment variables: ${missingVars.join(', ')}`);
+    }
 
-  // signedURL 받아온 후 반환
-  const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 60 * 2 });
-
-  return signedUrl;
-};
-
-////// 파일 확장자 생성 함수 //////
-export const createFileExtension = (fileName: string) => {
-  const fileNameList = fileName.split('.');
-  return fileNameList.pop();
-};
-
-////// 파일 Unix 이름 생성 함수 //////
-// 파일 이름이 중복되는 경우를 방지하기 위함.
-export const createFileUnixName = (fileName: string, prefix?: string) => {
-  const extension = createFileExtension(fileName); // 파일 확장자 추출
-  const unixNumber = dayjs().valueOf(); // 현재 Unix 시간 가져오기
-
-  // 접두사가 있는 경우
-  if (prefix) {
-    // 접두사와 Unix 시간을 조합하여 파일 이름 생성
-    return `${prefix}_${unixNumber}.${extension}`;
-  } else {
-    // Unix 시간을 파일 이름으로 사용
-    return `${unixNumber}.${extension}`;
+    return config;
   }
+
+  getS3Client(): S3Client {
+    if (!this.s3Client) {
+      const config = this.getS3Config();
+
+      const s3Config: S3ClientConfig = {
+        credentials: {
+          accessKeyId: config.accessKeyId,
+          secretAccessKey: config.secretAccessKey,
+        },
+        region: config.region,
+      };
+
+      this.s3Client = new S3Client(s3Config);
+      this.logger.log('S3 client initialized');
+    }
+
+    return this.s3Client;
+  }
+
+  getBucketName(): string {
+    return this.getS3Config().bucketName;
+  }
+}
+
+/**
+ * 파일 유틸리티 서비스
+ */
+@Injectable()
+export class FileUtilService {
+  private readonly logger = new Logger(FileUtilService.name);
+
+  constructor(private readonly s3Service: S3Service) {}
+
+  /**
+   * Signed URL 생성
+   */
+  async createSignedUrl(filePath: string, expiresIn: number = 120): Promise<string> {
+    try {
+      const s3Client = this.s3Service.getS3Client();
+      const bucketName = this.s3Service.getBucketName();
+
+      const command = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: filePath,
+      });
+
+      const signedUrl = await getSignedUrl(s3Client, command, { expiresIn });
+      this.logger.log(`Signed URL created for: ${filePath}`);
+
+      return signedUrl;
+    } catch (error) {
+      this.logger.error(`Failed to create signed URL: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * 파일 확장자 추출
+   */
+  createFileExtension(fileName: string): string {
+    if (!fileName || typeof fileName !== 'string') {
+      throw new Error('Invalid file name');
+    }
+
+    const parts = fileName.split('.');
+    if (parts.length < 2) {
+      throw new Error('File must have extension');
+    }
+
+    return parts.pop()!.toLowerCase();
+  }
+
+  /**
+   * Unix 타임스탬프 파일명 생성
+   */
+  createFileUnixName(fileName: string, prefix?: string): string {
+    const extension = this.createFileExtension(fileName);
+    const timestamp = dayjs().valueOf();
+
+    if (prefix) {
+      const cleanPrefix = prefix.replace(/[^a-zA-Z0-9_-]/g, '_');
+      return `${cleanPrefix}_${timestamp}.${extension}`;
+    }
+
+    return `${timestamp}.${extension}`;
+  }
+}
+
+// 기존 호환성을 위한 함수들 (기존 코드가 계속 작동하도록)
+const s3Service = new S3Service();
+const fileUtilService = new FileUtilService(s3Service);
+
+export const setS3Client = () => {
+  return s3Service.getS3Client();
+};
+
+export const createSignedUrl = async (filePath: string) => {
+  return fileUtilService.createSignedUrl(filePath);
+};
+
+export const createFileExtension = (fileName: string) => {
+  return fileUtilService.createFileExtension(fileName);
+};
+
+export const createFileUnixName = (fileName: string, prefix?: string) => {
+  return fileUtilService.createFileUnixName(fileName, prefix);
 };

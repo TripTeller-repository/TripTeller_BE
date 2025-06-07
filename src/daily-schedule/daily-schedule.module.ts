@@ -6,14 +6,11 @@ import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
 import { DailyScheduleService } from './daily-schedule.service';
 import { DailyPlanService } from 'src/daily-plan/daily-plan.service';
 import { DailyScheduleIndexService } from './daily-schedule-index.service';
-import { AuthModule } from 'src/authentication/auth.module';
-import { AuthGuard } from 'src/authentication/auth.guard';
-import { AuthService } from 'src/authentication/auth.service';
-import { UserSchema } from 'src/user/user.schema';
-import { UserService } from 'src/user/user.service';
 import { TravelLogService } from 'src/travel-log/travel-log.service';
 import { DailyScheduleController } from './daily-schedule.controller';
 import { LoginSchema } from 'src/authentication/login.schema';
+import { UserSchema } from 'src/user/schemas/user.schema';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -24,17 +21,9 @@ import { LoginSchema } from 'src/authentication/login.schema';
       { name: 'User', schema: UserSchema },
       { name: 'Login', schema: LoginSchema },
     ]),
-    AuthModule,
+    UserModule,
   ],
-  providers: [
-    DailyPlanService,
-    DailyScheduleService,
-    DailyScheduleIndexService,
-    AuthGuard,
-    AuthService,
-    UserService,
-    TravelLogService,
-  ],
+  providers: [DailyPlanService, DailyScheduleService, DailyScheduleIndexService, TravelLogService],
   controllers: [DailyScheduleController],
 })
 export class DailyScheduleModule {}

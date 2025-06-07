@@ -7,12 +7,8 @@ import { ExpenseService } from 'src/expense/expense.service';
 import { ExpenseSchema } from 'src/expense/expense.schema';
 import { DailyScheduleService } from 'src/daily-schedule/daily-schedule.service';
 import { DailyScheduleSchema } from 'src/daily-schedule/daily-schedule.schema';
-import { AuthService } from 'src/authentication/auth.service';
-import { AuthModule } from 'src/authentication/auth.module';
-import { UserSchema } from 'src/user/user.schema';
-import { UserService } from 'src/user/user.service';
 import { DailyPlanController } from './daily-plan.controller';
-import { LoginSchema } from 'src/authentication/login.schema';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -21,12 +17,10 @@ import { LoginSchema } from 'src/authentication/login.schema';
       { name: 'TravelPlan', schema: TravelPlanSchema },
       { name: 'Expense', schema: ExpenseSchema },
       { name: 'DailySchedule', schema: DailyScheduleSchema },
-      { name: 'User', schema: UserSchema },
-      { name: 'Login', schema: LoginSchema },
     ]),
-    AuthModule,
+    UserModule,
   ],
-  providers: [DailyPlanService, ExpenseService, DailyScheduleService, AuthService, UserService],
+  providers: [DailyPlanService, ExpenseService, DailyScheduleService],
   controllers: [DailyPlanController],
 })
 export class DailyPlanModule {}

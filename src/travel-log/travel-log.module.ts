@@ -4,9 +4,9 @@ import { TravelLogController } from './travel-log.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DailyScheduleSchema } from 'src/daily-schedule/daily-schedule.schema';
 import { AuthService } from 'src/authentication/auth.service';
-import { UserSchema } from 'src/user/user.schema';
-import { UserService } from 'src/user/user.service';
 import { LoginSchema } from 'src/authentication/login.schema';
+import { UserSchema } from 'src/user/schemas/user.schema';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -15,8 +15,9 @@ import { LoginSchema } from 'src/authentication/login.schema';
       { name: 'User', schema: UserSchema },
       { name: 'Login', schema: LoginSchema },
     ]),
+    UserModule,
   ],
   controllers: [TravelLogController],
-  providers: [TravelLogService, AuthService, UserService],
+  providers: [TravelLogService, AuthService],
 })
 export class TravelLogModule {}

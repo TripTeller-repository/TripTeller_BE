@@ -5,13 +5,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FeedSchema } from 'src/feed/feed.schema';
 import { FeedExtractor } from 'src/utils/feed-extractor';
 import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
-import { UserSchema } from 'src/user/user.schema';
 import { ScrapSchema } from 'src/scrap/scrap.schema';
-import { UserService } from 'src/user/user.service';
 import { AuthService } from 'src/authentication/auth.service';
 import { FeedModule } from 'src/feed/feed.module';
 import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
 import { LoginSchema } from 'src/authentication/login.schema';
+import { UserSchema } from 'src/user/schemas/user.schema';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -24,8 +24,9 @@ import { LoginSchema } from 'src/authentication/login.schema';
       { name: 'Login', schema: LoginSchema },
     ]),
     FeedModule,
+    UserModule,
   ],
-  providers: [OurTripService, FeedExtractor, UserService, AuthService],
+  providers: [OurTripService, FeedExtractor, AuthService],
   controllers: [OurTripController],
 })
 export class OurTripModule {}

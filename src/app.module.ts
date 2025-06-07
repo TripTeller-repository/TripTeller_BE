@@ -15,12 +15,12 @@ import { SearchModule } from './search/search.module';
 import { UserModule } from './user/user.module';
 import { TravelPlanModule } from './travel-plan/travel-plan.module';
 import { TravelLogModule } from './travel-log/travel-log.module';
-import { AuthService } from './authentication/auth.service';
 import { AllExceptionsFilter } from './utils/all-exceptions.filter';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { ExpenseModule } from './expense/expense.module';
+import { CommonModule } from './common/modules/common.module';
 
 @Module({
   imports: [
@@ -85,9 +85,10 @@ import { ExpenseModule } from './expense/expense.module';
     TravelPlanModule,
     TravelLogModule,
     ExpenseModule,
+    CommonModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AuthService, { provide: 'APP_FILTER', useClass: AllExceptionsFilter }],
+  providers: [AppService, { provide: 'APP_FILTER', useClass: AllExceptionsFilter }],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

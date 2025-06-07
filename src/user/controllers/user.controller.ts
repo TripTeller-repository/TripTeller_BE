@@ -1,14 +1,14 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PostProfileImageDto } from './dto/post-profile-image.dto';
-import { AuthGuard } from 'src/authentication/auth.guard';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserInfoDto } from './dto/user-info.dto';
+import { PostProfileImageDto } from '../dto/post-profile-image.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserInfoDto } from '../dto/user-info.dto';
+import { UserService } from '../services/user.service';
+import { JwtAuthGuard } from 'src/common/guards';
 
 @ApiTags('User')
 @Controller('user')
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

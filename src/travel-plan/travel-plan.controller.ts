@@ -2,12 +2,12 @@ import { Controller, Post, Delete, Get, Param, Body, Req, Put, UseGuards } from 
 import { TravelPlanService } from '../travel-plan/travel-plan.service';
 import { CreateTravelPlanDto } from '../travel-plan/dto/create-travel-plan.dto';
 import { PutTravelPlanDto } from '../travel-plan/dto/put-travel-plan.dto';
-import { AuthGuard } from 'src/authentication/auth.guard';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/common/guards';
 
 @ApiTags('TravelPlan')
 @Controller('my-trip')
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 export class TravelPlanController {
   constructor(private readonly travelPlanService: TravelPlanService) {}
 

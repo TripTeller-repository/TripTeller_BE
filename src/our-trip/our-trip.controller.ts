@@ -1,6 +1,6 @@
 import { Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe, Query, Req } from '@nestjs/common';
 import { Body } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/user/services/user.service';
 import { Post } from '@nestjs/common';
 import { OurTripService } from './our-trip.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';

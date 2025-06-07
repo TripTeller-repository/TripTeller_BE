@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { DailySchedule } from 'src/daily-schedule/daily-schedule.schema';
@@ -6,8 +6,44 @@ import Feed, { FeedDocument } from 'src/feed/feed.schema';
 import Scrap from 'src/scrap/scrap.schema';
 import { RegionName } from 'src/travel-plan/region-name.enum';
 import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
-import { User } from 'src/user/user.schema';
+import { User } from 'src/user/schemas/user.schema';
 
+/**
+ * 피드 추출 결과
+ */
+export interface ExtractedFeed {
+  feedId: string;
+  travelPlanId: string;
+  travelPlan: any;
+  userId: string;
+  createdAt: Date;
+  isPublic: boolean;
+  likeCount: number;
+  title: string;
+  region: RegionName;
+  startDate: Date;
+  endDate: Date;
+  thumbnailUrl: string | null;
+  coverImage: string;
+  isScrapped: boolean;
+}
+
+/**
+ * 페이지네이션 결과
+ */
+export interface PaginationResult {
+  success: boolean;
+  feeds: {
+    metadata: {
+      totalCount: number;
+      pageNumber: number;
+      pageSize: number;
+    };
+    data: any[];
+  };
+}
+
+@Injectable()
 export class FeedExtractor {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
@@ -16,21 +52,35 @@ export class FeedExtractor {
     @InjectModel('Scrap') private readonly scrapModel: Model<Scrap>,
   ) {}
 
-  // 로그인한 회원과 글 작성자가 일치하는지 판별하는 함수
-  checkUser = async (feedId: string, userId: string) => {
+  /**
+   * 로그인한 회원과 글 작성자가 일치하는지 판별하는 함수
+   */
+  checkUser = async (feedId: string, userId: string): Promise<void> => {
     const feed = await this.feedModel.findOne({ _id: feedId }).exec();
+
+    if (!feed) {
+      throw new NotFoundException('게시물을 찾을 수 없습니다.');
+    }
+
     if (feed.userId !== userId) {
       throw new NotFoundException('로그인한 회원과 게시물 작성자가 일치하지 않습니다.');
     }
   };
 
-  // 회원 ID로 작성자 검색하기
-  getUserByUserId = async (userId: string) => {
+  /**
+   * 회원 ID로 작성자 검색하기
+   */
+  getUserByUserId = async (userId: string): Promise<User> => {
     const user = await this.userModel.findOne({ _id: userId }).exec();
+    if (!user) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
     return user;
   };
 
-  // 회원 ID로 게시글 검색하기
+  /**
+   * 회원 ID로 게시글 검색하기
+   */
   findFeedsByUserId = async (userId: string): Promise<FeedDocument[]> => {
     return await this.feedModel
       .find({
@@ -40,20 +90,24 @@ export class FeedExtractor {
       .exec();
   };
 
-  // 페이지네이션 설정하는 함수
-  getFeedPaginated = async (pageNumber: number = 1, pageSize: number = 9, criteria: any = {}, sort: any = {}) => {
+  /**
+   * 페이지네이션 설정하는 함수
+   */
+  getFeedPaginated = async (
+    pageNumber: number = 1,
+    pageSize: number = 9,
+    criteria: any = {},
+    sort: any = {},
+  ): Promise<PaginationResult> => {
     const skip = (pageNumber - 1) * pageSize;
 
     try {
-      // 기본 파이프라인 설정
       const pipeline: any[] = [{ $match: criteria }];
 
-      // sort가 제공되었을 경우 정렬 단계 추가
       if (Object.keys(sort).length) {
         pipeline.push({ $sort: sort });
       }
 
-      // 페이지네이션 설정
       pipeline.push({
         $facet: {
           metadata: [
@@ -72,106 +126,115 @@ export class FeedExtractor {
       });
 
       const feeds = await this.feedModel.aggregate(pipeline);
-
       const totalCount = feeds[0].metadata.length > 0 ? feeds[0].metadata[0].totalCount : 0;
 
-      const result = {
+      return {
         success: true,
         feeds: {
           metadata: { totalCount, pageNumber, pageSize },
           data: feeds[0].data,
         },
       };
-
-      return result;
     } catch (error) {
       throw new Error('페이지네이션 작업이 실패하였습니다.');
     }
   };
 
-  // 게시물 정렬 기준 설정하는 함수
-  findFeedsByCriteria = async (criteria: any) => {
+  /**
+   * 게시물 정렬 기준 설정하는 함수
+   */
+  findFeedsByCriteria = async (criteria: any): Promise<FeedDocument[]> => {
     return this.feedModel.find(criteria).exec();
   };
 
-  // 스크랩 여부 확인 함수 추가
-  // 스크랩 되어 있으면 true, 안 되어 있으면 false
-  isScrappedByUser = async (feedId: string, userId?: string) => {
-    if (!userId) return false; // 로그인 상태가 아니면 false 반환
+  /**
+   * 스크랩 여부 확인 함수
+   */
+  isScrappedByUser = async (feedId: string, userId?: string): Promise<boolean> => {
+    if (!userId) return false;
     const scrap = await this.scrapModel.findOne({ feedId, userId }).exec();
-    return scrap ? true : false;
+    return !!scrap;
   };
 
-  // 원하는 형태로 리턴값 추출
-  extractFeeds = async (feeds: FeedDocument[], userId?: string) => {
-    const extractFeed = async (feed: FeedDocument) => {
-      const { likeCount, coverImage, isPublic } = feed;
+  /**
+   * 썸네일 URL 추출
+   */
+  private extractThumbnailUrl(dailySchedules: DailySchedule[]): string | null {
+    if (!dailySchedules || dailySchedules.length === 0) return null;
 
-      const travelPlanId = feed.travelPlan;
-      const travelPlan = await this.travelPlanModel.findById(travelPlanId);
+    // 1. isThumbnail이 true이고 imageUrl이 있는 것을 우선 탐색
+    const thumbnailSchedule = dailySchedules.find((schedule) => schedule.isThumbnail && schedule.imageUrl);
 
-      // if (!travelPlan) return null;
-      if (!travelPlan) {
-        console.log(`Feed ${feed._id} has no associated travel plan.`);
+    if (thumbnailSchedule) {
+      return thumbnailSchedule.imageUrl;
+    }
+
+    // 2. imageUrl이 있는 첫 번째 것 사용
+    const scheduleWithImage = dailySchedules.find((schedule) => schedule.imageUrl);
+
+    return scheduleWithImage?.imageUrl || null;
+  }
+
+  /**
+   * 원하는 형태로 리턴값 추출
+   */
+  extractFeeds = async (feeds: FeedDocument[], userId?: string): Promise<ExtractedFeed[]> => {
+    const extractFeed = async (feed: FeedDocument): Promise<ExtractedFeed | null> => {
+      try {
+        const { likeCount, coverImage, isPublic } = feed;
+        const travelPlanId = feed.travelPlan;
+
+        const travelPlan = await this.travelPlanModel.findById(travelPlanId);
+
+        if (!travelPlan) {
+          console.log(`Feed ${feed._id} has no associated travel plan.`);
+          return null;
+        }
+
+        // 모든 일일 일정 수집
+        const dailySchedules: DailySchedule[] =
+          travelPlan['dailyPlans']?.map((dailyPlan) => dailyPlan.dailySchedules)?.flat() || [];
+
+        // 썸네일 URL 추출
+        const thumbnailUrl = this.extractThumbnailUrl(dailySchedules);
+
+        // 스크랩 여부 확인
+        const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId);
+
+        return {
+          feedId: feed._id.toString(),
+          travelPlanId: feed.travelPlan['_id']?.toString(),
+          travelPlan: feed.travelPlan,
+          userId: feed.userId,
+          createdAt: feed.createdAt,
+          isPublic,
+          likeCount,
+          title: travelPlan['title'],
+          region: travelPlan['region'] as RegionName,
+          startDate: travelPlan['startDate'],
+          endDate: travelPlan['endDate'],
+          thumbnailUrl,
+          coverImage,
+          isScrapped,
+        };
+      } catch (error) {
+        console.error(`Error extracting feed data for feed ${feed._id}:`, error);
         return null;
       }
-
-      // 이 TravelPlan의 모든 DailySchedule을 가져옴
-      const dailySchedules: DailySchedule[] = travelPlan['dailyPlans'] // => DailyPlan[]
-        .map((dailyPlan) => dailyPlan.dailySchedules) // => DailySchedule[][]
-        .flat(); // => DailySchedule[]
-
-      let thumbnailUrl = null; // 썸네일 URL
-      // DailySchedule 중 썸네일 이미지가 있고, isThumbnail이 true인 DailySchedule을 찾아 썸네일 URL을 추출
-      const isThumbnailDailySchedule = dailySchedules.find((dailySchedule) => dailySchedule.isThumbnail);
-
-      // isThumbnail이 true이고 imageUrl이 있는 DailySchedule이 있으면 해당 URL 사용
-      if (isThumbnailDailySchedule) {
-        thumbnailUrl = isThumbnailDailySchedule.imageUrl;
-      } else {
-        // 2. isThumbnail이 true인 것이 없으면, imageUrl이 있는 첫 번째 DailySchedule 사용
-        const dailyScheduleWithImage = dailySchedules.find((dailySchedule) => dailySchedule.imageUrl);
-        if (dailyScheduleWithImage) {
-          thumbnailUrl = dailyScheduleWithImage.imageUrl;
-        }
-      }
-
-      const startDate = travelPlan['startDate'];
-      const endDate = travelPlan['endDate'];
-
-      // 해당 게시물 스크랩 여부 확인
-      const isScrapped = await this.isScrappedByUser(feed._id.toString(), userId || null);
-
-      return {
-        feedId: feed._id, // 게시물 ID 값
-        travelPlanId: feed.travelPlan['_id'], // travelPlan ID값
-        travelPlan: feed.travelPlan, // travelPlan 데이터
-        userId: feed.userId, // 회원 ID 값
-        createdAt: feed.createdAt, // 게시물 작성일
-        isPublic, // 공개 여부
-        likeCount, // 좋아요(스크랩) 개수
-        title: travelPlan['title'], // 제목
-        region: travelPlan['region'] as RegionName, // 지역
-        startDate, // 시작일
-        endDate, // 종료일
-        thumbnailUrl, // TravelLog 이미지 중 썸네일 URL
-        coverImage, // 게시물 커버 이미지 URL
-        isScrapped, // 해당 게시물 스크랩 여부
-      };
     };
 
-    return (
-      await Promise.all(
-        feeds.map(async (feed) => {
-          const _extractedFeed = await extractFeed(feed);
+    const extractedFeeds = await Promise.all(
+      feeds.map(async (feed) => {
+        const extractedFeed = await extractFeed(feed);
 
-          // 필터링 된 게시물 확인
-          if (_extractedFeed === null) {
-            console.log(`Feed ${feed._id} was filtered out.`);
-          }
-          return _extractedFeed;
-        }), // => ExtractedFeed[]
-      )
-    ).filter((feed) => feed !== null); // null인 경우는 제외
+        if (extractedFeed === null) {
+          console.log(`Feed ${feed._id} was filtered out.`);
+        }
+
+        return extractedFeed;
+      }),
+    );
+
+    return extractedFeeds.filter((feed): feed is ExtractedFeed => feed !== null);
   };
 }

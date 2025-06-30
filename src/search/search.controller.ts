@@ -7,10 +7,18 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
+  /**
+   * 검색 수행 API
+   * @param title 제목
+   * @param author 작성자 닉네임
+   * @param content 내용
+   * @param region 지역
+   * @returns 공개된 피드 배열
+   */
   @Get()
-  @ApiOperation({ 
-    summary: '검색', 
-    description: '제목, 내용, 작성자, 지역을 기반으로 검색을 수행한다. 검색된 결과는 공개된 게시물만 조회된다.'
+  @ApiOperation({
+    summary: '검색',
+    description: '제목, 내용, 작성자, 지역을 기반으로 검색을 수행한다. 검색된 결과는 공개된 게시물만 조회된다.',
   })
   @ApiQuery({
     name: 'title',

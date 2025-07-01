@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
 import { ExpenseService } from '../expense/expense.service';
-import { CreateExpenseDto } from 'src/expense/dto/create-expense.dto';
-import { PutExpenseDto } from 'src/expense/dto/put-expense.dto';
+import { CreateExpenseDto } from '@expense/dto/create-expense.dto';
+import { PutExpenseDto } from '@expense/dto/put-expense.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Expense')

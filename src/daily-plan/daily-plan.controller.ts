@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DailyPlanService } from 'src/daily-plan/daily-plan.service';
-import { CreateDailyPlanDto } from 'src/daily-plan/dto/create-daily-plan.dto';
-import { PutDailyPlanDto } from 'src/daily-plan/dto/put-daily-plan.dto';
-import { JwtAuthGuard } from 'src/common/guards';
+import { DailyPlanService } from '@daily-plan/daily-plan.service';
+import { CreateDailyPlanDto } from '@daily-plan/dto/create-daily-plan.dto';
+import { PutDailyPlanDto } from '@daily-plan/dto/put-daily-plan.dto';
+import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('DailyPlan')
 @Controller('travel-plan')

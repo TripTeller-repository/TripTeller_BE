@@ -3,7 +3,7 @@ import { TravelPlanService } from '../travel-plan/travel-plan.service';
 import { CreateTravelPlanDto } from '../travel-plan/dto/create-travel-plan.dto';
 import { PutTravelPlanDto } from '../travel-plan/dto/put-travel-plan.dto';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/common/guards';
+import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('TravelPlan')
 @Controller('my-trip')

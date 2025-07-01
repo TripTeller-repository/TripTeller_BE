@@ -1,14 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { DailySchedule } from 'src/daily-schedule/daily-schedule.schema';
-import { createFileUnixName, createSignedUrl } from 'src/utils/file.util';
+import { DailySchedule } from '@daily-schedule/daily-schedule.schema';
 import { PutTravelLogPostContentDto } from './dto/put-travel-log-post-content.dto';
 import { PutTravelLogImageDto } from './dto/put-travel-log-image.dto';
+import { FileUtilService } from '@common/files/file-util.service';
 
 @Injectable()
 export class TravelLogService {
-  constructor(@InjectModel('DailySchedule') private readonly dailyScheduleModel: Model<DailySchedule>) {}
+  constructor(
+    @InjectModel('DailySchedule') private readonly dailyScheduleModel: Model<DailySchedule>,
+    private readonly fileUtilService: FileUtilService,
+  ) {}
 
   // 여행 로그 조회
   async fetchOneTravelLog(dailyScheduleId: string) {
@@ -70,8 +73,8 @@ export class TravelLogService {
 
   // AWS S3 TravelLog 이미지 Signed URL 불러오기
   async fetchTravelLogImageSignedUrl(fileName: string, userId: string) {
-    const fileNameInBucket = createFileUnixName(fileName, userId);
+    const fileNameInBucket = this.fileUtilService.createFileUnixName(fileName, userId);
     const filePathName = `travel-log-image/${fileNameInBucket}`;
-    return await createSignedUrl(filePathName);
+    return await this.fileUtilService.createSignedUrl(filePathName);
   }
 }

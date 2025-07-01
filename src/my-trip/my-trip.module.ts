@@ -2,17 +2,17 @@ import { Module } from '@nestjs/common';
 import { MyTripService } from './my-trip.service';
 import { MyTripController } from './my-trip.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FeedSchema } from 'src/feed/feed.schema';
-import { FeedExtractor } from 'src/utils/feed-extractor';
-import { TravelPlanService } from 'src/travel-plan/travel-plan.service';
-import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
-import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
-import { ScrapSchema } from 'src/scrap/scrap.schema';
-import { FeedModule } from 'src/feed/feed.module';
-import { AuthService } from 'src/authentication/auth.service';
-import { LoginSchema } from 'src/authentication/login.schema';
-import { UserSchema } from 'src/user/schemas/user.schema';
-import { UserModule } from 'src/user/user.module';
+import { FeedSchema } from '@feed/feed.schema';
+import { TravelPlanService } from '@travel-plan/travel-plan.service';
+import { TravelPlanSchema } from '@travel-plan/travel-plan.schema';
+import { DailyPlanSchema } from '@daily-plan/daily-plan.schema';
+import { ScrapSchema } from '@scrap/scrap.schema';
+import { FeedModule } from '@feed/feed.module';
+import { AuthService } from '@auth/auth.service';
+import { LoginSchema } from '@auth/login.schema';
+import { UserSchema } from '@user/schemas/user.schema';
+import { UserModule } from '@user/user.module';
+import { FileModule } from '@common/files/file.module';
 
 @Module({
   imports: [
@@ -26,8 +26,9 @@ import { UserModule } from 'src/user/user.module';
     ]),
     FeedModule,
     UserModule,
+    FileModule,
   ],
-  providers: [MyTripService, TravelPlanService, FeedExtractor, AuthService],
+  providers: [MyTripService, TravelPlanService, AuthService],
   controllers: [MyTripController],
 })
 export class MyTripModule {}

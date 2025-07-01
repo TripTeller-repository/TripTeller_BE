@@ -14,7 +14,7 @@ import { SearchModule } from './search/search.module';
 import { UserModule } from './user/user.module';
 import { TravelPlanModule } from './travel-plan/travel-plan.module';
 import { TravelLogModule } from './travel-log/travel-log.module';
-import { AllExceptionsFilter } from './utils/all-exceptions.filter';
+import { AllExceptionsFilter } from 'common/filters/all-exceptions.filter';
 import { ExpenseModule } from './expense/expense.module';
 import { CommonModule } from './common/modules/common.module';
 import { ConfigModule } from './common/config/config.module';

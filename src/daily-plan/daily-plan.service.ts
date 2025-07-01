@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import { DailyPlan } from './daily-plan.schema';
 import { CreateDailyPlanDto } from './dto/create-daily-plan.dto';
 import { PutDailyPlanDto } from './dto/put-daily-plan.dto';
-import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
+import { TravelPlan } from '@travel-plan/travel-plan.schema';
 
 @Injectable()
 export class DailyPlanService {

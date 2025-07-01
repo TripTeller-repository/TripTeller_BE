@@ -3,11 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
 import { IProfileImageService } from '../interfaces/profile-image.interface';
-import { createFileUnixName, createSignedUrl } from 'src/utils/file.util';
+import { FileUtilService } from '@common/files/file-util.service';
 
 @Injectable()
 export class ProfileImageService implements IProfileImageService {
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+  constructor(
+    @InjectModel('User') private readonly userModel: Model<User>,
+    private readonly fileUtilService: FileUtilService,
+  ) {}
 
   /**
    * 사용자의 프로필 이미지를 조회합니다
@@ -29,8 +32,8 @@ export class ProfileImageService implements IProfileImageService {
    * @returns Signed URL
    */
   async fetchProfileImageSignedUrl(fileName: string, userId: string): Promise<string> {
-    const fileNameInBucket = createFileUnixName(fileName, userId);
+    const fileNameInBucket = this.fileUtilService.createFileUnixName(fileName, userId);
     const filePathName = `profile-image/${fileNameInBucket}`;
-    return await createSignedUrl(filePathName);
+    return await this.fileUtilService.createSignedUrl(filePathName);
   }
 }

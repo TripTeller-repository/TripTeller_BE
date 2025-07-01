@@ -11,9 +11,10 @@ import { UserDeleterService } from './services/user-deleter.service';
 import { ProfileImageService } from './services/profile-image.service';
 import { NicknameService } from './services/nickname.service';
 import { ConfigModule } from '@nestjs/config';
+import { FileModule } from '@common/files/file.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]), ConfigModule],
+  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]), ConfigModule, FileModule],
   controllers: [UserController],
   providers: [
     // 내부 서비스들 (외부에 노출되지 않음)
@@ -26,6 +27,6 @@ import { ConfigModule } from '@nestjs/config';
     // 메인 Facade 서비스 (유일한 외부 인터페이스)
     UserService,
   ],
-  exports: [UserService],
+  exports: [UserService, MongooseModule],
 })
 export class UserModule {}

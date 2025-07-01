@@ -3,16 +3,17 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { SearchService } from './search.service';
 import { SearchController } from './search.controller';
 import { SearchStrategyFactory } from './search-strategy.factory';
-import { FeedExtractor } from 'src/utils/feed-extractor';
-import { FeedSchema } from 'src/feed/feed.schema';
-import { UserSchema } from 'src/user/schemas/user.schema';
-import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
-import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
-import { DailyScheduleSchema } from 'src/daily-schedule/daily-schedule.schema';
-import { ScrapSchema } from 'src/scrap/scrap.schema';
+import { FeedSchema } from '@feed/feed.schema';
+import { UserSchema } from '@user/schemas/user.schema';
+import { TravelPlanSchema } from '@travel-plan/travel-plan.schema';
+import { DailyPlanSchema } from '@daily-plan/daily-plan.schema';
+import { DailyScheduleSchema } from '@daily-schedule/daily-schedule.schema';
+import { ScrapSchema } from '@scrap/scrap.schema';
 import { SearchByTitleStrategy } from './strategies/search-by-title.strategy';
 import { SearchByAuthorStrategy } from './strategies/search-by-author.strategy';
 import { SearchByContentStrategy } from './strategies/search-by-content.strategy';
+import { FeedModule } from '@feed/feed.module';
+import { FeedExtractor } from '@feed/feed-extractor';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -23,14 +24,15 @@ import { SearchByContentStrategy } from './strategies/search-by-content.strategy
       { name: 'DailySchedule', schema: DailyScheduleSchema },
       { name: 'Scrap', schema: ScrapSchema },
     ]),
+    FeedModule,
   ],
   controllers: [SearchController],
   providers: [
     SearchService,
-    FeedExtractor,
     SearchByTitleStrategy,
     SearchByAuthorStrategy,
     SearchByContentStrategy,
+    FeedExtractor,
     {
       provide: SearchStrategyFactory,
       useFactory: (title: SearchByTitleStrategy, author: SearchByAuthorStrategy, content: SearchByContentStrategy) =>

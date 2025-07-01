@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/common/guards';
-import { PutTravelLogImageDto } from 'src/travel-log/dto/put-travel-log-image.dto';
-import { PutTravelLogPostContentDto } from 'src/travel-log/dto/put-travel-log-post-content.dto';
-import { TravelLogService } from 'src/travel-log/travel-log.service';
+import { JwtAuthGuard } from '@common/guards';
+import { PutTravelLogImageDto } from '@travel-log/dto/put-travel-log-image.dto';
+import { PutTravelLogPostContentDto } from '@travel-log/dto/put-travel-log-post-content.dto';
+import { TravelLogService } from '@travel-log/travel-log.service';
 
 @ApiTags('TravelLog')
 @Controller('')

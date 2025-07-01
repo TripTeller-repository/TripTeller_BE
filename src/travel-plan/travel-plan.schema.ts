@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types, Document } from 'mongoose';
-import { DailyPlan } from 'src/daily-plan/daily-plan.schema';
-import { DailySchedule } from 'src/daily-schedule/daily-schedule.schema';
+import { DailyPlan } from '@daily-plan/daily-plan.schema';
+import { DailySchedule } from '@daily-schedule/daily-schedule.schema';
 import { RegionName } from './region-name.enum';
 
 export type TravelPlanDocument = TravelPlan & Document;

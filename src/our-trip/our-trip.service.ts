@@ -1,14 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { FeedExtractor } from 'src/utils/feed-extractor';
-import Feed from 'src/feed/feed.schema';
-import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
+import Feed from '@feed/feed.schema';
+import { TravelPlan } from '@travel-plan/travel-plan.schema';
+import { FeedExtractor } from '@feed/feed-extractor';
+import { FeedService } from '@feed/feed.service';
 
 @Injectable()
 export class OurTripService {
   constructor(
     private readonly feedExtractor: FeedExtractor,
+    private readonly feedService: FeedService,
     @InjectModel('Feed') private readonly feedModel: Model<Feed>,
     @InjectModel('TravelPlan') private readonly travelPlanModel: Model<TravelPlan>,
   ) {}
@@ -20,7 +22,7 @@ export class OurTripService {
       isPublic: true,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
+    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
     const extractedFeeds = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     paginatedResult.feeds.data = extractedFeeds;
@@ -35,7 +37,7 @@ export class OurTripService {
       _id: feedId,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-    const feed = await this.feedExtractor.findFeedsByCriteria(criteria);
+    const feed = await this.feedService.findFeedsByCriteria(criteria);
     const extractedFeed = await this.feedExtractor.extractFeeds(feed);
 
     return extractedFeed;
@@ -52,7 +54,7 @@ export class OurTripService {
     const sort = { createdAt: -1 }; // 최신순으로 정렬
 
     // 최신순으로 정렬 후 페이지네이션
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria, sort);
+    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
     paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     return paginatedResult;
@@ -68,7 +70,7 @@ export class OurTripService {
     };
     const sort = { likeCount: -1 }; // 인기순 정렬
 
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria, sort);
+    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
     paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     return paginatedResult;
@@ -113,7 +115,7 @@ export class OurTripService {
 
       // 필터링된 배열의 id목록과 일치하는 게시글을 가져오도록 함.
       const paginationCriteria = { _id: { $in: filteredFeeds.map((feed) => feed._id) } };
-      const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, paginationCriteria);
+      const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, paginationCriteria);
       paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
       return paginatedResult;

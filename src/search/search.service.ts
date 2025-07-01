@@ -4,15 +4,15 @@ import { Model } from 'mongoose';
 import { FeedSearchUtil } from './utils/feed-search.util';
 import { SearchStrategyFactory } from './search-strategy.factory';
 import { SearchParams } from './dto/search-params.dto';
-import Feed from 'src/feed/feed.schema';
-import { FeedExtractor } from 'src/utils/feed-extractor';
+import Feed from '@feed/feed.schema';
+import { FeedExtractor } from '@feed/feed-extractor';
 
 @Injectable()
 export class SearchService {
   constructor(
     private readonly strategyFactory: SearchStrategyFactory,
-    private readonly feedExtractor: FeedExtractor,
     @InjectModel('Feed') private readonly feedModel: Model<Feed>,
+    private readonly feedExtractor: FeedExtractor,
   ) {}
 
   /**

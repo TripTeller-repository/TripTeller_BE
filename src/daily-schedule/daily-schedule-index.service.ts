@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { DailySchedule } from './daily-schedule.schema';
-import { FeedService } from 'src/feed/feed.service';
+import { FeedService } from '@feed/feed.service';
 
 @Injectable()
 export class DailyScheduleIndexService implements OnModuleInit {

@@ -4,8 +4,8 @@ import { CreateDailyScheduleDto } from './dto/create-daily-schedule.dto';
 import { PutDailyScheduleDto } from './dto/put-daily-schedule.dto';
 import { Model, Types } from 'mongoose';
 import { DailySchedule } from './daily-schedule.schema';
-import { DailyPlan } from 'src/daily-plan/daily-plan.schema';
-import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
+import { DailyPlan } from '@daily-plan/daily-plan.schema';
+import { TravelPlan } from '@travel-plan/travel-plan.schema';
 
 @Injectable()
 export class DailyScheduleService {

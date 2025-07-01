@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import { Expense } from './expense.schema';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { PutExpenseDto } from './dto/put-expense.dto';
-import { DailyPlan } from 'src/daily-plan/daily-plan.schema';
+import { DailyPlan } from '@daily-plan/daily-plan.schema';
 
 @Injectable()
 export class ExpenseService {

@@ -1,11 +1,19 @@
 import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtAuthGuard } from 'src/common/guards/auth.guard';
+import { JwtAuthGuard } from '@common/guards/auth.guard';
+import { FeedScrapService } from '@common/services/feed-scrap.service';
+import { FeedSchema } from '@feed/feed.schema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ScrapSchema } from '@scrap/scrap.schema';
 
 @Global()
 @Module({
   imports: [
+    MongooseModule.forFeature([
+      { name: 'Feed', schema: FeedSchema },
+      { name: 'Scrap', schema: ScrapSchema },
+    ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -15,7 +23,7 @@ import { JwtAuthGuard } from 'src/common/guards/auth.guard';
       inject: [ConfigService],
     }),
   ],
-  providers: [JwtAuthGuard],
-  exports: [JwtModule, JwtAuthGuard],
+  providers: [JwtAuthGuard, FeedScrapService],
+  exports: [JwtModule, JwtAuthGuard, FeedScrapService],
 })
 export class CommonModule {}

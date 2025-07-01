@@ -1,18 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import Feed from 'src/feed/feed.schema';
+import Feed from '@feed/feed.schema';
 import { TravelPlan } from './travel-plan.schema';
 import { PutTravelPlanDto } from './dto/put-travel-plan.dto';
 import dayjs from 'dayjs';
-import { FeedExtractor } from 'src/utils/feed-extractor';
-import { DailyPlan, DateType } from 'src/daily-plan/daily-plan.schema';
+import { DailyPlan, DateType } from '@daily-plan/daily-plan.schema';
 import { CreateTravelPlanDto } from './dto/create-travel-plan.dto';
+import { FeedService } from '@feed/feed.service';
 
 @Injectable()
 export class TravelPlanService {
   constructor(
-    private readonly feedExtractor: FeedExtractor,
+    private readonly feedService: FeedService,
     @InjectModel('Feed') private readonly feedModel: Model<Feed>,
     @InjectModel('TravelPlan') private readonly travelPlanModel: Model<TravelPlan>,
     @InjectModel('DailyPlan') private readonly dailyPlanModel: Model<DailyPlan>,
@@ -20,7 +20,7 @@ export class TravelPlanService {
 
   // 특정 여행 일정 조회
   async fetchTravelPlan(feedId: string, travelPlanId: string, userId: string) {
-    await this.feedExtractor.checkUser(feedId, userId);
+    await this.feedService.checkFeedAuthor(feedId, userId);
     const plan = await (await this.travelPlanModel.findById({ _id: travelPlanId })).populate('dailyPlans');
 
     if (!plan) {
@@ -32,7 +32,7 @@ export class TravelPlanService {
 
   // 여행 일정 등록 (ID 업데이트)
   async createTravelPlan(feedId: string, createTravelPlanDto: CreateTravelPlanDto, userId: string) {
-    await this.feedExtractor.checkUser(feedId, userId);
+    await this.feedService.checkFeedAuthor(feedId, userId);
     const createdPlan = await this.travelPlanModel.create(createTravelPlanDto);
     const feed = await this.feedModel
       .findByIdAndUpdate(
@@ -82,7 +82,7 @@ export class TravelPlanService {
 
   // 여행 일정 수정
   async updateTravelPlan(feedId: string, travelPlanId: string, putTravelPlanDto: PutTravelPlanDto, userId: string) {
-    await this.feedExtractor.checkUser(feedId, userId);
+    await this.feedService.checkFeedAuthor(feedId, userId);
 
     const updatePlan = await this.travelPlanModel.findByIdAndUpdate({ _id: travelPlanId }, putTravelPlanDto, {
       runValidators: true,

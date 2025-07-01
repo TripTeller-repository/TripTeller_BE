@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TravelPlan } from './travel-plan.schema';
-import { FeedService } from 'src/feed/feed.service';
+import { FeedService } from '@feed/feed.service';
 
 @Injectable()
 export class TravelPlanIndexService implements OnModuleInit {

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from '@user/services/user.service';
 import { SignInDto } from './dto/sign-in.dto';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
@@ -9,7 +9,7 @@ import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDevice } from './user-device.interface';
 import { Login } from './login.schema';
-import { User } from 'src/user/schemas/user.schema';
+import { User } from '@user/schemas/user.schema';
 
 // 소셜 로그인 사용자 정보 제공자
 export enum EAuthProvider {

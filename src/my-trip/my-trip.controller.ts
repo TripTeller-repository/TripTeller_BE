@@ -1,10 +1,10 @@
 import { Controller, Post, Delete, Get, Param, Body, Req, Put, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { MyTripService } from './my-trip.service';
-import { CreateFeedDto } from '../feed/dto/create-feed.dto';
-import { UpdateFeedDto } from '../feed/dto/update-feed.dto';
-import { PostCoverImageDto } from '../feed/dto/post-cover-Image.dto';
+import { CreateFeedDto } from '../feed/dto/request/create-feed.dto';
+import { UpdateFeedDto } from '../feed/dto/request/update-feed.dto';
+import { PostCoverImageDto } from '../feed/dto/request/post-cover-Image.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiParam, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/common/guards';
+import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('MyTrip')
 @Controller('my-trip')

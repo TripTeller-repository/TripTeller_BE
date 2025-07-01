@@ -4,7 +4,7 @@ import { PostProfileImageDto } from '../dto/post-profile-image.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserInfoDto } from '../dto/user-info.dto';
 import { UserService } from '../services/user.service';
-import { JwtAuthGuard } from 'src/common/guards';
+import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('User')
 @Controller('user')

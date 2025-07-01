@@ -1,16 +1,19 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FeedDocument } from '../feed/feed.schema';
-import { CreateFeedDto } from '../feed/dto/create-feed.dto';
+import { CreateFeedDto } from '../feed/dto/request/create-feed.dto';
 import { Model } from 'mongoose';
-import { UpdateFeedDto } from '../feed/dto/update-feed.dto';
-import { FeedExtractor } from 'src/utils/feed-extractor';
-import { createFileUnixName, createSignedUrl } from 'src/utils/file.util';
+import { UpdateFeedDto } from '../feed/dto/request/update-feed.dto';
+import { FileUtilService } from '@common/files/file-util.service';
+import { FeedExtractor } from '@feed/feed-extractor';
+import { FeedService } from '@feed/feed.service';
 
 @Injectable()
 export class MyTripService {
   constructor(
+    private readonly feedService: FeedService,
     private readonly feedExtractor: FeedExtractor,
+    private readonly fileUtilService: FileUtilService,
     @InjectModel('Feed') private readonly feedModel: Model<FeedDocument>,
   ) {}
 
@@ -88,7 +91,7 @@ export class MyTripService {
       userId,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
+    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
     const extractedFeeds = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data);
     paginatedResult.feeds.data = extractedFeeds;
 
@@ -121,7 +124,7 @@ export class MyTripService {
       isPublic: true,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
+    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
     const sortedFeeds = paginatedResult.feeds.data;
     paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
 
@@ -137,7 +140,7 @@ export class MyTripService {
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
 
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria);
+    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
     const sortedFeeds = paginatedResult.feeds.data;
     paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(sortedFeeds);
 
@@ -154,7 +157,7 @@ export class MyTripService {
     const sort = { createdAt: -1 }; // 최신순으로 정렬
 
     // 최신순으로 정렬 후 페이지네이션
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria, sort);
+    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
     paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     return paginatedResult;
@@ -170,7 +173,7 @@ export class MyTripService {
     };
     const sort = { likeCount: -1 }; // 인기순 정렬
 
-    const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, criteria, sort);
+    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
     paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     return paginatedResult;
@@ -219,7 +222,7 @@ export class MyTripService {
       // 필터링된 배열의 id목록과 일치하는 게시글을 가져오도록 함.
       const paginationCriteria = { _id: { $in: filteredFeeds.map((feed) => feed._id) } };
 
-      const paginatedResult = await this.feedExtractor.getFeedPaginated(pageNumber, pageSize, paginationCriteria);
+      const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, paginationCriteria);
 
       paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
@@ -231,9 +234,9 @@ export class MyTripService {
 
   // AWS S3 프로필 이미지 Signed URL 불러오기
   async fetchCoverImageSignedUrl(fileName: string, userId: string) {
-    const fileNameInBucket = createFileUnixName(fileName, userId);
+    const fileNameInBucket = this.fileUtilService.createFileUnixName(fileName, userId);
     const filePathName = `cover-image/${fileNameInBucket}`;
-    return await createSignedUrl(filePathName);
+    return await this.fileUtilService.createSignedUrl(filePathName);
   }
 
   // 커버 이미지 변경하기

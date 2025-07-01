@@ -1,5 +1,5 @@
 import { SearchParams } from '../dto/search-params.dto';
-import Feed from 'src/feed/feed.schema';
+import Feed from '@feed/feed.schema';
 
 /**
  * 피드 검색 Strategy Interface

@@ -21,6 +21,7 @@ import { ConfigModule } from './common/config/config.module';
 import { ConfigService } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './common/logger/winston.config';
+import { SlackModule } from '@common/slack/slack.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { winstonConfig } from './common/logger/winston.config';
     TravelLogModule,
     ExpenseModule,
     CommonModule,
+    SlackModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: 'APP_FILTER', useClass: AllExceptionsFilter }],

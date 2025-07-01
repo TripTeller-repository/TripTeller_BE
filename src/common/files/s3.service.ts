@@ -2,6 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
 
+/**
+ * AWS S3 관련 기능을 담당하는 서비스
+ * - S3 클라이언트 초기화 및 반환
+ * - 버킷 이름 조회
+ */
 @Injectable()
 export class S3Service {
   private s3Client: S3Client | null = null;
@@ -9,6 +14,12 @@ export class S3Service {
 
   constructor(private readonly configService: ConfigService) {}
 
+  /**
+   * AWS S3 클라이언트를 생성하거나 반환합니다.
+   * 내부적으로 싱글톤 형태로 한 번만 초기화됩니다.
+   *
+   * @returns {S3Client} - 초기화된 S3 클라이언트 인스턴스
+   */
   getS3Client(): S3Client {
     if (!this.s3Client) {
       const accessKeyId = this.configService.get<string>('awsS3AccessKeyId');
@@ -27,6 +38,11 @@ export class S3Service {
     return this.s3Client;
   }
 
+  /**
+   * 환경변수에서 S3 버킷 이름을 가져옵니다.
+   *
+   * @returns {string} - S3 버킷 이름
+   */
   getBucketName(): string {
     return this.configService.get<string>('awsS3BucketName');
   }

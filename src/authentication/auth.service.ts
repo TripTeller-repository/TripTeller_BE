@@ -26,29 +26,38 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  // 회원 가입
+  /**
+   * 회원 가입
+   * @param createUserDto - 사용자 회원가입 정보
+   * @returns 생성된 사용자
+   * @throws {UnauthorizedException} 이미 가입된 이메일일 경우
+   */
   async createUser(createUserDto: CreateUserDto) {
-    // DB에 중복된 이메일이 있는지 확인
     const existingEmail = await this.userModel.findOne({ email: createUserDto.email });
     if (existingEmail) {
       throw new UnauthorizedException('이미 가입된 계정입니다.');
     }
 
-    // 비밀번호 해시화하여 암호 저장
     const hashedPassword = await this.hashPassword(createUserDto.password);
     const newUser = {
       ...createUserDto,
       password: hashedPassword,
     };
 
-    // 아닌 경우 회원가입 진행
     const user = await this.userModel.create(newUser);
     await user.save();
     return user;
   }
 
-  // 토큰 생성
-  // userId, authProvider 및 디바이스 정보를 기반으로 JWT 토큰을 생성
+  /**
+   * JWT 토큰 생성 (access, refresh)
+   * @description userId, authProvider 및 디바이스 정보를 기반으로 JWT 토큰을 생성
+   * @param userId - 사용자 ID
+   * @param authProvider - 인증 제공자
+   * @param deviceInfo - 디바이스 정보
+   * @param ip - 클라이언트 IP
+   * @returns accessToken, refreshToken
+   */
   async createTokens(userId: string, authProvider: string, deviceInfo: UserDevice, ip: string) {
     const loginAt = new Date();
 
@@ -65,7 +74,6 @@ export class AuthService {
     const payload = {
       userId,
       authProvider,
-      // deviceId: deviceInfo.deviceId,
       browser: deviceInfo.browser,
       os: deviceInfo.os,
       ip,
@@ -82,7 +90,14 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  // 액세스 토큰 재발급
+  /**
+   * 액세스 토큰 재발급
+   * @param refreshToken - 기존 리프레시 토큰
+   * @param deviceInfo - 디바이스 정보
+   * @param ip - 클라이언트 IP
+   * @returns 새 accessToken과 의심 로그인 여부
+   * @throws {UnauthorizedException} 토큰 만료 또는 검증 실패 시
+   */
   async refreshAccessToken(refreshToken: string, deviceInfo: UserDevice, ip: string) {
     try {
       // Refresh 토큰 검증
@@ -130,7 +145,14 @@ export class AuthService {
     }
   }
 
-  // 로그인
+  /**
+   * 이메일과 비밀번호 기반 로그인
+   * @param signInDto - 로그인 요청 정보
+   * @param deviceInfo - 디바이스 정보
+   * @param ip - 클라이언트 IP
+   * @returns accessToken, refreshToken, suspicious
+   * @throws {UnauthorizedException} 로그인 실패 시
+   */
   async signIn(signInDto: SignInDto, deviceInfo: UserDevice, ip: string) {
     try {
       // 이메일로 특정 회원 조회
@@ -177,7 +199,13 @@ export class AuthService {
     }
   }
 
-  // 의심스러운 로그인 감지
+  /**
+   * 의심스러운 로그인 감지
+   * @param session - 마지막 로그인 세션 정보
+   * @param deviceInfo - 현재 디바이스 정보
+   * @param ip - 현재 IP 주소
+   * @returns 의심스러우면 true
+   */
   private detectSuspiciousLogin(session: Login, deviceInfo: UserDevice, ip: string): boolean {
     // IP 주소가 다를 경우
     if (session.ipAddress !== ip) {
@@ -192,7 +220,12 @@ export class AuthService {
     return false;
   }
 
-  // 토큰 검증
+  /**
+   * JWT 토큰 검증
+   * @param token - JWT 토큰
+   * @returns 디코딩된 payload
+   * @throws {UnauthorizedException} 유효하지 않은 토큰일 경우
+   */
   async verifyToken(token: string): Promise<jwt.JwtPayload> {
     try {
       const decoded = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
@@ -217,7 +250,12 @@ export class AuthService {
     }
   }
 
-  // 카카오에서 토큰 받아오기
+  /**
+   * 카카오 토큰 요청 (인가 코드로)
+   * @param code - 카카오 인가 코드
+   * @returns accessToken
+   * @throws {UnauthorizedException} 요청 실패 시
+   */
   async fetchKakaoToken(code: string | null) {
     try {
       const url = 'https://kauth.kakao.com/oauth/token';
@@ -240,7 +278,12 @@ export class AuthService {
     }
   }
 
-  // 받은 토큰 다시 넘겨주고 회원 정보 받아오기
+  /**
+   * 카카오 사용자 정보 요청
+   * @param kakaoToken - 액세스 토큰
+   * @returns 사용자 정보 (이메일, 닉네임, 제공자)
+   * @throws {UnauthorizedException} 요청 실패 시
+   */
   async fetchKakaoUserInfo(kakaoToken: string | null) {
     try {
       const url = 'https://kapi.kakao.com/v2/user/me';
@@ -265,7 +308,14 @@ export class AuthService {
     }
   }
 
-  // 소셜 로그인 처리
+  /**
+   * OAuth 기반 로그인 처리 (카카오 등)
+   * @param userInfo - 소셜 사용자 정보
+   * @param deviceInfo - 디바이스 정보
+   * @param ip - 클라이언트 IP
+   * @returns accessToken, refreshToken
+   * @throws {Error} OAuth 로그인 실패 시
+   */
   async oauthSignIn(userInfo, deviceInfo: UserDevice, ip: string) {
     try {
       // 이메일로 회원 조회
@@ -301,18 +351,32 @@ export class AuthService {
     }
   }
 
-  // 비밀번호 해시화
+  /**
+   * 비밀번호 해시화
+   * @param password - 원문 비밀번호
+   * @returns 해시된 비밀번호
+   */
   async hashPassword(password: string) {
     const saltRounds = 15;
     return await bcrypt.hash(password, saltRounds);
   }
 
-  // 해시화된 비밀번호 검증
+  /**
+   * 비밀번호 검증 (비교)
+   * @param password - 입력 비밀번호
+   * @param hashedPassword - 저장된 해시 비밀번호
+   * @returns 일치 여부
+   */
   async verifyPassword(password: string, hashedPassword: string) {
     return await bcrypt.compare(password, hashedPassword);
   }
 
-  // 회원 탈퇴
+  /**
+   * 회원 탈퇴 처리
+   * @param userId - 사용자 ID
+   * @returns 성공 메시지
+   * @throws {UnauthorizedException} 탈퇴 실패 시
+   */
   async withdraw(userId: string) {
     try {
       // 회원 ID로 회원 조회
@@ -335,14 +399,24 @@ export class AuthService {
     }
   }
 
-  // 로그아웃
+  /**
+   * 로그아웃 처리
+   * @param userId - 사용자 ID
+   * @param sessionId - 세션 ID
+   * @returns 성공 메시지
+   */
   async logout(userId: string, sessionId: string) {
     // 특정 세션 삭제
     await this.loginModel.findByIdAndDelete(sessionId);
     return { message: '로그아웃 되었습니다.' };
   }
 
-  // 로그인 이력 조회
+  /**
+   * 로그인 이력 조회 (최근 10건)
+   * @param userId - 사용자 ID
+   * @returns 로그인 세션 배열
+   * @throws {Error} 조회 실패 시
+   */
   async getLoginHistory(userId: string) {
     try {
       // 해당 사용자의 로그인 이력 조회 (최근 10개)
@@ -355,7 +429,11 @@ export class AuthService {
     }
   }
 
-  // 탈퇴한 회원인지 확인
+  /**
+   * 탈퇴 회원 여부 확인
+   * @param userId - 사용자 ID
+   * @throws {UnauthorizedException} 탈퇴한 사용자일 경우
+   */
   async isWithDrawn(userId: string) {
     const user = await this.userModel.findById({ _id: userId });
     if (!user || user.deletedAt !== null) {

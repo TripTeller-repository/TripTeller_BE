@@ -1,35 +1,99 @@
 import { Catch, ExceptionFilter, ArgumentsHost, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { Logger } from 'winston';
 import { Request, Response } from 'express';
+import { SlackService } from '@common/slack/slack.service';
+import { ConfigService } from '@nestjs/config';
+import * as jwt from 'jsonwebtoken';
 
+/**
+ * 모든 예외를 잡아서 공통된 형식으로 응답하고, Winston 로거로 상세 로깅하는 필터
+ */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  constructor(@Inject('winston') private readonly logger: Logger) {}
+  constructor(
+    @Inject('winston') private readonly logger: Logger,
+    private readonly configService: ConfigService,
+    private readonly slackService: SlackService,
+  ) {}
 
-  catch(exception: any, host: ArgumentsHost) {
+  /**
+   * 예외를 포착하고 로깅 및 JSON 응답 처리
+   *
+   * @param exception - 발생한 예외 객체
+   * @param host - 요청 컨텍스트를 제공하는 NestJS ArgumentsHost
+   */
+  async catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    let status: number;
 
-    if (exception instanceof HttpException) {
-      status = exception.getStatus();
-    } else {
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
+    const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+
+    // 요청 본문 문자열로 변환
+    const requestBody = typeof request.body === 'object' ? JSON.stringify(request.body, null, 2) : String(request.body);
+
+    // IP 주소
+    const ip = request.ip || request.headers['x-forwarded-for'] || request.socket?.remoteAddress || 'unknown';
+
+    // 토큰에서 userId, sessionId 추출
+    let userId = 'unknown';
+    let sessionId = 'N/A';
+
+    try {
+      const authHeader = request.headers['authorization'];
+      if (authHeader?.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.decode(token) as jwt.JwtPayload;
+        if (decoded) {
+          userId = decoded.userId || 'unknown';
+          sessionId = decoded.sessionId || 'N/A';
+        }
+      }
+    } catch {
+      this.logger.warn('토큰 디코딩 실패, Slack 로그에 사용자 정보 누락 가능');
     }
 
+    // Winston 로그 출력
     this.logger.error({
-      message: 'An error occurred',
+      message: 'Unhandled Exception',
       error: exception.message,
       stack: exception.stack,
       request: {
         method: request.method,
         url: request.originalUrl,
+        ip,
+        userId,
+        sessionId,
         userAgent: request.headers['user-agent'],
         requestBody: request.body,
       },
     });
 
+    // 배포 환경일 경우 에러시 Slack 알림
+    const env = this.configService.get<string>('NODE_ENV');
+    if (env === 'production') {
+      const safeErrorMessage =
+        typeof exception.message === 'string'
+          ? exception.message
+              .replace(/[^\x20-\x7Eㄱ-ㅎ가-힣\s.,:!?(){}\[\]<>_~'"“”‘’=-]/g, '?')
+              .replace(/[\r\n]+/g, ' ')
+              .slice(0, 300)
+          : 'Unknown error';
+
+      const slackMessage =
+        '🚨 *Unhandled Exception*\n' +
+        `*URL:* \`${request.method} ${request.originalUrl}\`\n` +
+        `*Status:* ${status}\n` +
+        `*User ID:* ${userId}\n` +
+        `*IP:* ${ip}\n` +
+        `*Session ID:* ${sessionId}\`\n` +
+        `*Body:* \`\`\`${requestBody}\`\`\`\n` +
+        `*Error:* \`${safeErrorMessage}\``;
+
+      await this.slackService.sendError(slackMessage);
+    }
+
+    // 클라이언트 응답
     response.status(status).json({
       statusCode: status,
       message: 'Internal server error',

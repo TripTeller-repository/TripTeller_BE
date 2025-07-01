@@ -15,6 +15,9 @@ export const configuration = () => ({
   // 서버 비밀키
   secretKey: process.env.SECRET_KEY,
 
+  // 슬랙 웹훅
+  slackWebHookUrl: process.env.SLACK_WEBHOOK_URL,
+
   // AWS S3
   awsS3AccessKeyId: process.env.AWS_S3_ACCESSKEYID,
   awsS3SecretAccessKey: process.env.AWS_S3_SECRETACCESSKEY,

@@ -15,8 +15,8 @@ export class S3Service {
   constructor(private readonly configService: ConfigService) {}
 
   /**
-   * AWS S3 클라이언트를 생성하거나 반환합니다.
-   * 내부적으로 싱글톤 형태로 한 번만 초기화됩니다.
+   * AWS S3 클라이언트를 생성하거나 반환
+   * 내부적으로 한 번만 초기화
    *
    * @returns {S3Client} - 초기화된 S3 클라이언트 인스턴스
    */
@@ -39,7 +39,7 @@ export class S3Service {
   }
 
   /**
-   * 환경변수에서 S3 버킷 이름을 가져옵니다.
+   * 환경변수에서 S3 버킷 이름을 가져옴
    *
    * @returns {string} - S3 버킷 이름
    */

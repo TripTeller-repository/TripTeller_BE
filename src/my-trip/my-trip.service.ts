@@ -17,7 +17,15 @@ export class MyTripService {
     @InjectModel('Feed') private readonly feedModel: Model<FeedDocument>,
   ) {}
 
-  // 게시물의 커버 이미지 url만 불러오기
+  /**
+   * 사용자가 작성한 게시물의 커버 이미지 URL을 반환
+   *
+   * @param {string} feedId - 게시물 ID
+   * @param {string} userId - 요청한 사용자 ID
+   * @throws {UnauthorizedException} 게시물 작성자와 사용자 불일치 시
+   * @throws {NotFoundException} 게시물 또는 커버 이미지가 존재하지 않을 시
+   * @returns {{ coverImage: string }} 커버 이미지 URL
+   */
   async fetchMyFeedImgUrl(feedId: string, userId: string) {
     // 해당 게시물 찾기
     const feed = await this.feedModel.findById(feedId).exec();
@@ -43,14 +51,28 @@ export class MyTripService {
     return { coverImage };
   }
 
-  // 게시물 작성
+  /**
+   * 새로운 게시물을 생성
+   *
+   * @param {CreateFeedDto} createFeedDto - 게시물 생성 DTO
+   * @param {string} userId - 작성자 ID
+   * @returns {Promise<FeedDocument>} 생성된 게시물
+   */
   async createFeed(createFeedDto: CreateFeedDto, userId: string) {
     createFeedDto.userId = userId;
     const createdFeed = await this.feedModel.create(createFeedDto);
     return createdFeed.save();
   }
 
-  // 게시물 수정
+  /**
+   * 게시물을 수정
+   *
+   * @param {string} feedId - 수정할 게시물 ID
+   * @param {string} userId - 요청한 사용자 ID
+   * @param {UpdateFeedDto} updateFeedDto - 수정 데이터
+   * @throws {NotFoundException} 게시물 미존재 혹은 권한 없음
+   * @returns {{ message: string }} 수정 완료 메시지
+   */
   async updateFeed(feedId: string, userId: string, updateFeedDto: UpdateFeedDto) {
     const feed = await this.feedModel.findById({ _id: feedId }).exec();
     if (!feed) {
@@ -70,7 +92,14 @@ export class MyTripService {
     }
   }
 
-  // 게시물 삭제
+  /**
+   * 게시물 삭제(soft delete)
+   *
+   * @param {string} feedId - 게시물 ID
+   * @param {string} userId - 요청한 사용자 ID
+   * @throws {NotFoundException} 게시물 미존재 혹은 권한 없음
+   * @returns {{ message: string }} 삭제 완료 메시지
+   */
   async removeFeed(feedId: string, userId: string) {
     const feed = await this.feedModel.findById(feedId).exec();
     if (!feed) {
@@ -84,7 +113,13 @@ export class MyTripService {
     return { message: '해당 게시물이 삭제되었습니다.' };
   }
 
-  // 본인이 작성한 모든 게시물 조회
+  /**
+   * 본인이 작성한 게시물 전체를 페이지네이션으로 조회
+   *
+   * @param {number} pageNumber - 페이지 번호
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise<any>} 페이지네이션된 게시물 데이터
+   */
   async fetchAllMyFeedsPaginated(pageNumber: number = 1, userId: string) {
     const pageSize = 9;
     const criteria = {
@@ -98,7 +133,13 @@ export class MyTripService {
     return paginatedResult;
   }
 
-  // 본인이 작성한 특정 게시물을 게시물 ID로 조회
+  /**
+   * 특정 ID의 본인 게시물을 조회
+   *
+   * @param {string} feedId - 게시물 ID
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise<any>} 해당 게시물 정보
+   */
   async fetchMyFeedByFeedId(feedId: string, userId: string) {
     const feed = await this.feedModel.findById(feedId).exec();
     if (!feed) {
@@ -116,7 +157,13 @@ export class MyTripService {
     return this.feedExtractor.extractFeeds(feeds);
   }
 
-  // 본인이 작성한 모든 게시물 중 "공개" 게시물 조회
+  /**
+   * 본인이 작성한 모든 게시물 중 "공개" 게시물만 조회
+   *
+   * @param {number} pageNumber - 페이지 번호 (기본값: 1)
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise<any>} 페이지네이션된 공개 게시물 목록
+   */
   async fetchMyPublicFeeds(pageNumber: number = 1, userId: string) {
     const pageSize = 9;
     const criteria = {
@@ -131,7 +178,13 @@ export class MyTripService {
     return paginatedResult;
   }
 
-  // 본인이 작성한 모든 게시물 중 "비공개" 게시물 조회
+  /**
+   * 본인이 작성한 모든 게시물 중 "비공개" 게시물만 조회
+   *
+   * @param {number} pageNumber - 페이지 번호 (기본값: 1)
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise<any>} 페이지네이션된 비공개 게시물 목록
+   */
   async fetchMyPrivateFeeds(pageNumber: number = 1, userId: string) {
     const pageSize = 9;
     const criteria = {
@@ -147,7 +200,13 @@ export class MyTripService {
     return paginatedResult;
   }
 
-  // 본인이 쓴 게시물 정렬 : 최신순
+  /**
+   * 본인이 작성한 게시물을 최신순으로 정렬하여 조회
+   *
+   * @param {number} pageNumber - 페이지 번호 (기본값: 1)
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise<any>} 최신순 정렬된 게시물 목록
+   */
   async sortMyFeedsByRecent(pageNumber: number = 1, userId: string) {
     const pageSize = 9;
     const criteria = {
@@ -163,8 +222,13 @@ export class MyTripService {
     return paginatedResult;
   }
 
-  // 본인이 쓴 게시물 정렬 : 인기순
-  // feed 스키마의 likeCount 필드의 개수대로 내림차순 정렬
+  /**
+   * 본인이 작성한 게시물을 좋아요 수(likeCount) 기준으로 정렬하여 조회
+   *
+   * @param {number} pageNumber - 페이지 번호 (기본값: 1)
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise<any>} 인기순 정렬된 게시물 목록
+   */
   async sortMyFeedsByLikeCount(pageNumber: number = 1, userId: string) {
     const pageSize = 9;
     const criteria = {
@@ -179,7 +243,16 @@ export class MyTripService {
     return paginatedResult;
   }
 
-  // 본인이 쓴 게시물 기간별 조회
+  /**
+   * 본인이 작성한 게시물 중 특정 날짜 범위(startDate ~ endDate)에 해당하는 게시물을 조회
+   *
+   * @param {string} startDate - 조회 시작 날짜 (YYYY-MM-DD 형식)
+   * @param {string} endDate - 조회 종료 날짜 (YYYY-MM-DD 형식)
+   * @param {number} pageNumber - 페이지 번호
+   * @param {string} userId - 사용자 ID
+   * @throws {BadRequestException} startDate가 endDate보다 늦은 경우
+   * @returns {Promise<any>} 필터링된 게시물 목록 또는 메시지
+   */
   async fetchMyFeedsByDate(startDate: string, endDate: string, pageNumber: number, userId: string) {
     const pageSize = 9;
     const InputStartDate: Date = new Date(startDate);
@@ -232,14 +305,27 @@ export class MyTripService {
     }
   }
 
-  // AWS S3 프로필 이미지 Signed URL 불러오기
+  /**
+   * AWS S3에 업로드할 커버 이미지용 Signed URL을 생성
+   *
+   * @param {string} fileName - 원본 파일명
+   * @param {string} userId - 사용자 ID (파일명 유니크 처리용)
+   * @returns {Promise<string>} AWS S3 Signed URL
+   */
   async fetchCoverImageSignedUrl(fileName: string, userId: string) {
     const fileNameInBucket = this.fileUtilService.createFileUnixName(fileName, userId);
     const filePathName = `cover-image/${fileNameInBucket}`;
     return await this.fileUtilService.createSignedUrl(filePathName);
   }
 
-  // 커버 이미지 변경하기
+  /**
+   * 게시물의 커버 이미지를 업데이트
+   *
+   * @param {string} feedId - 대상 피드 ID
+   * @param {string} userId - 사용자 ID
+   * @param {string} imageUrl - 새 커버 이미지 URL
+   * @returns {Promise<FeedDocument | null>} 업데이트된 게시물 문서
+   */
   async updateCoverImageById(feedId: string, userId: string, imageUrl: string) {
     const updatedFeed = await this.feedModel
       .findOneAndUpdate({ _id: feedId, userId }, { coverImage: imageUrl }, { runValidators: true, new: true })

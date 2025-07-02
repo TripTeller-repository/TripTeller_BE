@@ -13,7 +13,13 @@ export class FeedScrapService {
   ) {}
 
   /**
-   * 스크랩 생성 (기존 ScrapService.createScrap 로직)
+   * 피드를 스크랩
+   *
+   * @param {CreateScrapDto} createScrapDto - 스크랩 생성 요청 DTO
+   * @param {string} userId - 스크랩을 요청한 사용자 ID
+   * @throws {NotFoundException} 피드가 존재하지 않을 경우
+   * @throws {Error} 비공개 피드거나 본인 피드일 경우 또는 이미 스크랩한 경우
+   * @returns {Promise<Scrap>} 생성된 스크랩 문서
    */
   async createScrap(createScrapDto: CreateScrapDto, userId: string) {
     const feed = await this.feedModel.findById(createScrapDto.feedId).exec();
@@ -44,7 +50,12 @@ export class FeedScrapService {
   }
 
   /**
-   * 스크랩 취소 (기존 ScrapService.removeScrap 로직)
+   * 피드의 스크랩을 취소
+   *
+   * @param {string} feedId - 스크랩을 취소할 피드 ID
+   * @param {string} userId - 요청한 사용자 ID
+   * @throws {NotFoundException} 피드 또는 스크랩이 존재하지 않을 경우
+   * @returns {Promise<{ message: string }>} 성공 메시지
    */
   async removeScrap(feedId: string, userId: string) {
     const feed = await this.feedModel.findById(feedId).exec();
@@ -64,14 +75,18 @@ export class FeedScrapService {
   }
 
   /**
-   * 사용자의 스크랩 목록 조회 (기존 ScrapService.findScrapsByUserId 로직)
+   * 사용자의 모든 스크랩을 조회
+   *
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise<Scrap[]>} 사용자 스크랩 목록
    */
   async findScrapsByUserId(userId: string) {
     return this.scrapModel.find({ userId }).exec();
   }
 
   /**
-   * 스크랩 여부 확인 (FeedExtractor에서 사용)
+   * 사용자가 특정 피드를 스크랩했는지 여부를 확인
+   *
    * @param {string} feedId - 피드 ID
    * @param {string} userId - 사용자 ID
    * @returns {Promise<boolean>} 스크랩 여부

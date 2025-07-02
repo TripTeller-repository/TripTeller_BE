@@ -18,6 +18,17 @@ export enum EAuthProvider {
   KAKAO = 'Kakao',
 }
 
+/**
+ * AuthService는 사용자 인증과 관련된 기능을 담당
+ * - 로그인 처리
+ * - 소셜 로그인 (Kakao) 연동
+ * - JWT 토큰 발급
+ *
+ * 주요 역할:
+ * 1. 사용자의 로그인 인증 (이메일/비밀번호)
+ * 2. 소셜 로그인(구글, 카카오 등) 연동 및 사용자 정보 저장
+ * 3. 인증된 사용자에 대해 JWT 토큰 발급
+ */
 @Injectable()
 export class AuthService {
   constructor(

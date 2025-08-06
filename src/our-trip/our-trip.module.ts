@@ -11,6 +11,7 @@ import { DailyPlanSchema } from '@daily-plan/daily-plan.schema';
 import { LoginSchema } from '@auth/login.schema';
 import { UserSchema } from '@user/schemas/user.schema';
 import { UserModule } from '@user/user.module';
+import { TwoFactorSchema } from '@auth/schemas/two-factor.schema';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from '@user/user.module';
       { name: 'Scrap', schema: ScrapSchema },
       { name: 'DailyPlan', schema: DailyPlanSchema },
       { name: 'Login', schema: LoginSchema },
+      { name: 'TwoFactor', schema: TwoFactorSchema },
     ]),
     FeedModule,
     UserModule,

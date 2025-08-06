@@ -7,12 +7,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { LoginSchema } from './login.schema';
 import { UserSchema } from '@user/schemas/user.schema';
 import { UserModule } from '@user/user.module';
+import { TwoFactorSchema } from './schemas/two-factor.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'User', schema: UserSchema },
       { name: 'Login', schema: LoginSchema },
+      { name: 'TwoFactor', schema: TwoFactorSchema },
     ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -25,7 +27,7 @@ import { UserModule } from '@user/user.module';
     UserModule,
   ],
   providers: [AuthService],
-  exports: [AuthService],
+  exports: [AuthService, MongooseModule],
   controllers: [AuthController],
 })
 export class AuthModule {}

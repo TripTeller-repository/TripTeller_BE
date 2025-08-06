@@ -7,9 +7,13 @@ import axios from 'axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserDevice } from './user-device.interface';
+import { UserDevice } from './interfaces/user-device.interface';
 import { Login } from './login.schema';
 import { User } from '@user/schemas/user.schema';
+import * as speakeasy from 'speakeasy';
+import * as QRCode from 'qrcode';
+import { TwoFactor } from './schemas/two-factor.schema';
+import { DeviceInfoUtil } from '../common/utils/device-info.util';
 
 // 소셜 로그인 사용자 정보 제공자
 export enum EAuthProvider {
@@ -34,6 +38,7 @@ export class AuthService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Login') private readonly loginModel: Model<Login>,
+    @InjectModel('TwoFactor') private readonly twoFactorModel: Model<TwoFactor>,
     private readonly userService: UserService,
   ) {}
 
@@ -194,7 +199,33 @@ export class AuthService {
         suspicious = this.detectSuspiciousLogin(lastSession, deviceInfo, ip);
       }
 
-      // 토큰 발행
+      // 2FA 활성화 여부 확인
+      const userHas2FA = await this.is2FAEnabled(user._id.toString());
+
+      // 2FA가 활성화되어 있거나 의심스러운 로그인인 경우
+      if (userHas2FA || suspicious) {
+        const tempPayload = {
+          userId: user._id.toString(),
+          type: 'temp',
+          isSuspicious: suspicious,
+          userHas2FA: userHas2FA,
+          browser: deviceInfo.browser,
+          os: deviceInfo.os,
+          ip,
+        };
+
+        const tempToken = jwt.sign(tempPayload, process.env.SECRET_KEY, { expiresIn: '10m' });
+
+        return {
+          requiresTwoFactor: true,
+          isSuspiciousLogin: suspicious,
+          suspiciousFactors: suspicious ? ['기기 또는 위치 변경 감지'] : [],
+          tempToken: tempToken,
+          userHas2FA: userHas2FA,
+        };
+      }
+
+      // 일반 로그인 완료
       const userIdString = user._id.toString();
       const { accessToken, refreshToken } = await this.createTokens(
         userIdString,
@@ -203,32 +234,10 @@ export class AuthService {
         ip,
       );
 
-      // 로그인 성공 시 액세스 토큰과 리프레시 토큰 반환
       return { accessToken, refreshToken, suspicious };
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');
     }
-  }
-
-  /**
-   * 의심스러운 로그인 감지
-   * @param session - 마지막 로그인 세션 정보
-   * @param deviceInfo - 현재 디바이스 정보
-   * @param ip - 현재 IP 주소
-   * @returns 의심스러우면 true
-   */
-  private detectSuspiciousLogin(session: Login, deviceInfo: UserDevice, ip: string): boolean {
-    // IP 주소가 다를 경우
-    if (session.ipAddress !== ip) {
-      return true;
-    }
-
-    // 브라우저나 OS가 변경된 경우
-    if (session.deviceInfo.browser !== deviceInfo.browser || session.deviceInfo.os !== deviceInfo.os) {
-      return true;
-    }
-
-    return false;
   }
 
   /**
@@ -450,5 +459,313 @@ export class AuthService {
     if (!user || user.deletedAt !== null) {
       throw new UnauthorizedException('이미 탈퇴한 회원입니다.');
     }
+  }
+
+  /**
+   * 2FA 설정 시작 - QR 코드 생성
+   */
+  async setup2FA(userId: string) {
+    try {
+      const user = await this.userModel.findById(userId);
+      if (!user) {
+        throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
+      }
+
+      const existingTwoFactor = await this.twoFactorModel.findOne({ userId });
+      if (existingTwoFactor && existingTwoFactor.enabled) {
+        throw new UnauthorizedException('이미 2단계 인증이 활성화되어 있습니다.');
+      }
+
+      const secret = speakeasy.generateSecret({
+        name: `TripTeller (${user.email})`,
+        issuer: 'TripTeller',
+        length: 32,
+      });
+
+      const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url);
+
+      await this.twoFactorModel.findOneAndUpdate(
+        { userId },
+        {
+          userId,
+          tempSecret: secret.base32,
+          enabled: false,
+        },
+        { upsert: true, new: true },
+      );
+
+      return {
+        qrCode: qrCodeUrl,
+        manualEntryKey: secret.base32,
+      };
+    } catch (error) {
+      console.error('2FA setup failed:', error);
+      throw new UnauthorizedException('2FA 설정에 실패했습니다.');
+    }
+  }
+
+  /**
+   * 2FA 설정 완료 - 토큰 검증 후 활성화
+   */
+  async verify2FASetup(userId: string, token: string) {
+    try {
+      const twoFactor = await this.twoFactorModel.findOne({ userId });
+      if (!twoFactor || !twoFactor.tempSecret) {
+        throw new UnauthorizedException('2FA 설정 세션이 만료되었습니다.');
+      }
+
+      const verified = speakeasy.totp.verify({
+        secret: twoFactor.tempSecret,
+        encoding: 'base32',
+        token: token,
+        window: 2,
+      });
+
+      if (!verified) {
+        throw new UnauthorizedException('인증 코드가 올바르지 않습니다.');
+      }
+
+      const backupCodes = Array.from({ length: 10 }, () => Math.random().toString(36).substring(2, 8).toUpperCase());
+
+      await this.twoFactorModel.findOneAndUpdate(
+        { userId },
+        {
+          secret: twoFactor.tempSecret,
+          enabled: true,
+          backupCodes: backupCodes,
+          tempSecret: null,
+          setupCompletedAt: new Date(),
+          disabledAt: null,
+        },
+      );
+
+      return { backupCodes };
+    } catch (error) {
+      console.error('2FA verification failed:', error);
+      throw new UnauthorizedException('2FA 인증에 실패했습니다.');
+    }
+  }
+
+  /**
+   * 2FA 토큰 검증
+   */
+  async verify2FAToken(userId: string, token: string): Promise<boolean> {
+    try {
+      const twoFactor = await this.twoFactorModel.findOne({ userId, enabled: true });
+      if (!twoFactor || !twoFactor.secret) {
+        return false;
+      }
+
+      const verified = speakeasy.totp.verify({
+        secret: twoFactor.secret,
+        encoding: 'base32',
+        token: token,
+        window: 2,
+      });
+
+      if (verified) {
+        await this.twoFactorModel.findOneAndUpdate({ userId }, { lastAuthenticatedAt: new Date() });
+        return true;
+      }
+
+      // 백업 코드 확인
+      const backupCodeIndex = twoFactor.backupCodes.indexOf(token.toUpperCase());
+      if (backupCodeIndex !== -1) {
+        const updatedBackupCodes = [...twoFactor.backupCodes];
+        updatedBackupCodes.splice(backupCodeIndex, 1);
+
+        await this.twoFactorModel.findOneAndUpdate(
+          { userId },
+          {
+            backupCodes: updatedBackupCodes,
+            lastAuthenticatedAt: new Date(),
+          },
+        );
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('2FA token verification failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 사용자의 2FA 활성화 여부 확인
+   */
+  async is2FAEnabled(userId: string): Promise<boolean> {
+    try {
+      const twoFactor = await this.twoFactorModel.findOne({ userId, enabled: true });
+      return !!twoFactor;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * 2FA 상태 조회
+   */
+  async get2FAStatus(userId: string) {
+    try {
+      const twoFactor = await this.twoFactorModel.findOne({ userId });
+
+      return {
+        enabled: twoFactor?.enabled || false,
+        backupCodesCount: twoFactor?.backupCodes?.length || 0,
+        setupCompletedAt: twoFactor?.setupCompletedAt || null,
+        lastAuthenticatedAt: twoFactor?.lastAuthenticatedAt || null,
+      };
+    } catch (error) {
+      return {
+        enabled: false,
+        backupCodesCount: 0,
+        setupCompletedAt: null,
+        lastAuthenticatedAt: null,
+      };
+    }
+  }
+
+  /**
+   * 2FA 비활성화
+   */
+  async disable2FA(userId: string, token: string) {
+    try {
+      const isValid = await this.verify2FAToken(userId, token);
+      if (!isValid) {
+        throw new UnauthorizedException('올바른 인증 코드를 입력해주세요.');
+      }
+
+      await this.twoFactorModel.findOneAndUpdate(
+        { userId },
+        {
+          enabled: false,
+          disabledAt: new Date(),
+          tempSecret: null,
+        },
+      );
+
+      return { message: '2단계 인증이 비활성화되었습니다.' };
+    } catch (error) {
+      console.error('2FA disable failed:', error);
+      throw new UnauthorizedException('2FA 비활성화에 실패했습니다.');
+    }
+  }
+
+  /**
+   * 새 백업 코드 생성
+   */
+  async generateNewBackupCodes(userId: string, token: string) {
+    try {
+      const isValid = await this.verify2FAToken(userId, token);
+      if (!isValid) {
+        throw new UnauthorizedException('올바른 인증 코드를 입력해주세요.');
+      }
+
+      const newBackupCodes = Array.from({ length: 10 }, () => Math.random().toString(36).substring(2, 8).toUpperCase());
+
+      await this.twoFactorModel.findOneAndUpdate({ userId }, { backupCodes: newBackupCodes });
+
+      return {
+        backupCodes: newBackupCodes,
+        message: '새로운 백업 코드가 생성되었습니다.',
+      };
+    } catch (error) {
+      throw new UnauthorizedException('백업 코드 생성에 실패했습니다.');
+    }
+  }
+
+  /**
+   * 2FA 인증 완료 처리
+   */
+  async verify2FALogin(tempToken: string, totpCode?: string, skipTwoFactor?: boolean) {
+    try {
+      const decoded = jwt.verify(tempToken, process.env.SECRET_KEY) as any;
+      if (decoded.type !== 'temp') {
+        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+      }
+
+      const user = await this.userModel.findById(decoded.userId);
+      if (!user) {
+        throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
+      }
+
+      // 의심스러운 로그인이지만 2FA 건너뛰기 선택한 경우
+      if (decoded.isSuspicious && skipTwoFactor && !decoded.userHas2FA) {
+        return this.completeLogin(user, decoded);
+      }
+
+      // 2FA 코드 검증
+      if (!totpCode) {
+        throw new UnauthorizedException('인증 코드를 입력해주세요.');
+      }
+
+      const verified = await this.verify2FAToken(decoded.userId, totpCode);
+      if (!verified) {
+        throw new UnauthorizedException('인증 코드가 올바르지 않습니다.');
+      }
+
+      return this.completeLogin(user, decoded);
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new UnauthorizedException('인증 시간이 만료되었습니다. 다시 로그인해주세요.');
+      }
+      throw new UnauthorizedException('2FA 인증에 실패했습니다.');
+    }
+  }
+
+  /**
+   * 로그인 완료 처리
+   */
+  private async completeLogin(user: any, decoded: any) {
+    const deviceInfo = {
+      browser: decoded.browser,
+      os: decoded.os,
+      device: 'Desktop',
+      userAgent: '',
+    };
+
+    const { accessToken, refreshToken } = await this.createTokens(
+      user._id.toString(),
+      user.authProvider || null,
+      deviceInfo,
+      decoded.ip,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        email: user.email,
+        nickname: user.nickname,
+      },
+    };
+  }
+
+  /**
+   * 의심스러운 로그인 감지 로직 (유틸 사용)
+   * @param session - 마지막 로그인 세션 정보
+   * @param deviceInfo - 현재 디바이스 정보
+   * @param ip - 현재 IP 주소
+   * @returns 의심스러우면 true
+   */
+  private detectSuspiciousLogin(session: Login, deviceInfo: UserDevice, ip: string): boolean {
+    const suspiciousFactors = [];
+
+    if (session.ipAddress !== ip) {
+      suspiciousFactors.push('ip_change');
+    }
+
+    if (!DeviceInfoUtil.isSameDevice(session.deviceInfo, deviceInfo)) {
+      suspiciousFactors.push('device_change');
+    }
+
+    const daysSinceLastLogin = (Date.now() - session.lastLoginAt.getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceLastLogin > 30) {
+      suspiciousFactors.push('long_absence');
+    }
+
+    return suspiciousFactors.length >= 2;
   }
 }

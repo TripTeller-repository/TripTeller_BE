@@ -10,6 +10,7 @@ import { LoginSchema } from '@auth/login.schema';
 import { UserSchema } from '@user/schemas/user.schema';
 import { UserModule } from '@user/user.module';
 import { CommonModule } from '@common/modules/common.module';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CommonModule } from '@common/modules/common.module';
     ]),
     UserModule,
     CommonModule,
+    AuthModule,
   ],
   providers: [ScrapService, AuthService],
   controllers: [ScrapController],

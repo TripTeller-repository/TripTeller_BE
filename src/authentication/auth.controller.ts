@@ -9,6 +9,7 @@ import {
   Get,
   Query,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { Request as expReq, Response as expRes, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
@@ -17,6 +18,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatedUserDto } from './dto/created-user.dto';
 import { PasswordSerializerInterceptor } from './password.interceptor';
+import { RateLimitGuard } from '@common/guards';
+import { Setup2faDto } from './dto/setup-2fa.dto';
+import { Verify2faDto } from './dto/verify-2fa.dto';
+import { DeviceInfoUtil } from '@common/utils/device-info.util';
 
 @UseInterceptors(PasswordSerializerInterceptor)
 @ApiTags('Authentication')
@@ -76,25 +81,43 @@ export class AuthController {
   async postSignIn(@Body() signInDto: SignInDto, @Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
     try {
       // 디바이스 정보 추출
-      const deviceInfo = this.extractDeviceInfo(req);
+      const deviceInfo = DeviceInfoUtil.extractDeviceInfo(req);
       const ip = req.ip || req.socket.remoteAddress;
 
+      // 디바이스 ID 쿠키 설정
+      if (!req.cookies?.deviceId) {
+        DeviceInfoUtil.setDeviceIdCookie(res, deviceInfo.deviceId);
+      }
+
       // 로그인 시도
-      const { accessToken, refreshToken, suspicious } = await this.authService.signIn(signInDto, deviceInfo, ip);
+      const result = await this.authService.signIn(signInDto, deviceInfo, ip);
 
-      // 쿠키에 토큰 설정
-      this.setRefreshTokenCookie(res, refreshToken);
-
-      // 의심스러운 로그인이면 클라이언트에 알림
-      if (suspicious) {
+      // 2FA가 필요한 경우
+      if (result.requiresTwoFactor) {
         return {
-          accessToken,
+          requiresTwoFactor: true,
+          isSuspiciousLogin: result.isSuspiciousLogin,
+          suspiciousFactors: result.suspiciousFactors,
+          tempToken: result.tempToken,
+          userHas2FA: result.userHas2FA,
+          message: result.isSuspiciousLogin
+            ? '의심스러운 로그인이 감지되었습니다. 2단계 인증을 완료해주세요.'
+            : '2단계 인증이 필요합니다.',
+        };
+      }
+
+      // 일반 로그인 완료
+      this.setRefreshTokenCookie(res, result.refreshToken);
+
+      if (result.suspicious) {
+        return {
+          accessToken: result.accessToken,
           suspicious: true,
           message: '의심스러운 로그인이 감지되었습니다. 본인이 아니라면 비밀번호를 변경해주세요.',
         };
       }
 
-      return { accessToken };
+      return { accessToken: result.accessToken };
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');
     }
@@ -143,7 +166,7 @@ export class AuthController {
       }
 
       // 디바이스 정보 추출
-      const deviceInfo = this.extractDeviceInfo(req);
+      const deviceInfo = DeviceInfoUtil.extractDeviceInfo(req);
       const ip = req.ip || req.socket.remoteAddress;
 
       // 액세스 토큰 재발급
@@ -200,7 +223,7 @@ export class AuthController {
       const kakaoUserInfo = await this.authService.fetchKakaoUserInfo(kakaoToken);
 
       // 디바이스 정보 추출
-      const deviceInfo = this.extractDeviceInfo(req);
+      const deviceInfo = DeviceInfoUtil.extractDeviceInfo(req);
       const ip = req.ip || req.socket.remoteAddress;
 
       // 우리 서버의 토큰 발행하기
@@ -307,84 +330,122 @@ export class AuthController {
     }
   }
 
-  // 디바이스 정보 추출 메서드
-  private extractDeviceInfo(req: expReq): any {
-    const userAgent = req.headers['user-agent'] || '';
-
-    // 간단한 디바이스 정보 추출 로직
-    const browser = this.detectBrowser(userAgent);
-    const os = this.detectOS(userAgent);
-
-    return {
-      deviceId: req.cookies.deviceId || `device_${this.detectBrowser(userAgent)}_${Date.now()}`,
-      browser,
-      os,
-      userAgent,
-    };
+  @Post('setup-2fa')
+  @ApiOperation({
+    summary: '2단계 인증 설정 시작',
+    description: 'QR 코드를 생성하여 Google Authenticator 앱에 등록할 수 있도록 한다.',
+  })
+  async postSetup2FA(@Req() req: expReq) {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedException('로그인이 필요합니다.');
+      }
+      return await this.authService.setup2FA(userId);
+    } catch (error) {
+      throw new UnauthorizedException('2FA 설정에 실패했습니다.');
+    }
   }
 
-  // 브라우저 감지
-  private detectBrowser(userAgent: string): string {
-    // Edge (Chromium 기반) - 반드시 가장 먼저 확인해야 함
-    if (/Edg\//.test(userAgent)) {
-      return 'Edge';
+  @Post('verify-2fa-setup')
+  @UseGuards(RateLimitGuard)
+  @ApiOperation({
+    summary: '2단계 인증 설정 완료',
+    description: 'Google Authenticator에서 생성된 코드로 2FA 설정을 완료한다.',
+  })
+  async postVerify2FASetup(@Body() setup2faDto: Setup2faDto, @Req() req: expReq) {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedException('로그인이 필요합니다.');
+      }
+      const result = await this.authService.verify2FASetup(userId, setup2faDto.token);
+      return {
+        message: '2단계 인증이 활성화되었습니다.',
+        backupCodes: result.backupCodes,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('2FA 설정 완료에 실패했습니다.');
     }
-
-    // Edge (레거시)
-    if (/Edge\//.test(userAgent)) {
-      return 'Edge';
-    }
-
-    // Firefox
-    if (/Firefox\//.test(userAgent) && !/ Seamonkey\//.test(userAgent)) {
-      return 'Firefox';
-    }
-
-    // Chrome - Edge 및 다른 Chromium 기반 브라우저 체크 후에 확인
-    if (
-      /Chrome\//.test(userAgent) &&
-      !/Chromium\//.test(userAgent) &&
-      !/Edg\//.test(userAgent) &&
-      !/OPR\//.test(userAgent)
-    ) {
-      return 'Chrome';
-    }
-
-    // Safari - Chrome 체크 후 확인 (Safari는 Chrome UA 문자열에도 포함됨)
-    if (/Safari\//.test(userAgent) && !/Chrome\//.test(userAgent) && !/Chromium\//.test(userAgent)) {
-      return 'Safari';
-    }
-
-    // Internet Explorer
-    if (/MSIE(\d+\.\d+);/.test(userAgent) || /Trident\//.test(userAgent)) {
-      return 'Internet Explorer';
-    }
-
-    // Thunder Client
-    if (/Thunder Client/.test(userAgent)) {
-      return 'Thunder Client';
-    }
-
-    // 기타 API 클라이언트
-    if (/Postman/.test(userAgent)) {
-      return 'Postman';
-    }
-
-    if (/curl/.test(userAgent)) {
-      return 'curl';
-    }
-
-    return 'Unknown';
   }
 
-  // OS 감지
-  private detectOS(userAgent: string): string {
-    if (userAgent.includes('Windows')) return 'Windows';
-    if (userAgent.includes('Mac OS')) return 'MacOS';
-    if (userAgent.includes('Linux')) return 'Linux';
-    if (userAgent.includes('Android')) return 'Android';
-    if (userAgent.includes('iPhone') || userAgent.includes('iPad')) return 'iOS';
-    return 'Unknown';
+  @Post('verify-2fa')
+  @UseGuards(RateLimitGuard)
+  @ApiOperation({
+    summary: '2단계 인증 완료',
+    description: '임시 토큰과 2FA 코드로 로그인을 완료한다.',
+  })
+  async postVerify2FA(@Body() verify2faDto: Verify2faDto, @Res({ passthrough: true }) res: expRes) {
+    try {
+      const result = await this.authService.verify2FALogin(
+        verify2faDto.tempToken,
+        verify2faDto.totpCode,
+        verify2faDto.skipTwoFactor,
+      );
+
+      this.setRefreshTokenCookie(res, result.refreshToken);
+      this.setAccessTokenCookie(res, result.accessToken);
+
+      return {
+        accessToken: result.accessToken,
+        user: result.user,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('2FA 인증에 실패했습니다.');
+    }
+  }
+
+  @Post('disable-2fa')
+  @UseGuards(RateLimitGuard)
+  @ApiOperation({
+    summary: '2단계 인증 비활성화',
+    description: '현재 2FA 코드로 인증 후 2단계 인증을 비활성화한다.',
+  })
+  async postDisable2FA(@Body() setup2faDto: Setup2faDto, @Req() req: expReq) {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedException('로그인이 필요합니다.');
+      }
+      return await this.authService.disable2FA(userId, setup2faDto.token);
+    } catch (error) {
+      throw new UnauthorizedException('2FA 비활성화에 실패했습니다.');
+    }
+  }
+
+  @Get('2fa-status')
+  @ApiOperation({
+    summary: '2단계 인증 상태 확인',
+    description: '현재 사용자의 2FA 활성화 여부를 확인한다.',
+  })
+  async get2FAStatus(@Req() req: expReq) {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedException('로그인이 필요합니다.');
+      }
+      return await this.authService.get2FAStatus(userId);
+    } catch (error) {
+      throw new UnauthorizedException('2FA 상태 조회에 실패했습니다.');
+    }
+  }
+
+  @Post('regenerate-backup-codes')
+  @UseGuards(RateLimitGuard)
+  @ApiOperation({
+    summary: '백업 코드 재생성',
+    description: '기존 백업 코드를 모두 사용한 경우 새로운 백업 코드를 생성한다.',
+  })
+  async postRegenerateBackupCodes(@Body() setup2faDto: Setup2faDto, @Req() req: expReq) {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedException('로그인이 필요합니다.');
+      }
+      return await this.authService.generateNewBackupCodes(userId, setup2faDto.token);
+    } catch (error) {
+      throw new UnauthorizedException('백업 코드 재생성에 실패했습니다.');
+    }
   }
 
   // 쿠키에서 모든 토큰 제거

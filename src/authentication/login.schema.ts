@@ -1,5 +1,5 @@
 import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
-import { UserDevice } from './user-device.interface';
+import { UserDevice } from './interfaces/user-device.interface';
 import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })

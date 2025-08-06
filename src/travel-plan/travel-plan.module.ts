@@ -12,6 +12,7 @@ import { LoginSchema } from '@auth/login.schema';
 import { UserSchema } from '@user/schemas/user.schema';
 import { UserModule } from '@user/user.module';
 import { FeedModule } from '@feed/feed.module';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FeedModule } from '@feed/feed.module';
     ]),
     UserModule,
     FeedModule,
+    AuthModule,
   ],
   providers: [TravelPlanService, TravelPlanIndexService, AuthService],
   controllers: [TravelPlanController],

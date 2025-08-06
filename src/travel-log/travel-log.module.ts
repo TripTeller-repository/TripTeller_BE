@@ -8,6 +8,7 @@ import { LoginSchema } from '@auth/login.schema';
 import { UserSchema } from '@user/schemas/user.schema';
 import { UserModule } from '@user/user.module';
 import { FileModule } from '@common/files/file.module';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FileModule } from '@common/files/file.module';
     ]),
     UserModule,
     FileModule,
+    AuthModule,
   ],
   controllers: [TravelLogController],
   providers: [TravelLogService, AuthService],

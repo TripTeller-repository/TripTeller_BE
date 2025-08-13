@@ -1,40 +1,53 @@
+# ─────────────────────────────
+# Build stage
+# ─────────────────────────────
 FROM node:22-alpine AS builder
-
 WORKDIR /usr/src/app
 
-# 의존성 설치를 위한 파일 복사
+# 1) 의존성 레이어 캐시 최적화
 COPY package.json package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
 
-# 의존성 설치
-RUN npm ci
-
-# 소스 복사
+# 2) 소스 복사 및 빌드
 COPY . .
-
-# 빌드
 RUN npm run build
 
-# 프로덕션 이미지
+# ─────────────────────────────
+# Runtime stage
+# ─────────────────────────────
 FROM node:22-alpine
+
+# (헬스체크용) curl 설치
+RUN apk add --no-cache curl
 
 WORKDIR /usr/src/app
 
-# 프로덕션 의존성만 설치하기 위한 파일 복사
+# 프로덕션 의존성만 설치
 COPY package.json package-lock.json ./
-RUN npm ci --only=production
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev && npm prune --omit=dev
 
-# 빌드된 파일만 복사
+# 빌드 아티팩트만 복사
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/.production.env ./
 
-# 헬스체크 구성
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://api.trip-teller.com/health-check || exit 1
+# 메타데이터
+ARG BUILD_VERSION=unknown
+ARG GIT_SHA=unknown
+LABEL org.opencontainers.image.title="TripTeller API" \
+      org.opencontainers.image.version="${BUILD_VERSION}" \
+      org.opencontainers.image.revision="${GIT_SHA}" \
+      org.opencontainers.image.source="https://github.com/TripTeller-repository/TripTeller_BE"
 
+# 내부 헬스체크 (도메인X, 로컬만)
+HEALTHCHECK --interval=10s --timeout=5s --start-period=20s --retries=5 \
+  CMD curl -fsS http://localhost:3000/health-check >/dev/null || exit 1
+
+ENV NODE_ENV=production
+ENV PORT=3000
 EXPOSE 3000
 
-# 환경 변수 설정
-ENV NODE_ENV=production
+# 비 루트 권한으로 실행
+USER node
 
-# 애플리케이션 실행
-CMD ["node", "dist/main"]
+# 실행
+CMD ["node", "dist/main.js"]

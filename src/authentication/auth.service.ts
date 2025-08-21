@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { GoneException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '@user/services/user.service';
 import { SignInDto } from './dto/sign-in.dto';
 import * as jwt from 'jsonwebtoken';
@@ -489,14 +489,21 @@ export class AuthService {
         {
           userId,
           tempSecret: secret.base32,
+          tempSecretExpiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10분 후 만료
           enabled: false,
         },
         { upsert: true, new: true },
       );
 
+      if (existingTwoFactor.tempSecretExpiresAt && existingTwoFactor.tempSecretExpiresAt < new Date()) {
+        await this.twoFactorModel.updateOne({ userId }, { $unset: { tempSecret: 1, tempSecretExpiresAt: 1 } });
+        throw new GoneException('2FA 설정 시간이 만료되었습니다. 다시 QR을 발급받아 시작하세요.');
+      }
+
       return {
         qrCode: qrCodeUrl,
         manualEntryKey: secret.base32,
+        expiresAt: Date.now() + 10 * 60 * 1000,
       };
     } catch (error) {
       console.error('2FA setup failed:', error);
@@ -517,7 +524,8 @@ export class AuthService {
       const verified = speakeasy.totp.verify({
         secret: twoFactor.tempSecret,
         encoding: 'base32',
-        token: token,
+        token,
+        step: 30,
         window: 2,
       });
 

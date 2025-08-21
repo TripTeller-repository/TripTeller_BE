@@ -23,6 +23,10 @@ export class TwoFactor extends Document {
   @Prop({ default: null })
   tempSecret: string | null;
 
+  // 임시 시크릿 만료 시간
+  @Prop({ default: null })
+  tempSecretExpiresAt: Date | null;
+
   // 마지막 2FA 인증 시간
   @Prop({ default: null })
   lastAuthenticatedAt: Date | null;

@@ -24,29 +24,30 @@ export class AllExceptionsFilter implements ExceptionFilter {
    */
   async catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const res = ctx.getResponse<Response>();
+    const req = ctx.getRequest<Request>();
 
-    const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+    const isHttp = exception instanceof HttpException;
+    const status = isHttp ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    // 요청 본문 문자열로 변환
-    const requestBody = typeof request.body === 'object' ? JSON.stringify(request.body, null, 2) : String(request.body);
+    // 요청 본문 (문자열로 변환)
+    const requestBody = typeof req.body === 'object' ? JSON.stringify(req.body, null, 2) : String(req.body);
 
     // IP 주소
-    const ip = request.ip || request.headers['x-forwarded-for'] || request.socket?.remoteAddress || 'unknown';
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
 
     // 토큰에서 userId, sessionId 추출
     let userId = 'unknown';
     let sessionId = 'N/A';
 
     try {
-      const authHeader = request.headers['authorization'];
+      const authHeader = req.headers['authorization'];
       if (authHeader?.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1];
         const decoded = jwt.decode(token) as jwt.JwtPayload;
         if (decoded) {
-          userId = decoded.userId || 'unknown';
-          sessionId = decoded.sessionId || 'N/A';
+          userId = (decoded as any).userId ?? 'unknown';
+          sessionId = (decoded as any).sessionId ?? 'N/A';
         }
       }
     } catch {
@@ -56,16 +57,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // Winston 로그 출력
     this.logger.error({
       message: 'Unhandled Exception',
-      error: exception.message,
-      stack: exception.stack,
+      error: exception?.message,
+      stack: exception?.stack,
       request: {
-        method: request.method,
-        url: request.originalUrl,
+        method: req.method,
+        url: req.originalUrl,
         ip,
         userId,
         sessionId,
-        userAgent: request.headers['user-agent'],
-        requestBody: request.body,
+        userAgent: req.headers['user-agent'],
+        requestBody,
       },
     });
 
@@ -73,7 +74,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const env = this.configService.get<string>('NODE_ENV');
     if (env === 'production') {
       const safeErrorMessage =
-        typeof exception.message === 'string'
+        typeof exception?.message === 'string'
           ? exception.message
               .replace(/[^\x20-\x7Eㄱ-ㅎ가-힣\s.,:!?(){}\[\]<>_~'"“”‘’=-]/g, '?')
               .replace(/[\r\n]+/g, ' ')
@@ -82,7 +83,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
       const slackMessage =
         '🚨 *Unhandled Exception*\n' +
-        `*URL:* \`${request.method} ${request.originalUrl}\`\n` +
+        `*URL:* \`${req.method} ${req.originalUrl}\`\n` +
         `*Status:* ${status}\n` +
         `*User ID:* ${userId}\n` +
         `*IP:* ${ip}\n` +
@@ -93,10 +94,25 @@ export class AllExceptionsFilter implements ExceptionFilter {
       await this.slackService.sendError(slackMessage);
     }
 
-    // 클라이언트 응답
-    response.status(status).json({
-      statusCode: status,
-      message: 'Internal server error',
-    });
+    // 응답 분기처리
+    if (isHttp) {
+      const payload = exception.getResponse();
+      // payload가 string이면 메시지로, 객체면 그대로 사용
+      if (typeof payload === 'string') {
+        res.status(status).json({ statusCode: status, message: payload });
+      } else {
+        const obj = payload as Record<string, any>;
+        res.status(status).json({
+          statusCode: status,
+          ...obj,
+          ...(obj.statusCode ? {} : { statusCode: status }),
+        });
+      }
+    } else {
+      res.status(status).json({
+        statusCode: status,
+        message: 'Internal Server Error',
+      });
+    }
   }
 }

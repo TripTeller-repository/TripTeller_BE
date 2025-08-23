@@ -11,12 +11,20 @@ export class Verify2faDto {
   tempToken: string;
 
   @ApiProperty({
-    description: '2FA 인증 코드 또는 백업 코드',
+    description: '2FA 인증 코드',
     example: '123456',
   })
   @IsString()
   @IsOptional()
   totpCode?: string;
+
+  @ApiProperty({
+    description: '2FA 백업 코드 (잃어버릴 경우)',
+    example: '123456',
+  })
+  @IsString()
+  @IsOptional()
+  backupCode?: string;
 
   @ApiProperty({
     description: '2FA 건너뛰기 여부 (의심스러운 로그인시만)',

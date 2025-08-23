@@ -1,4 +1,14 @@
-import { Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe, Query, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { Body } from '@nestjs/common';
 import { UserService } from '@user/services/user.service';
 import { Post } from '@nestjs/common';
@@ -37,8 +47,12 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getPublicFeeds(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req: Request) {
+  async getPublicFeeds(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
+      console.log('raw query:', (req as any).query);
       const userId = req['user']?.userId;
       return this.ourTripService.fetchOurFeeds(pageNumber, userId || null);
     } catch (error) {
@@ -85,7 +99,7 @@ export class OurTripController {
   async getFeedsByDate(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
-    @Query('pageNumber', ParseIntPipe) pageNumber: number = 1,
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
     @Req() req: Request,
   ) {
     try {
@@ -129,7 +143,10 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getOurFeedsOrderedByRecent(@Query('pageNumber', ParseIntPipe) pageNumber: number = 1, @Req() req: Request) {
+  async getOurFeedsOrderedByRecent(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
       const userId = req['user']?.userId;
       return this.ourTripService.sortOurFeedsByRecent(pageNumber, userId || null);
@@ -144,7 +161,6 @@ export class OurTripController {
     }
   }
 
-  // our-trip/order-by/like-count?pageNumber=1
   @Get('order-by/like-count')
   @ApiOperation({
     summary: '모든 공개 게시글 정렬 : 인기순',
@@ -172,7 +188,10 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getOurFeedsOrderedByLikeCount(@Query('pageNumber', ParseIntPipe) pageNumber: number = 1, @Req() req: Request) {
+  async getOurFeedsOrderedByLikeCount(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
       const userId = req['user']?.userId;
       return this.ourTripService.sortOurFeedsByLikeCount(pageNumber, userId || null);

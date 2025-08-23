@@ -16,7 +16,7 @@ export class OurTripService {
   ) {}
 
   /**
-   * 모든 공개 게시물을 조회합니다. (페이지네이션)
+   * 모든 공개 게시물을 조회 (페이지네이션)
    *
    * @param {number} pageNumber - 페이지 번호 (기본값: 1)
    * @param {string} [userId] - 사용자 ID (선택적, 로그인 상태에서 개인화된 피드를 제공하기 위함)
@@ -29,6 +29,7 @@ export class OurTripService {
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
     const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
+
     const extractedFeeds = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
 
     paginatedResult.feeds.data = extractedFeeds;

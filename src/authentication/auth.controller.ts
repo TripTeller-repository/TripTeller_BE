@@ -15,7 +15,7 @@ import { Request as expReq, Response as expRes, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatedUserDto } from './dto/created-user.dto';
 import { PasswordSerializerInterceptor } from './password.interceptor';
 import { RateLimitGuard } from '@common/guards';
@@ -124,6 +124,7 @@ export class AuthController {
   }
 
   @Post('refresh-accessToken')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '액세스 토큰 재발급',
     description: '리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급한다.',
@@ -240,6 +241,7 @@ export class AuthController {
   }
 
   @Delete('withdraw')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '회원 탈퇴',
     description: '회원 탈퇴를 요청하여 해당 사용자의 계정을 삭제한다.',
@@ -294,6 +296,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '로그아웃',
     description: '현재 기기에서 로그아웃한다.',
@@ -309,6 +312,7 @@ export class AuthController {
   }
 
   @Get('login-history')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '로그인 이력 조회',
     description: '사용자의 로그인 이력을 조회한다.',
@@ -330,7 +334,8 @@ export class AuthController {
     }
   }
 
-  @Post('setup-2fa')
+  @Post('2fa/setup')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '2단계 인증 설정 시작',
     description: 'QR 코드를 생성하여 Google Authenticator 앱에 등록할 수 있도록 한다.',
@@ -347,7 +352,8 @@ export class AuthController {
     }
   }
 
-  @Post('verify-2fa-setup')
+  @Post('2fa/verify-setup')
+  @ApiBearerAuth()
   @UseGuards(RateLimitGuard)
   @ApiOperation({
     summary: '2단계 인증 설정 완료',
@@ -369,18 +375,27 @@ export class AuthController {
     }
   }
 
-  @Post('verify-2fa')
+  @Post('2fa/verify')
   @UseGuards(RateLimitGuard)
   @ApiOperation({
     summary: '2단계 인증 완료',
     description: '임시 토큰과 2FA 코드로 로그인을 완료한다.',
   })
   async postVerify2FA(@Body() verify2faDto: Verify2faDto, @Res({ passthrough: true }) res: expRes) {
+    // 디버깅용 콘솔
+    console.log('[2FA DEBUG][CTRL] body', {
+      hasTempToken: !!verify2faDto.tempToken,
+      hasTotp: !!verify2faDto.totpCode,
+      hasBackup: !!verify2faDto.backupCode,
+      skipTwoFactor: verify2faDto.skipTwoFactor,
+    });
+
     try {
       const result = await this.authService.verify2FALogin(
         verify2faDto.tempToken,
         verify2faDto.totpCode,
         verify2faDto.skipTwoFactor,
+        verify2faDto.backupCode,
       );
 
       this.setRefreshTokenCookie(res, result.refreshToken);
@@ -395,7 +410,8 @@ export class AuthController {
     }
   }
 
-  @Post('disable-2fa')
+  @Post('2fa/disable')
+  @ApiBearerAuth()
   @UseGuards(RateLimitGuard)
   @ApiOperation({
     summary: '2단계 인증 비활성화',
@@ -413,7 +429,8 @@ export class AuthController {
     }
   }
 
-  @Get('2fa-status')
+  @Get('2fa/status')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '2단계 인증 상태 확인',
     description: '현재 사용자의 2FA 활성화 여부를 확인한다.',
@@ -430,7 +447,8 @@ export class AuthController {
     }
   }
 
-  @Post('regenerate-backup-codes')
+  @Post('2fa/backup-codes')
+  @ApiBearerAuth()
   @UseGuards(RateLimitGuard)
   @ApiOperation({
     summary: '백업 코드 재생성',

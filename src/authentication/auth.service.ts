@@ -564,6 +564,41 @@ export class AuthService {
         return false;
       }
 
+      // 디버깅용 콘솔
+      const inputRaw = (token ?? '').trim();
+      const inputNorm = inputRaw.replace(/[\s-]/g, '').toUpperCase();
+
+      // 현재/이전/다음 슬롯 코드 계산
+      const now = Math.floor(Date.now() / 1000);
+      const cur = speakeasy.totp({ secret: twoFactor.secret, encoding: 'base32', time: now, step: 30, digits: 6 });
+      const prev = speakeasy.totp({
+        secret: twoFactor.secret,
+        encoding: 'base32',
+        time: now - 30,
+        step: 30,
+        digits: 6,
+      });
+      const next = speakeasy.totp({
+        secret: twoFactor.secret,
+        encoding: 'base32',
+        time: now + 30,
+        step: 30,
+        digits: 6,
+      });
+
+      console.log('[2FA DEBUG][verify2FAToken] inputs', {
+        inputRaw,
+        inputNorm,
+        cur,
+        prev,
+        next,
+        window: 2,
+        step: 30,
+        digits: 6,
+        algorithm: 'sha1',
+        serverNowISO: new Date(now * 1000).toISOString(),
+      });
+
       const verified = speakeasy.totp.verify({
         secret: twoFactor.secret,
         encoding: 'base32',
@@ -578,6 +613,13 @@ export class AuthService {
 
       // 백업 코드 확인
       const backupCodeIndex = twoFactor.backupCodes.indexOf(token.toUpperCase());
+      console.log(
+        '[2FA DEBUG][verify2FAToken] backupMatchIdx',
+        backupCodeIndex,
+        'remaining',
+        twoFactor.backupCodes.length,
+      );
+
       if (backupCodeIndex !== -1) {
         const updatedBackupCodes = [...twoFactor.backupCodes];
         updatedBackupCodes.splice(backupCodeIndex, 1);
@@ -686,12 +728,20 @@ export class AuthService {
   /**
    * 2FA 인증 완료 처리
    */
-  async verify2FALogin(tempToken: string, totpCode?: string, skipTwoFactor?: boolean) {
+  async verify2FALogin(tempToken: string, totpCode?: string, skipTwoFactor?: boolean, backupCode?: string) {
     try {
       const decoded = jwt.verify(tempToken, process.env.SECRET_KEY) as any;
       if (decoded.type !== 'temp') {
         throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
+
+      // 디버깅용 콘솔
+      console.log('[2FA DEBUG][SVC.verify2FALogin] decoded', {
+        type: decoded?.type,
+        userId: decoded?.userId,
+        isSuspicious: decoded?.isSuspicious,
+        userHas2FA: decoded?.userHas2FA,
+      });
 
       const user = await this.userModel.findById(decoded.userId);
       if (!user) {
@@ -704,11 +754,17 @@ export class AuthService {
       }
 
       // 2FA 코드 검증
-      if (!totpCode) {
-        throw new UnauthorizedException('인증 코드를 입력해주세요.');
-      }
+      const code = (totpCode ?? backupCode ?? '').trim();
 
-      const verified = await this.verify2FAToken(decoded.userId, totpCode);
+      // 디버깅용 콘솔
+      console.log('[2FA DEBUG][SVC.verify2FALogin] input source', {
+        usedTotp: !!totpCode,
+        usedBackup: !!backupCode,
+        codeLength: code.length,
+      });
+      if (!code) throw new UnauthorizedException('인증 코드를 입력해주세요.');
+
+      const verified = await this.verify2FAToken(decoded.userId, code);
       if (!verified) {
         throw new UnauthorizedException('인증 코드가 올바르지 않습니다.');
       }

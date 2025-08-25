@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { RegionName } from '@travel-plan/region-name.enum';
 import { TravelPlan } from '@travel-plan/travel-plan.schema';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 
 @Injectable()
 export class FeedExtractor {
@@ -33,8 +33,27 @@ export class FeedExtractor {
         const { likeCount, coverImage, isPublic } = feed;
 
         // FeedService를 통해 피드 조회
-        const travelPlan = await this.travelPlanModel.findById(feed.travelPlan.toString());
-        if (!travelPlan) return null;
+        if (!feed.travelPlan) {
+          // console.log('=======[ feed.travelPlan is null ]=======');
+          return null;
+        }
+
+        // travelPlan 조회
+        let travelPlan: TravelPlan | null = null;
+
+        // populate된 객체인지 확인
+        if (typeof feed.travelPlan === 'object') {
+          travelPlan = feed.travelPlan;
+          // console.log('======= 이미 populate된 travelPlan 사용');
+        } else {
+          // objectId인 경우 직접 조회
+          travelPlan = await this.travelPlanModel.findById((feed.travelPlan as ObjectId).toString());
+          // console.log('======= DB에서 travelPlan 조회');
+        }
+        if (!travelPlan) {
+          // console.log('======= travelPlan을 찾을 수 없음');
+          return null;
+        }
 
         // thumbnail URL 추출
         const dailySchedules = travelPlan['dailyPlans']?.flatMap((dp) => dp.dailySchedules) || [];

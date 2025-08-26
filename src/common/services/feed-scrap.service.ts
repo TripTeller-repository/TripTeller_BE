@@ -95,4 +95,27 @@ export class FeedScrapService {
     const scrap = await this.scrapModel.findOne({ feedId, userId }).exec();
     return !!scrap;
   }
+
+  /**
+   * 여러 피드에 대한 사용자의 스크랩 상태를 일괄 조회
+   *
+   * @param {string[]} feedIds - 피드 ID 목록
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise<Set<string>>} 스크랩한 피드 ID들의 Set
+   */
+  async getScrappedFeedIds(feedIds: string[], userId: string): Promise<Set<string>> {
+    if (!userId || feedIds.length === 0) {
+      return new Set();
+    }
+
+    const scraps = await this.scrapModel
+      .find({
+        feedId: { $in: feedIds },
+        userId: userId,
+      })
+      .select('feedId')
+      .exec();
+
+    return new Set(scraps.map((scrap) => scrap.feedId.toString()));
+  }
 }

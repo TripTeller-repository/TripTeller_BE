@@ -22,15 +22,22 @@ import { ConfigService } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './common/logger/winston.config';
 import { SlackModule } from '@common/slack/slack.module';
+import mongoose from 'mongoose';
 
 @Module({
   imports: [
     ConfigModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('mongoUri'),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        if (process.env.NODE_ENV === 'development') {
+          mongoose.set('debug', true);
+        }
+
+        return {
+          uri: configService.get<string>('mongoUri'),
+        };
+      },
       inject: [ConfigService],
     }),
     WinstonModule.forRoot(winstonConfig),

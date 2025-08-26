@@ -28,6 +28,12 @@ export class FeedExtractor {
    * @returns {Promise<ExtractedFeed[]>} 가공된 피드 목록
    */
   async extractFeeds(feeds: FeedDocument[], userId?: string): Promise<ExtractedFeed[]> {
+    let scrappedFeedIds: Set<string> = new Set();
+    if (userId) {
+      const feedIds = feeds.map((feed) => feed._id.toString());
+      scrappedFeedIds = await this.feedScrapService.getScrappedFeedIds(feedIds, userId);
+    }
+
     const extractFeed = async (feed: FeedDocument): Promise<ExtractedFeed | null> => {
       try {
         const { likeCount, coverImage, isPublic } = feed;
@@ -60,7 +66,7 @@ export class FeedExtractor {
         const thumbnailUrl = this.extractThumbnailUrl(dailySchedules);
 
         // Scrap 상태 확인
-        const isScrapped = await this.feedScrapService.isScrapped(feed._id.toString(), userId);
+        const isScrapped = scrappedFeedIds.has(feed._id.toString());
 
         return {
           feedId: feed._id.toString(),

@@ -28,6 +28,7 @@ export class OurTripService {
       isPublic: true,
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
+
     const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
 
     const extractedFeeds = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);

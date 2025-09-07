@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import type { DailySchedule } from '../daily-schedule/daily-schedule.schema';
-import type { Expense } from '../expense/expense.schema';
+import { DailySchedule } from '../daily-schedule/daily-schedule.schema';
+import { Expense } from '../expense/expense.schema';
 
 export enum DateType {
   DATE = 'DATE',

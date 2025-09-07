@@ -60,4 +60,8 @@ const populate = function (next) {
 FeedSchema.pre('find', populate);
 FeedSchema.pre('findOne', populate);
 
+FeedSchema.index({ likeCount: -1, createdAt: -1 });
+FeedSchema.index({ userId: 1 });
+FeedSchema.index({ travelPlan: 1 });
+
 export { FeedSchema };

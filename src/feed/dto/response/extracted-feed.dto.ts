@@ -10,8 +10,8 @@ export interface ExtractedFeed {
   /** 연결된 여행 계획 ID */
   travelPlanId: string;
 
-  /** 연결된 여행 계획 전체 객체 */
-  travelPlan: any;
+  // /** 연결된 여행 계획 전체 객체 */
+  // travelPlan: any;
 
   /** 게시물 작성자 ID */
   userId: string;

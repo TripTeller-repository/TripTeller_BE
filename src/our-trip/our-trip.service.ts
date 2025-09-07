@@ -29,13 +29,24 @@ export class OurTripService {
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     };
 
-    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
+    // 1) id 페이지만 받아옴
+    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
 
-    const extractedFeeds = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
+    // 2) ids → 문서 조회 (populate 포함)
+    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
+    const docs = await this.feedService.findByIds(ids);
 
-    paginatedResult.feeds.data = extractedFeeds;
+    // 3) extractor로 슬림 변환
+    const data = await this.feedExtractor.extractFeeds(docs, userId ?? undefined);
 
-    return paginatedResult;
+    // 4) 새 페이지 객체로 조립해서 반환 (원본 .data에 대입하지 않음)
+    return {
+      success: true,
+      feeds: {
+        metadata: pageIds.feeds.metadata,
+        data,
+      },
+    };
   }
 
   /**
@@ -71,10 +82,12 @@ export class OurTripService {
     };
     const sort = { createdAt: -1 };
 
-    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
-    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
+    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
+    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
+    const docs = await this.feedService.findByIds(ids);
+    const data = await this.feedExtractor.extractFeeds(docs, userId ?? undefined);
 
-    return paginatedResult;
+    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
   }
 
   /**
@@ -92,12 +105,13 @@ export class OurTripService {
     };
     const sort = { likeCount: -1 };
 
-    const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
-    paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
+    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
+    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
+    const docs = await this.feedService.findByIds(ids);
+    const data = await this.feedExtractor.extractFeeds(docs, userId ?? undefined);
 
-    return paginatedResult;
+    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
   }
-
   /**
    * 공개 게시물을 특정 날짜 범위(startDate ~ endDate)에 해당하는 게시물만 조회
    *
@@ -110,44 +124,54 @@ export class OurTripService {
    */
   async fetchFeedsByDate(startDate: string, endDate: string, pageNumber: number, userId?: string) {
     const pageSize = 9;
-    const InputStartDate: Date = new Date(startDate);
-    const InputEndDate: Date = new Date(endDate);
-
+    const InputStartDate = new Date(startDate);
+    const InputEndDate = new Date(endDate);
     if (InputStartDate > InputEndDate) {
       throw new BadRequestException('startDate는 endDate보다 이전이어야 합니다.');
     }
-    try {
-      const criteria = {
-        isPublic: true,
-        $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
-      };
 
-      const AllFeeds = await this.feedModel.find(criteria).exec();
+    const criteria = {
+      isPublic: true,
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    };
 
-      const filteredFeeds = AllFeeds.filter((feed) => {
-        if (feed.isPublic === false) return false;
+    // 1) 일단 후보 feed id만 뽑기
+    const all = await this.feedModel.find(criteria).select('_id').lean();
+    const ids = all.map((d) => String(d._id));
 
-        if (!feed.travelPlan) return false;
-
-        if (!feed.travelPlan.dailyPlans) return false;
-
-        for (const dailyPlan of feed.travelPlan.dailyPlans) {
-          if (dailyPlan.date < InputStartDate || dailyPlan.date > InputEndDate) return false;
-        }
-        return true;
-      });
-
-      if (!filteredFeeds || filteredFeeds.length === 0) {
-        return { message: '게시물이 해당 날짜 사이에 존재하지 않습니다.' };
-      }
-
-      const paginationCriteria = { _id: { $in: filteredFeeds.map((feed) => feed._id) } };
-      const paginatedResult = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, paginationCriteria);
-      paginatedResult.feeds.data = await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
-
-      return paginatedResult;
-    } catch (error) {
-      throw error;
+    if (ids.length === 0) {
+      return { success: true, feeds: { metadata: { totalCount: 0, pageNumber, pageSize }, data: [] } };
     }
+
+    // 2) 실제 문서 로드 + populate
+    const docs = await this.feedService.findByIds(ids);
+
+    // 3) 날짜 필터 (populate된 상태에서 안전)
+    const filtered = docs.filter((feed) => {
+      const tp: any = (feed as any).travelPlan;
+      if (!tp?.dailyPlans) return false;
+      // 하루라도 범위 안에 들면 통과 (모두 들어와야 한다면 every로 바꿔)
+      return tp.dailyPlans.some((dp: any) => {
+        if (dp?.date && !isNaN(new Date(dp.date).getTime())) {
+          const d = new Date(dp.date);
+          return d >= InputStartDate && d <= InputEndDate;
+        }
+        return false;
+      });
+    });
+
+    if (filtered.length === 0) {
+      return { message: '게시물이 해당 날짜 사이에 존재하지 않습니다.' };
+    }
+
+    // 4) 페이지네이션: id 기반 페이지 구하고 → findByIds → extractFeeds
+    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, {
+      _id: { $in: filtered.map((f) => f._id) },
+    });
+    const pageIdList = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
+    const pageDocs = await this.feedService.findByIds(pageIdList);
+    const data = await this.feedExtractor.extractFeeds(pageDocs, userId ?? undefined);
+
+    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
   }
 }

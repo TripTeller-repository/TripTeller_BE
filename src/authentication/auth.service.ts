@@ -163,13 +163,14 @@ export class AuthService {
 
   /**
    * 이메일과 비밀번호 기반 로그인
+   * 로그인 정보 검증 및 상태 확인 (토큰 발급 없이)
    * @param signInDto - 로그인 요청 정보
    * @param deviceInfo - 디바이스 정보
    * @param ip - 클라이언트 IP
    * @returns accessToken, refreshToken, suspicious
    * @throws {UnauthorizedException} 로그인 실패 시
    */
-  async signIn(signInDto: SignInDto, deviceInfo: UserDevice, ip: string) {
+  async validateSignIn(signInDto: SignInDto, deviceInfo: UserDevice, ip: string) {
     try {
       // 이메일로 특정 회원 조회
       const user = await this.userService.findUserByEmail(signInDto.email);
@@ -202,41 +203,67 @@ export class AuthService {
       // 2FA 활성화 여부 확인
       const userHas2FA = await this.is2FAEnabled(user._id.toString());
 
-      // 2FA가 활성화되어 있거나 의심스러운 로그인인 경우
-      if (userHas2FA || suspicious) {
-        const tempPayload = {
-          userId: user._id.toString(),
-          type: 'temp',
-          isSuspicious: suspicious,
-          userHas2FA: userHas2FA,
-          browser: deviceInfo.browser,
-          os: deviceInfo.os,
-          ip,
-        };
-
-        const tempToken = jwt.sign(tempPayload, process.env.SECRET_KEY, { expiresIn: '10m' });
-
-        return {
-          requiresTwoFactor: true,
-          isSuspiciousLogin: suspicious,
-          suspiciousFactors: suspicious ? ['기기 또는 위치 변경 감지'] : [],
-          tempToken: tempToken,
-          userHas2FA: userHas2FA,
-        };
-      }
-
-      // 일반 로그인 완료
-      const userIdString = user._id.toString();
-      const { accessToken, refreshToken } = await this.createTokens(
-        userIdString,
-        user.authProvider || null,
-        deviceInfo,
+      // tempToken 생성
+      const tempPayload = {
+        userId: user._id.toString(),
+        type: 'temp',
+        isSuspicious: suspicious,
+        userHas2FA: userHas2FA,
+        browser: deviceInfo.browser,
+        os: deviceInfo.os,
         ip,
-      );
+        authProvider: user.authProvider || null,
+      };
 
-      return { accessToken, refreshToken, suspicious };
+      const tempToken = jwt.sign(tempPayload, process.env.SECRET_KEY, { expiresIn: '10m' });
+
+      return {
+        requiresTwoFactor: userHas2FA,
+        isSuspiciousLogin: suspicious,
+        suspiciousFactors: suspicious ? ['기기 또는 위치 변경 감지'] : [],
+        tempToken: tempToken,
+        userHas2FA: userHas2FA,
+      };
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');
+    }
+  }
+
+  /**
+   * tempToken으로 실제 로그인 진행 (기존 createTokens 활용)
+   * @param token - 임시 JWT 토큰 (tempToken)
+   * @returns accessToken, refreshToken
+   * @throws {UnauthorizedException} 유효하지 않은 토큰일 경우
+   */
+  async proceedLogin(tempToken: string) {
+    try {
+      const decoded = jwt.verify(tempToken, process.env.SECRET_KEY) as any;
+
+      if (decoded.type !== 'temp') {
+        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+      }
+
+      const deviceInfo: UserDevice = {
+        browser: decoded.browser,
+        os: decoded.os,
+        device: decoded.device || 'Desktop',
+        userAgent: decoded.userAgent || '',
+        deviceId: decoded.deviceId,
+      };
+
+      const { accessToken, refreshToken } = await this.createTokens(
+        decoded.userId,
+        decoded.authProvider,
+        deviceInfo,
+        decoded.ip,
+      );
+
+      return { accessToken, refreshToken };
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new UnauthorizedException('인증 시간이 만료되었습니다.');
+      }
+      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
     }
   }
 
@@ -750,7 +777,15 @@ export class AuthService {
 
       // 의심스러운 로그인이지만 2FA 건너뛰기 선택한 경우
       if (decoded.isSuspicious && skipTwoFactor && !decoded.userHas2FA) {
-        return this.completeLogin(user, decoded);
+        const tokens = await this.proceedLogin(tempToken);
+        return {
+          ...tokens,
+          user: {
+            id: user._id,
+            email: user.email,
+            nickname: user.nickname,
+          },
+        };
       }
 
       // 2FA 코드 검증
@@ -762,6 +797,7 @@ export class AuthService {
         usedBackup: !!backupCode,
         codeLength: code.length,
       });
+
       if (!code) throw new UnauthorizedException('인증 코드를 입력해주세요.');
 
       const verified = await this.verify2FAToken(decoded.userId, code);
@@ -769,7 +805,11 @@ export class AuthService {
         throw new UnauthorizedException('인증 코드가 올바르지 않습니다.');
       }
 
-      return this.completeLogin(user, decoded);
+      const tokens = await this.proceedLogin(tempToken);
+      return {
+        ...tokens,
+        user: { id: user._id, email: user.email, nickname: user.nickname },
+      };
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
         throw new UnauthorizedException('인증 시간이 만료되었습니다. 다시 로그인해주세요.');
@@ -779,32 +819,51 @@ export class AuthService {
   }
 
   /**
-   * 로그인 완료 처리
+   * 세션 무효화 (로그아웃)
+   * @param options - userId, deviceId, refreshToken 중 하나 이상 필요
+   * @returns 성공 메시지
    */
-  private async completeLogin(user: any, decoded: any) {
-    const deviceInfo = {
-      browser: decoded.browser,
-      os: decoded.os,
-      device: 'Desktop',
-      userAgent: '',
-    };
+  async revokeSession(options: { userId?: string; deviceId?: string; refreshToken?: string }) {
+    try {
+      const { userId, deviceId, refreshToken } = options;
 
-    const { accessToken, refreshToken } = await this.createTokens(
-      user._id.toString(),
-      user.authProvider || null,
-      deviceInfo,
-      decoded.ip,
-    );
+      // refreshToken이 있으면 해당 세션 찾기
+      if (refreshToken) {
+        try {
+          const decoded = jwt.verify(refreshToken, process.env.SECRET_KEY) as any;
+          if (decoded.sessionId) {
+            await this.loginModel.findByIdAndDelete(decoded.sessionId);
+            return { message: '로그아웃되었습니다.' };
+          }
+        } catch (error) {
+          // refreshToken이 만료되었어도 다른 조건으로 세션 삭제 시도
+        }
+      }
 
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user._id,
-        email: user.email,
-        nickname: user.nickname,
-      },
-    };
+      // deviceId로 세션 찾기
+      if (userId && deviceId) {
+        await this.loginModel.deleteOne({
+          userId,
+          'deviceInfo.deviceId': deviceId,
+        });
+        return { message: '로그아웃되었습니다.' };
+      }
+
+      // userId만 있으면 가장 최근 세션 삭제
+      if (userId) {
+        const latestSession = await this.loginModel.findOne({ userId }).sort({ lastLoginAt: -1 });
+
+        if (latestSession) {
+          await this.loginModel.findByIdAndDelete(latestSession._id);
+        }
+        return { message: '로그아웃되었습니다.' };
+      }
+
+      return { message: '로그아웃되었습니다.' };
+    } catch (error) {
+      console.error('Session revocation failed:', error);
+      return { message: '로그아웃되었습니다.' }; // 사용자에게는 항상 성공으로 응답
+    }
   }
 
   /**

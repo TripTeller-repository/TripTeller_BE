@@ -15,7 +15,15 @@ import { Request as expReq, Response as expRes, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreatedUserDto } from './dto/created-user.dto';
 import { PasswordSerializerInterceptor } from './password.interceptor';
 import { RateLimitGuard } from '@common/guards';
@@ -65,7 +73,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 200,
-    description: '2단계 인증 필요',
+    description: '2단계 인증 필요 (선택적 2단계 인증)',
     schema: {
       type: 'object',
       properties: {
@@ -77,6 +85,10 @@ export class AuthController {
           example: ['기기 또는 위치 변경 감지'],
         },
         tempToken: {
+          type: 'string',
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        },
+        accessToken: {
           type: 'string',
           example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         },
@@ -107,37 +119,90 @@ export class AuthController {
         DeviceInfoUtil.setDeviceIdCookie(res, deviceInfo.deviceId);
       }
 
-      // 로그인 시도
-      const result = await this.authService.signIn(signInDto, deviceInfo, ip);
+      // 로그인 검증 (토큰 발급 없이)
+      const result = await this.authService.validateSignIn(signInDto, deviceInfo, ip);
 
-      // 2FA가 필요한 경우
-      if (result.requiresTwoFactor) {
+      // 2FA나 의심스러운 로그인이 필요한 경우
+      if (result.requiresTwoFactor || result.isSuspiciousLogin) {
         return {
-          requiresTwoFactor: true,
+          requiresTwoFactor: result.requiresTwoFactor,
           isSuspiciousLogin: result.isSuspiciousLogin,
           suspiciousFactors: result.suspiciousFactors,
           tempToken: result.tempToken,
           userHas2FA: result.userHas2FA,
-          message: result.isSuspiciousLogin
-            ? '의심스러운 로그인이 감지되었습니다. 2단계 인증을 완료해주세요.'
-            : '2단계 인증이 필요합니다.',
+          message: result.isSuspiciousLogin ? '의심스러운 로그인이 감지되었습니다.' : '2단계 인증이 필요합니다.',
         };
       }
 
-      // 일반 로그인 완료
-      this.setRefreshTokenCookie(res, result.refreshToken);
+      // 정상 로그인 - 바로 토큰 발급
+      const tokens = await this.authService.proceedLogin(result.tempToken);
+      this.setRefreshTokenCookie(res, tokens.refreshToken);
 
-      if (result.suspicious) {
-        return {
-          accessToken: result.accessToken,
-          suspicious: true,
-          message: '의심스러운 로그인이 감지되었습니다. 본인이 아니라면 비밀번호를 변경해주세요.',
-        };
-      }
-
-      return { accessToken: result.accessToken };
+      return {
+        accessToken: tokens.accessToken,
+        message: '로그인이 완료되었습니다.',
+      };
     } catch (error) {
       throw new UnauthorizedException('로그인에 실패하였습니다.');
+    }
+  }
+
+  @Post('sign-in/proceed')
+  @ApiOperation({
+    summary: '첫 로그인 이후 그냥 로그인 선택 시 진행',
+    description: 'tempToken으로 일반 로그인을 진행한다.',
+  })
+  @ApiBody({
+    description: '임시 토큰',
+    schema: {
+      type: 'object',
+      properties: {
+        tempToken: {
+          type: 'string',
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '로그인 완료',
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: {
+          type: 'string',
+          description: '새로 발급된 액세스 토큰',
+          example: 'eyJhbGciOiJIUzI1N...',
+        },
+        message: {
+          type: 'string',
+          example: '로그인이 완료되었습니다.',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '로그인 진행 실패',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: '로그인 진행에 실패했습니다.',
+      },
+    },
+  })
+  async proceedSignIn(@Body() body: { tempToken: string }, @Res({ passthrough: true }) res: expRes) {
+    try {
+      const result = await this.authService.proceedLogin(body.tempToken);
+      this.setRefreshTokenCookie(res, result.refreshToken);
+
+      return {
+        accessToken: result.accessToken,
+        message: '로그인이 완료되었습니다.',
+      };
+    } catch (error) {
+      throw new UnauthorizedException('로그인 진행에 실패했습니다.');
     }
   }
 
@@ -160,17 +225,7 @@ export class AuthController {
     schema: {
       example: {
         statusCode: 401,
-        message: 'Refresh token not found',
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: '리프레시 토큰 만료',
-    schema: {
-      example: {
-        statusCode: 401,
-        message: 'Refresh token has expired',
+        message: '리프레시 토큰이 없거나 유효하지 않습니다.',
       },
     },
   })
@@ -181,7 +236,7 @@ export class AuthController {
 
       // 리프레시 토큰이 없으면 에러
       if (!refreshToken) {
-        throw new UnauthorizedException('Refresh token not found');
+        throw new UnauthorizedException('리프레시 토큰이 없습니다.');
       }
 
       // 디바이스 정보 추출
@@ -319,14 +374,51 @@ export class AuthController {
     summary: '로그아웃',
     description: '현재 기기에서 로그아웃한다.',
   })
+  @ApiResponse({
+    status: 200,
+    description: '로그아웃 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: '현재 기기에서 로그아웃되었습니다.',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증 실패 (로그인되지 않은 사용자)',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: {
+          type: 'number',
+          example: 401,
+        },
+        message: {
+          type: 'string',
+          example: '로그인이 필요합니다.',
+        },
+        error: {
+          type: 'string',
+          example: 'Unauthorized',
+        },
+      },
+    },
+  })
   async postLogout(@Req() req: expReq, @Res({ passthrough: true }) res: expRes) {
-    try {
-      this.clearTokenCookies(res);
+    const userId = req.user?.userId;
+    if (!userId) throw new UnauthorizedException('로그인이 필요합니다.');
 
-      return { message: '로그아웃 되었습니다.' };
-    } catch (error) {
-      throw new UnauthorizedException('로그아웃에 실패했습니다.');
-    }
+    const refreshToken = req.cookies['refreshToken'];
+    const { deviceId } = DeviceInfoUtil.extractDeviceInfo(req);
+
+    await this.authService.revokeSession({ userId, deviceId, refreshToken });
+
+    this.clearTokenCookies(res);
+    return { message: '현재 기기에서 로그아웃되었습니다.' };
   }
 
   @Get('login-history')
@@ -334,6 +426,70 @@ export class AuthController {
   @ApiOperation({
     summary: '로그인 이력 조회',
     description: '사용자의 로그인 이력을 조회한다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '로그인 이력 조회 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        loginHistory: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              _id: { type: 'string', example: '68be7952577946cafc302963' },
+              userId: { type: 'string', example: '68adc583b7ba0e9c6465d814' },
+              deviceInfo: {
+                type: 'object',
+                properties: {
+                  browser: { type: 'string', example: 'Chrome 139.0.0.0' },
+                  os: { type: 'string', example: 'Windows 10' },
+                  device: { type: 'string', example: 'Desktop' },
+                  userAgent: {
+                    type: 'string',
+                    example:
+                      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+                  },
+                  deviceId: {
+                    type: 'string',
+                    example: 'device_1756255632792_1mql30rh6qr',
+                  },
+                },
+              },
+              ipAddress: { type: 'string', example: '::ffff:127.0.0.1' },
+              lastLoginAt: {
+                type: 'string',
+                format: 'date-time',
+                example: '2025-09-08T06:36:02.210Z',
+              },
+              suspicious: { type: 'boolean', example: false },
+              createdAt: {
+                type: 'string',
+                format: 'date-time',
+                example: '2025-09-08T06:36:02.229Z',
+              },
+              updatedAt: {
+                type: 'string',
+                format: 'date-time',
+                example: '2025-09-08T06:36:02.229Z',
+              },
+              __v: { type: 'number', example: 0 },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '로그인 이력 조회 실패 (인증되지 않은 사용자)',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: '유효하지 않은 사용자 정보입니다.',
+      },
+    },
   })
   async getLoginHistory(@Req() req: expReq) {
     try {
@@ -353,10 +509,116 @@ export class AuthController {
   }
 
   @Post('2fa/setup')
-  @ApiBearerAuth()
   @ApiOperation({
     summary: '2단계 인증 설정 시작',
-    description: 'QR 코드를 생성하여 Google Authenticator 앱에 등록할 수 있도록 한다.',
+    description: `
+    2단계 인증(2FA) 설정을 시작한다.
+    
+    - Google Authenticator 등의 TOTP 앱에서 사용할 수 있는 QR 코드를 생성한다.
+    - QR 코드는 10분 후 만료된다.
+    - 이미 2FA가 활성화된 경우 에러를 반환한다.
+    - 설정 완료를 위해서는 별도의 verify 엔드포인트에서 인증 코드를 확인해야 한다.
+  `,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '2FA 설정 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        qrCode: {
+          type: 'string',
+          description: 'QR 코드 이미지 (Base64 Data URL)',
+          example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51...',
+        },
+        manualEntryKey: {
+          type: 'string',
+          description: '수동 입력용 비밀 키',
+          example: 'JBSWY3DPEHPK3PXP',
+        },
+        expiresAt: {
+          type: 'number',
+          description: 'QR 코드 만료 시간 (Unix timestamp)',
+          example: 1640995200000,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증 실패 또는 2FA 설정 실패',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: '로그인이 필요합니다.',
+        },
+        statusCode: {
+          type: 'number',
+          example: 401,
+        },
+        error: {
+          type: 'string',
+          example: 'Unauthorized',
+        },
+      },
+      examples: {
+        notLoggedIn: {
+          summary: '로그인 필요',
+          value: {
+            message: '로그인이 필요합니다.',
+            statusCode: 401,
+            error: 'Unauthorized',
+          },
+        },
+        userNotFound: {
+          summary: '사용자를 찾을 수 없음',
+          value: {
+            message: '사용자를 찾을 수 없습니다.',
+            statusCode: 401,
+            error: 'Unauthorized',
+          },
+        },
+        alreadyEnabled: {
+          summary: '이미 2FA가 활성화됨',
+          value: {
+            message: '이미 2단계 인증이 활성화되어 있습니다.',
+            statusCode: 401,
+            error: 'Unauthorized',
+          },
+        },
+        setupFailed: {
+          summary: '일반적인 설정 실패',
+          value: {
+            message: '2FA 설정에 실패했습니다.',
+            statusCode: 401,
+            error: 'Unauthorized',
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 410,
+    description: '2FA 설정 시간 만료',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: '2FA 설정 시간이 만료되었습니다. 다시 QR을 발급받아 시작하세요.',
+        },
+        statusCode: {
+          type: 'number',
+          example: 410,
+        },
+        error: {
+          type: 'string',
+          example: 'Gone',
+        },
+      },
+    },
   })
   async postSetup2FA(@Req() req: expReq) {
     try {
@@ -417,11 +679,11 @@ export class AuthController {
       );
 
       this.setRefreshTokenCookie(res, result.refreshToken);
-      this.setAccessTokenCookie(res, result.accessToken);
 
       return {
         accessToken: result.accessToken,
         user: result.user,
+        message: '2단계 인증이 완료되었습니다.',
       };
     } catch (error) {
       throw new UnauthorizedException('2FA 인증에 실패했습니다.');
@@ -452,6 +714,23 @@ export class AuthController {
   @ApiOperation({
     summary: '2단계 인증 상태 확인',
     description: '현재 사용자의 2FA 활성화 여부를 확인한다.',
+  })
+  @ApiOkResponse({
+    description: '2FA 상태 조회 성공',
+    schema: {
+      example: {
+        enabled: false,
+        backupCodesCount: 0,
+        setupCompletedAt: null,
+        lastAuthenticatedAt: null,
+      },
+      properties: {
+        enabled: { type: 'boolean', description: '2FA 활성화 여부' },
+        backupCodesCount: { type: 'number', description: '남은 백업 코드 개수' },
+        setupCompletedAt: { type: 'string', format: 'date-time', nullable: true, description: '설정 완료 시각' },
+        lastAuthenticatedAt: { type: 'string', format: 'date-time', nullable: true, description: '마지막 인증 시각' },
+      },
+    },
   })
   async get2FAStatus(@Req() req: expReq) {
     try {

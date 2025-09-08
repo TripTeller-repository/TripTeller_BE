@@ -103,9 +103,9 @@ export class FeedExtractor {
           return null;
         }
 
-        console.log(`========= travelPlan`, travelPlan);
-        console.log(`========= travelPlan.dailyPlans `, travelPlan.dailyPlans);
-        console.log(`========= travelPlan['dailyPlans']`, travelPlan['dailyPlans']);
+        // console.log(`========= travelPlan`, travelPlan);
+        // console.log(`========= travelPlan.dailyPlans `, travelPlan.dailyPlans);
+        // console.log(`========= travelPlan['dailyPlans']`, travelPlan['dailyPlans']);
 
         const allDailySchedules: DailySchedule[] = [];
 
@@ -124,7 +124,7 @@ export class FeedExtractor {
             allDailySchedules.push(...arr.filter((s: any) => s && typeof s === 'object' && 'imageUrl' in s));
           }
         }
-        console.log('=============allDailySchedules', allDailySchedules);
+        // console.log('=============allDailySchedules', allDailySchedules);
         let thumbnailUrl = this.extractThumbnailUrl(allDailySchedules);
 
         // 썸네일을 찾지 못한 경우
@@ -138,7 +138,6 @@ export class FeedExtractor {
         return {
           feedId: feed._id.toString(),
           travelPlanId: travelPlan['_id'].toString(),
-          // travelPlan,
           userId: feed.userId,
           createdAt: feed.createdAt,
           isPublic,

@@ -65,9 +65,27 @@ export class AuthController {
   })
   @ApiResponse({
     status: 200,
-    description: '로그인 성공, 토큰 반환',
+    description: '2단계 인증 필요',
     schema: {
-      example: { accessToken: 'your-jwt-access-token' },
+      type: 'object',
+      properties: {
+        requiresTwoFactor: { type: 'boolean', example: true },
+        isSuspiciousLogin: { type: 'boolean', example: true },
+        suspiciousFactors: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['기기 또는 위치 변경 감지'],
+        },
+        tempToken: {
+          type: 'string',
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        },
+        userHas2FA: { type: 'boolean', example: false },
+        message: {
+          type: 'string',
+          example: '의심스러운 로그인이 감지되었습니다. 2단계 인증을 완료해주세요.',
+        },
+      },
     },
   })
   @ApiResponse({

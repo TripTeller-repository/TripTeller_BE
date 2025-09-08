@@ -48,30 +48,6 @@ export class FeedService implements OnModuleInit {
    * @param {string[]} feedIds - 조회할 피드 ID 목록
    * @returns {Promise<FeedDocument[]>} 피드 목록
    */
-  // async findByIds(feedIds: string[]): Promise<FeedDocument[]> {
-  //   return this.feedModel.find({ _id: { $in: feedIds } }).populate({
-  //     path: 'travelPlan',
-  //     model: 'TravelPlan',
-  //     select: 'title region totalExpense dailyPlans dailySchedules startDate endDate',
-  //     populate: [
-  //       {
-  //         path: 'dailyPlans',
-  //         model: 'DailyPlan',
-  //         select: 'date dateType dailySchedules',
-  //         populate: {
-  //           path: 'dailySchedules',
-  //           model: 'DailySchedule',
-  //           select: 'imageUrl isThumbnail',
-  //         },
-  //       },
-  //       {
-  //         path: 'dailySchedules',
-  //         model: 'DailySchedule',
-  //         select: 'imageUrl isThumbnail',
-  //       },
-  //     ],
-  //   });
-  // }
   async findByIds(feedIds: string[]): Promise<FeedDocument[]> {
     const feeds = await this.feedModel
       .find({ _id: { $in: feedIds } })
@@ -89,7 +65,7 @@ export class FeedService implements OnModuleInit {
           { path: 'dailySchedules', model: 'DailySchedule', select: 'imageUrl isThumbnail' },
         ],
       })
-      .lean(); // 선택(속도 ↑)
+      .lean();
 
     const map = new Map(feeds.map((f) => [String(f._id), f]));
     return feedIds.map((id) => map.get(String(id))).filter(Boolean) as any;
@@ -128,47 +104,6 @@ export class FeedService implements OnModuleInit {
    * @param {any} sort - 정렬 기준
    * @returns {Promise<any>} 페이지네이션된 피드 목록과 메타데이터
    */
-  // async getPaginatedFeeds(pageNumber = 1, pageSize = 9, criteria: any = {}, sort: any = {}) {
-  //   const skip = (pageNumber - 1) * pageSize;
-  //   const pipeline: any[] = [{ $match: criteria }];
-
-  //   if (Object.keys(sort).length) {
-  //     pipeline.push({ $sort: sort });
-  //   }
-
-  //   pipeline.push({
-  //     $facet: {
-  //       metadata: [
-  //         {
-  //           $match: {
-  //             $and: [{ travelPlan: { $ne: null } }, { $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] }],
-  //           },
-  //         },
-  //         { $count: 'totalCount' },
-  //       ],
-  //       // data: [{ $skip: skip }, { $limit: pageSize } ],
-  //       data: [{ $skip: skip }, { $limit: pageSize }, { $project: { _id: 1 } }],
-  //     },
-  //   });
-
-  //   const result = await this.feedModel.aggregate(pipeline);
-  //   const totalCount = result[0].metadata.length > 0 ? result[0].metadata[0].totalCount : 0;
-
-  //   const ids = result[0].data.map((d: any) => d._id);
-
-  //   // populate 포함해서 가져오기 (이미 네가 만든 findByIds 사용)
-  //   const feeds = await this.findByIds(ids);
-  //   // 슬림 변환
-  //   const data = await this.feedExtractor.extractFeeds(feeds);
-
-  //   return {
-  //     success: true,
-  //     feeds: {
-  //       metadata: { totalCount, pageNumber, pageSize },
-  //       data,
-  //     },
-  //   };
-  // }
   async getPaginatedFeeds(
     pageNumber = 1,
     pageSize = 9,

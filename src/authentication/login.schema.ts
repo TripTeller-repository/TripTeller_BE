@@ -29,3 +29,6 @@ export class Login extends Document {
 }
 
 export const LoginSchema = SchemaFactory.createForClass(Login);
+
+LoginSchema.index({ userId: 1, lastLoginAt: -1 });
+LoginSchema.index({ userId: 1, 'deviceInfo.deviceId': 1 });

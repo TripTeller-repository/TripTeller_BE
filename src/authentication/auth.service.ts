@@ -2,7 +2,7 @@ import { GoneException, Injectable, NotFoundException, UnauthorizedException } f
 import { UserService } from '@user/services/user.service';
 import { SignInDto } from './dto/sign-in.dto';
 import * as jwt from 'jsonwebtoken';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import axios from 'axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -14,6 +14,7 @@ import * as speakeasy from 'speakeasy';
 import * as QRCode from 'qrcode';
 import { TwoFactor } from './schemas/two-factor.schema';
 import { DeviceInfoUtil } from '../common/utils/device-info.util';
+import { performance } from 'node:perf_hooks';
 
 // 소셜 로그인 사용자 정보 제공자
 export enum EAuthProvider {
@@ -173,6 +174,7 @@ export class AuthService {
   async validateSignIn(signInDto: SignInDto, deviceInfo: UserDevice, ip: string) {
     try {
       // 이메일로 특정 회원 조회
+      const t0 = performance.now();
       const user = await this.userService.findUserByEmail(signInDto.email);
 
       // 회원이 존재하지 않을 경우
@@ -186,13 +188,15 @@ export class AuthService {
       }
 
       // 비밀번호 확인
+      const t1 = performance.now();
       const isPasswordValid = await this.verifyPassword(signInDto.password, user.password);
       if (!isPasswordValid) {
         throw new UnauthorizedException('잘못된 비밀번호입니다.');
       }
 
       // 최근 로그인 세션 확인
-      const lastSession = await this.loginModel.findOne({ userId: user._id }).sort({ lastLoginAt: -1 });
+      const t2 = performance.now();
+      const lastSession = await this.loginModel.findOne({ userId: user._id.toString() }).sort({ lastLoginAt: -1 });
 
       // 의심스러운 로그인 감지
       let suspicious = false;
@@ -201,7 +205,10 @@ export class AuthService {
       }
 
       // 2FA 활성화 여부 확인
+      const t3 = performance.now();
       const userHas2FA = await this.is2FAEnabled(user._id.toString());
+
+      const t4 = performance.now();
 
       // tempToken 생성
       const tempPayload = {
@@ -217,6 +224,9 @@ export class AuthService {
 
       const tempToken = jwt.sign(tempPayload, process.env.SECRET_KEY, { expiresIn: '10m' });
 
+      console.log(
+        `[perf][sign-in] user ${Math.round(t1 - t0)}ms | bcrypt ${Math.round(t2 - t1)}ms | login ${Math.round(t3 - t2)}ms | 2fa ${Math.round(t4 - t3)}ms`,
+      );
       return {
         requiresTwoFactor: userHas2FA,
         isSuspiciousLogin: suspicious,

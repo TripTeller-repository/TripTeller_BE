@@ -30,6 +30,7 @@ import { RateLimitGuard } from '@common/guards';
 import { Setup2faDto } from './dto/setup-2fa.dto';
 import { Verify2faDto } from './dto/verify-2fa.dto';
 import { DeviceInfoUtil } from '@common/utils/device-info.util';
+import * as jwt from 'jsonwebtoken';
 
 @UseInterceptors(PasswordSerializerInterceptor)
 @ApiTags('Authentication')
@@ -512,35 +513,33 @@ export class AuthController {
   @ApiOperation({
     summary: '2단계 인증 설정 시작',
     description: `
-    2단계 인증(2FA) 설정을 시작한다.
-    
-    - Google Authenticator 등의 TOTP 앱에서 사용할 수 있는 QR 코드를 생성한다.
-    - QR 코드는 10분 후 만료된다.
-    - 이미 2FA가 활성화된 경우 에러를 반환한다.
-    - 설정 완료를 위해서는 별도의 verify 엔드포인트에서 인증 코드를 확인해야 한다.
-  `,
+  2단계 인증(2FA) 설정을 시작한다.
+  - Google Authenticator 등의 TOTP 앱에서 사용할 수 있는 QR 코드를 생성한다.
+  - QR 코드는 10분 후 만료된다.
+  - 이미 2FA가 활성화된 경우 에러를 반환한다.
+  - 설정 완료를 위해서는 별도의 verify 엔드포인트에서 인증 코드를 확인해야 한다.
+`,
   })
-  @ApiResponse({
-    status: 200,
-    description: '2FA 설정 성공',
+  @ApiBody({
+    description: '임시 로그인 토큰',
     schema: {
       type: 'object',
       properties: {
-        qrCode: {
+        tempToken: {
           type: 'string',
-          description: 'QR 코드 이미지 (Base64 Data URL)',
-          example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51...',
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         },
-        manualEntryKey: {
-          type: 'string',
-          description: '수동 입력용 비밀 키',
-          example: 'JBSWY3DPEHPK3PXP',
-        },
-        expiresAt: {
-          type: 'number',
-          description: 'QR 코드 만료 시간 (Unix timestamp)',
-          example: 1640995200000,
-        },
+      },
+      required: ['tempToken'],
+    },
+  })
+  @ApiOkResponse({
+    description: '2FA 설정 성공',
+    schema: {
+      example: {
+        qrCode: 'data:image/png;base64,i어쩌구',
+        manualEntryKey: 'IVJFO4JYFBKVAVDQKB4S6SBSFFTU462CKRKFMYKDNEXGCULZGZVQ',
+        expiresAt: 1757370629983,
       },
     },
   })
@@ -548,109 +547,127 @@ export class AuthController {
     status: 401,
     description: '인증 실패 또는 2FA 설정 실패',
     schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: '로그인이 필요합니다.',
+      oneOf: [
+        {
+          example: { message: '로그인이 필요합니다.', statusCode: 401, error: 'Unauthorized' },
         },
-        statusCode: {
-          type: 'number',
-          example: 401,
+        {
+          example: { message: '사용자를 찾을 수 없습니다.', statusCode: 401, error: 'Unauthorized' },
         },
-        error: {
-          type: 'string',
-          example: 'Unauthorized',
+        {
+          example: { message: '이미 2단계 인증이 활성화되어 있습니다.', statusCode: 401, error: 'Unauthorized' },
         },
-      },
-      examples: {
-        notLoggedIn: {
-          summary: '로그인 필요',
-          value: {
-            message: '로그인이 필요합니다.',
-            statusCode: 401,
-            error: 'Unauthorized',
-          },
+        {
+          example: { message: '2FA 설정에 실패했습니다.', statusCode: 401, error: 'Unauthorized' },
         },
-        userNotFound: {
-          summary: '사용자를 찾을 수 없음',
-          value: {
-            message: '사용자를 찾을 수 없습니다.',
-            statusCode: 401,
-            error: 'Unauthorized',
-          },
-        },
-        alreadyEnabled: {
-          summary: '이미 2FA가 활성화됨',
-          value: {
-            message: '이미 2단계 인증이 활성화되어 있습니다.',
-            statusCode: 401,
-            error: 'Unauthorized',
-          },
-        },
-        setupFailed: {
-          summary: '일반적인 설정 실패',
-          value: {
-            message: '2FA 설정에 실패했습니다.',
-            statusCode: 401,
-            error: 'Unauthorized',
-          },
-        },
-      },
+      ],
     },
   })
   @ApiResponse({
     status: 410,
     description: '2FA 설정 시간 만료',
     schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: '2FA 설정 시간이 만료되었습니다. 다시 QR을 발급받아 시작하세요.',
-        },
-        statusCode: {
-          type: 'number',
-          example: 410,
-        },
-        error: {
-          type: 'string',
-          example: 'Gone',
-        },
+      example: {
+        message: '2FA 설정 시간이 만료되었습니다. 다시 QR을 발급받아 시작하세요.',
+        statusCode: 410,
+        error: 'Gone',
       },
     },
   })
-  async postSetup2FA(@Req() req: expReq) {
+  async postSetup2FA(@Body() body: { tempToken: string }) {
     try {
-      const userId = req.user?.userId;
-      if (!userId) {
-        throw new UnauthorizedException('로그인이 필요합니다.');
+      console.log('Received tempToken:', body.tempToken);
+      const decoded = jwt.verify(body.tempToken, process.env.SECRET_KEY) as any;
+      console.log('Decoded token:', decoded);
+      if (decoded.type !== 'temp') {
+        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
-      return await this.authService.setup2FA(userId);
+      console.log('Calling setup2FA with userId:', decoded.userId);
+      const result = await this.authService.setup2FA(decoded.userId);
+      console.log('Setup2FA result:', result);
+
+      return result;
     } catch (error) {
       throw new UnauthorizedException('2FA 설정에 실패했습니다.');
     }
   }
 
   @Post('2fa/verify-setup')
-  @ApiBearerAuth()
   @UseGuards(RateLimitGuard)
   @ApiOperation({
     summary: '2단계 인증 설정 완료',
     description: 'Google Authenticator에서 생성된 코드로 2FA 설정을 완료한다.',
   })
-  async postVerify2FASetup(@Body() setup2faDto: Setup2faDto, @Req() req: expReq) {
+  @ApiBody({
+    description: '임시 토큰 + TOTP 코드',
+    schema: {
+      type: 'object',
+      properties: {
+        tempToken: {
+          type: 'string',
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        },
+        totpCode: {
+          type: 'string',
+          description: '앱에서 생성된 Totp 번호 6자리',
+          example: '123456',
+        },
+      },
+      required: ['tempToken', 'token'],
+    },
+  })
+  @ApiOkResponse({
+    description: '2FA 설정 완료',
+    schema: {
+      example: {
+        message: '2단계 인증이 활성화되었습니다.',
+        backupCodes: [
+          'PJTKVC',
+          '9K2QFM',
+          'ABCD12',
+          'EF34GH',
+          'IJKL56',
+          'MN78OP',
+          'QR90ST',
+          'UV12WX',
+          'YZ34AA',
+          'BB56CC',
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '설정 완료 실패',
+    schema: {
+      oneOf: [
+        { example: { message: '토큰이 만료되었습니다.', statusCode: 401, error: 'Unauthorized' } },
+        { example: { message: '유효하지 않은 토큰입니다.', statusCode: 401, error: 'Unauthorized' } },
+        { example: { message: '2FA 설정 완료에 실패했습니다.', statusCode: 401, error: 'Unauthorized' } },
+      ],
+    },
+  })
+  async postVerify2FASetup(@Body() body: { tempToken: string; token: string }) {
     try {
-      const userId = req.user?.userId;
-      if (!userId) {
-        throw new UnauthorizedException('로그인이 필요합니다.');
+      const decoded = jwt.verify(body.tempToken, process.env.SECRET_KEY) as any;
+      if (decoded.type !== 'temp') {
+        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
-      const result = await this.authService.verify2FASetup(userId, setup2faDto.token);
+
+      const result = await this.authService.verify2FASetup(decoded.userId, body.token);
       return {
         message: '2단계 인증이 활성화되었습니다.',
         backupCodes: result.backupCodes,
       };
     } catch (error) {
+      console.error('2FA verify setup error:', error);
+
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new UnauthorizedException('토큰이 만료되었습니다.');
+      }
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('2FA 설정 완료에 실패했습니다.');
     }
   }
@@ -660,6 +677,61 @@ export class AuthController {
   @ApiOperation({
     summary: '2단계 인증 완료',
     description: '임시 토큰과 2FA 코드로 로그인을 완료한다.',
+  })
+  @ApiBody({
+    description: '아래 중 하나를 포함 (TOTP 또는 백업 코드) / skipTwoFactor가 true면 코드 없이 통과',
+    schema: {
+      type: 'object',
+      properties: {
+        tempToken: {
+          type: 'string',
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        },
+        totpCode: {
+          type: 'string',
+          description: 'TOTP 앱의 6자리 코드',
+          example: '123456',
+          nullable: true,
+        },
+        backupCode: {
+          type: 'string',
+          description: '백업 코드 (대문자/숫자 조합)',
+          example: 'PJTKVC',
+          nullable: true,
+        },
+        skipTwoFactor: {
+          type: 'boolean',
+          description: '선택적 2FA를 건너뛰고 일반 로그인 진행',
+          example: false,
+          nullable: true,
+        },
+      },
+      required: ['tempToken'],
+    },
+  })
+  @ApiOkResponse({
+    description: '2FA 인증 완료',
+    schema: {
+      example: {
+        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6Ikㅇㄹㄴㅇㄹㄴㄴ',
+        user: {
+          id: '667042212412512c08f7',
+          email: 'trip@teller.com',
+          nickname: '트립텔러',
+        },
+        message: '2단계 인증이 완료되었습니다.',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '2FA 인증 실패',
+    schema: {
+      oneOf: [
+        { example: { statusCode: 401, message: '유효하지 않은 토큰입니다.', error: 'Unauthorized' } },
+        { example: { statusCode: 401, message: '2FA 인증에 실패했습니다.', error: 'Unauthorized' } },
+      ],
+    },
   })
   async postVerify2FA(@Body() verify2faDto: Verify2faDto, @Res({ passthrough: true }) res: expRes) {
     // 디버깅용 콘솔
@@ -695,7 +767,69 @@ export class AuthController {
   @UseGuards(RateLimitGuard)
   @ApiOperation({
     summary: '2단계 인증 비활성화',
-    description: '현재 2FA 코드로 인증 후 2단계 인증을 비활성화한다.',
+    description: '현재 2FA 코드 숫자 6자리로 인증 후 2단계 인증을 비활성화한다.',
+  })
+  @ApiBody({
+    description: '2FA 비활성화 요청',
+    schema: {
+      type: 'object',
+      properties: {
+        token: {
+          type: 'string',
+          description: 'TOTP 6자리 코드',
+          example: '123456',
+        },
+      },
+      required: ['token'],
+    },
+  })
+  @ApiOkResponse({
+    description: '2FA 비활성화 성공',
+    schema: {
+      example: {
+        message: '2단계 인증이 비활성화되었습니다.',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '2FA 비활성화 실패',
+    schema: {
+      oneOf: [
+        {
+          example: {
+            statusCode: 401,
+            message: '로그인이 필요합니다.',
+            error: 'Unauthorized',
+          },
+        },
+        {
+          example: {
+            statusCode: 401,
+            message: '올바른 인증 코드를 입력해주세요.',
+            error: 'Unauthorized',
+          },
+        },
+        {
+          example: {
+            statusCode: 401,
+            message: '2FA 비활성화에 실패했습니다.',
+            error: 'Unauthorized',
+          },
+        },
+      ],
+    },
+  })
+  @ApiResponse({
+    status: 429,
+    description: '요청 한도 초과 (RateLimitGuard)',
+    schema: {
+      example: {
+        statusCode: 429,
+        message: 'Too Many Requests',
+        error: 'Too Many Requests',
+      },
+    },
   })
   async postDisable2FA(@Body() setup2faDto: Setup2faDto, @Req() req: expReq) {
     try {
@@ -703,7 +837,7 @@ export class AuthController {
       if (!userId) {
         throw new UnauthorizedException('로그인이 필요합니다.');
       }
-      return await this.authService.disable2FA(userId, setup2faDto.token);
+      return await this.authService.disable2FA(userId, setup2faDto.totpCode);
     } catch (error) {
       throw new UnauthorizedException('2FA 비활성화에 실패했습니다.');
     }
@@ -751,13 +885,87 @@ export class AuthController {
     summary: '백업 코드 재생성',
     description: '기존 백업 코드를 모두 사용한 경우 새로운 백업 코드를 생성한다.',
   })
+  @ApiBody({
+    description: '2FA 코드 검증 (기존 2FA 활성 사용자만 가능)',
+    schema: {
+      type: 'object',
+      properties: {
+        token: {
+          type: 'string',
+          description: 'TOTP 6자리 코드',
+          example: '654321',
+        },
+      },
+      required: ['token'],
+    },
+  })
+  @ApiOkResponse({
+    description: '백업 코드 재생성 성공',
+    schema: {
+      example: {
+        message: '새로운 백업 코드가 생성되었습니다.',
+        backupCodes: [
+          'PJTKVC',
+          '9K2QFM',
+          'ABCD12',
+          'EF34GH',
+          'IJKL56',
+          'MN78OP',
+          'QR90ST',
+          'UV12WX',
+          'YZ34AA',
+          'BB56CC',
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '백업 코드 재생성 실패',
+    schema: {
+      oneOf: [
+        {
+          example: {
+            statusCode: 401,
+            message: '로그인이 필요합니다.',
+            error: 'Unauthorized',
+          },
+        },
+        {
+          example: {
+            statusCode: 401,
+            message: '올바른 인증 코드를 입력해주세요.',
+            error: 'Unauthorized',
+          },
+        },
+        {
+          example: {
+            statusCode: 401,
+            message: '백업 코드 생성에 실패했습니다.',
+            error: 'Unauthorized',
+          },
+        },
+      ],
+    },
+  })
+  @ApiResponse({
+    status: 429,
+    description: '요청 한도 초과 (RateLimitGuard)',
+    schema: {
+      example: {
+        statusCode: 429,
+        message: 'Too Many Requests',
+        error: 'Too Many Requests',
+      },
+    },
+  })
   async postRegenerateBackupCodes(@Body() setup2faDto: Setup2faDto, @Req() req: expReq) {
     try {
       const userId = req.user?.userId;
       if (!userId) {
         throw new UnauthorizedException('로그인이 필요합니다.');
       }
-      return await this.authService.generateNewBackupCodes(userId, setup2faDto.token);
+      return await this.authService.generateNewBackupCodes(userId, setup2faDto.totpCode);
     } catch (error) {
       throw new UnauthorizedException('백업 코드 재생성에 실패했습니다.');
     }

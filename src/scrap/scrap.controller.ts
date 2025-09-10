@@ -1,10 +1,11 @@
 import { Controller, Post, Delete, Param, Body, Req, UseGuards } from '@nestjs/common';
 import { ScrapService } from './scrap.service';
 import { CreateScrapDto } from './dto/create-scrap.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('Scrap')
+@ApiBearerAuth()
 @Controller('scrap')
 @UseGuards(JwtAuthGuard)
 export class ScrapController {

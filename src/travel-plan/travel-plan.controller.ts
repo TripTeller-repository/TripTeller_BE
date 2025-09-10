@@ -2,16 +2,18 @@ import { Controller, Post, Delete, Get, Param, Body, Req, Put, UseGuards } from 
 import { TravelPlanService } from '../travel-plan/travel-plan.service';
 import { CreateTravelPlanDto } from '../travel-plan/dto/create-travel-plan.dto';
 import { PutTravelPlanDto } from '../travel-plan/dto/put-travel-plan.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('TravelPlan')
+@ApiBearerAuth()
 @Controller('my-trip')
 @UseGuards(JwtAuthGuard)
 export class TravelPlanController {
   constructor(private readonly travelPlanService: TravelPlanService) {}
 
   @Post(':feedId/travel-plan')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '여행 일정 등록',
     description:
@@ -56,6 +58,7 @@ export class TravelPlanController {
   }
 
   @Get(':feedId/travel-plan/:travelPlanId')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '특정 여행 일정을 여행 일정 ID로 조회',
     description: '여행 일정 ID를 통해 특정 여행 일정을 조회한다. 해당 일정의 상세 정보를 포함하여 반환된다.',
@@ -102,6 +105,7 @@ export class TravelPlanController {
   }
 
   @Put(':feedId/travel-plan/:travelPlanId')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '여행 일정 수정',
     description: '기존의 여행 일정을 수정한다. 일정의 시작일과 종료일을 포함하여 기타 정보를 변경할 수 있다.',
@@ -151,6 +155,7 @@ export class TravelPlanController {
   }
 
   @Delete(':feedId/travel-plan/:travelPlanId')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '여행 일정 삭제',
     description: '지정한 여행 일정을 삭제한다.',

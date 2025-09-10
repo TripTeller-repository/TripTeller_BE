@@ -131,7 +131,9 @@ export class AuthController {
           suspiciousFactors: result.suspiciousFactors,
           tempToken: result.tempToken,
           userHas2FA: result.userHas2FA,
-          message: result.isSuspiciousLogin ? '의심스러운 로그인이 감지되었습니다.' : '2단계 인증이 필요합니다.',
+          message: result.isSuspiciousLogin
+            ? '의심스러운 로그인이 감지되었습니다.'
+            : '로그인에 의심스러운 요소가 없습니다.',
         };
       }
 

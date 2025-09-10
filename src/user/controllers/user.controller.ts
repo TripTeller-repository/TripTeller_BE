@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostProfileImageDto } from '../dto/post-profile-image.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserInfoDto } from '../dto/user-info.dto';
@@ -7,12 +7,14 @@ import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('User')
+@ApiBearerAuth()
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('info')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '회원정보(이메일, 프로필 이미지 URL, 닉네임) 전체 조회',
     description: '클라이언트에게 반환해야할 회원 정보를 조회한다.',

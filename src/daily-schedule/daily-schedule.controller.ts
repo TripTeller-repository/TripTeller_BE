@@ -2,10 +2,11 @@ import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nes
 import { CreateDailyScheduleDto } from '../daily-schedule/dto/create-daily-schedule.dto';
 import { PutDailyScheduleDto } from '../daily-schedule/dto/put-daily-schedule.dto';
 import { DailyScheduleService } from '../daily-schedule/daily-schedule.service';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('DailySchedule')
+@ApiBearerAuth()
 @Controller('daily-plan')
 @UseGuards(JwtAuthGuard)
 export class DailyScheduleController {

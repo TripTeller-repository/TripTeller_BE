@@ -3,10 +3,11 @@ import { MyTripService } from './my-trip.service';
 import { CreateFeedDto } from '../feed/dto/request/create-feed.dto';
 import { UpdateFeedDto } from '../feed/dto/request/update-feed.dto';
 import { PostCoverImageDto } from '../feed/dto/request/post-cover-Image.dto';
-import { ApiOperation, ApiQuery, ApiResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiParam, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@common/guards';
 
 @ApiTags('MyTrip')
+@ApiBearerAuth()
 @Controller('my-trip')
 @UseGuards(JwtAuthGuard)
 export class MyTripController {

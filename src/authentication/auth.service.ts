@@ -204,6 +204,11 @@ export class AuthService {
         suspicious = this.detectSuspiciousLogin(lastSession, deviceInfo, ip);
       }
 
+      console.log('[DEBUG] lastSession:', lastSession);
+      console.log('[DEBUG] current deviceInfo:', deviceInfo);
+      console.log('[DEBUG] current ip:', ip);
+      console.log('[DEBUG] suspicious result:', suspicious);
+
       // 2FA 활성화 여부 확인
       const t3 = performance.now();
       const userHas2FA = await this.is2FAEnabled(user._id.toString());
@@ -886,19 +891,29 @@ export class AuthService {
   private detectSuspiciousLogin(session: Login, deviceInfo: UserDevice, ip: string): boolean {
     const suspiciousFactors = [];
 
+    // console.log('[DEBUG] session.ipAddress:', session.ipAddress, 'current ip:', ip);
+
     if (session.ipAddress !== ip) {
       suspiciousFactors.push('ip_change');
     }
+
+    // console.log('[DEBUG] session.deviceInfo:', session.deviceInfo);
+    // console.log('[DEBUG] current deviceInfo:', deviceInfo);
+    // console.log('[DEBUG] isSameDevice result:', DeviceInfoUtil.isSameDevice(session.deviceInfo, deviceInfo));
 
     if (!DeviceInfoUtil.isSameDevice(session.deviceInfo, deviceInfo)) {
       suspiciousFactors.push('device_change');
     }
 
     const daysSinceLastLogin = (Date.now() - session.lastLoginAt.getTime()) / (1000 * 60 * 60 * 24);
+    // console.log('[DEBUG] daysSinceLastLogin:', daysSinceLastLogin);
+
     if (daysSinceLastLogin > 30) {
       suspiciousFactors.push('long_absence');
     }
 
-    return suspiciousFactors.length >= 2;
+    // console.log('[DEBUG] suspiciousFactors:', suspiciousFactors);
+    // console.log('[DEBUG] final suspicious result:', suspiciousFactors.length >= 2);
+    return suspiciousFactors.length >= 1;
   }
 }

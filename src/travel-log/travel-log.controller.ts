@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@common/guards';
 import { PutTravelLogImageDto } from '@travel-log/dto/put-travel-log-image.dto';
 import { PutTravelLogPostContentDto } from '@travel-log/dto/put-travel-log-post-content.dto';
 import { TravelLogService } from '@travel-log/travel-log.service';
 
 @ApiTags('TravelLog')
+@ApiBearerAuth()
 @Controller('')
 @UseGuards(JwtAuthGuard)
 export class TravelLogController {

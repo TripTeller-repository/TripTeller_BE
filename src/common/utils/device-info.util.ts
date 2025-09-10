@@ -56,6 +56,14 @@ export class DeviceInfoUtil {
    * 두 디바이스 정보가 같은지 비교
    */
   static isSameDevice(device1: UserDevice, device2: UserDevice): boolean {
-    return device1.browser === device2.browser && device1.os === device2.os && device1.device === device2.device;
+    // console.log('[DEBUG] Comparing devices:');
+    // console.log('[DEBUG] device1:', { browser: device1.browser, os: device1.os, device: device1.device });
+    // console.log('[DEBUG] device2:', { browser: device2.browser, os: device2.os, device: device2.device });
+
+    const result =
+      device1.browser === device2.browser && device1.os === device2.os && device1.device === device2.device;
+
+    // console.log('[DEBUG] isSameDevice result:', result);
+    return result;
   }
 }

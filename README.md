@@ -11,27 +11,27 @@
   </tr>
 </table>
 
----
+<br>
 
-## 테스트 계정
+# 테스트 계정
 
 > 이메일 : `trip@teller.com` <br>
 > 비밀번호 : `letsgotrip1234!` <br>
 
----
+<br>
 
-## 바로가기
+# 바로가기
 
 ### 1. [프로젝트 개요](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#1-프로젝트-개요-1)
 ### 2. [프로젝트 아키텍쳐](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#2-프로젝트-아키텍쳐-1)
 ### 3. [구현 내용](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#3-구현-내용-1)
 ### 4. [이슈 해결](https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#4-이슈-해결-1)
 
----
+<br>
 
-## 프로젝트 개요
+# 프로젝트 개요
 
-### 🛠️ 기술스택
+## 🛠️ 기술스택
 
 | 분야 | 기술스택 |
 |------|----------|
@@ -46,13 +46,15 @@
 | **AWS** | 광범위한 서비스 제공, 대량 트래픽 처리 용이 |
 | **Docker** | 개발/배포 환경 일관성, 컨테이너 기반 효율적 배포 |
 
----
+<br>
 
-## 프로젝트 아키텍처
+# 프로젝트 아키텍처
 
----
+<img width="2066" height="1272" alt="Image" src="https://github.com/user-attachments/assets/cdebfb6e-7d8a-45fb-836c-6ed7c2644560" />
 
-## 구현 내용 
+<br>
+
+# 구현 내용 
 
 | **분야**       | **세부 전략**                                                                 |
 |----------------|-------------------------------------------------------------------------------|
@@ -64,12 +66,50 @@
 | 📝 **문서화**     | • Swagger 활용<br>• Compodoc 활용 (전체 코드 문서화)<br>• JSDoc 활용 (세부 코드 주석 및 문서화) |
 | 🖼️ **이미지**     | • Presigned URL 활용<br>• 프론트엔드 vs 서버 처리 비용/효율성 비교 <br>→ 비용 절감을 위해 프론트엔드에서 처리 |
 
----
+<br>
 
-## 이슈 해결
+# 이슈 해결
 
-### 1. 로그인 전략
+## 1. 보안 강화된 로그인 전략
+
+### 1) 기존 방식
+
+#### 토큰 구조
+| 토큰 종류 | 반환 값 | 저장 메커니즘 | 만료 시간 |
+|----------------|----------------|-----------------------------------|------------|
+| <b>액세스 토큰</b> | 값 | HTTP 헤더 | 1 시간 |
+| <b>리프레시 토큰</b> | 쿠키 | HTTP 헤더<br>(HttpOnly 옵션 사용) | 10 분 |
+
+#### 한계점
+- 토큰 탈취 시 악용 불가피
+- Refresh Token이 쿠키에 있어 XSS/CSRF 위험 존재
+
+### 2) 개선 방식
+#### 의심 로그인 탐지 + 2단계 인증(2FA) 추가
+  - 로그인 시 디바이스/IP/브라우저 비교
+  - 의심 로그인일 경우 → `tempToken` 발급 → 선택적 2FA 분기
+  - Google Authenticator(TOTP) 검증 후 Access/Refresh 재발급
+
+#### 효과
+| 구분 | 기존 방식 | 개선 방식 |
+|------|-----------|-----------|
+| 토큰 탈취 대응 | 불가능 | 가능 (디바이스/IP 감지로 차단) |
+| 클라이언트 쿠키 공격 대응 | HttpOnly 쿠키 | HttpOnly 쿠키 + 2FA |
+| 공격 탐지 | 불가능 | 가능 (디바이스/IP 기반) |
+| 인증 단계 | 비밀번호만 | 필요 시 2FA 추가 |
+
+### 3) 2FA 로그인 시퀀스 다이어그램
+
+<img width="1091" height="2464" alt="Image" src="https://github.com/user-attachments/assets/004907de-d09a-444c-aef6-f5cb1e101391" />
+
+### 4) 카카오 시퀀스 다이어그램
+
+<img width="947" height="907" alt="Image" src="https://github.com/user-attachments/assets/55eca528-3ce9-41f5-b33f-ed864309d493" />
+
+<br>
 
 ### 2. 배포 방식: pm2 vs docker
+
+<br>
 
 ### 3. 이미지 리사이징: 프론트엔드 vs 백엔드

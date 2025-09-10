@@ -10,6 +10,8 @@ import {
   Query,
   UseInterceptors,
   UseGuards,
+  Inject,
+  Logger,
 } from '@nestjs/common';
 import { Request as expReq, Response as expRes, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
@@ -31,12 +33,18 @@ import { Setup2faDto } from './dto/setup-2fa.dto';
 import { Verify2faDto } from './dto/verify-2fa.dto';
 import { DeviceInfoUtil } from '@common/utils/device-info.util';
 import * as jwt from 'jsonwebtoken';
+import { ConfigService } from '@nestjs/config';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @UseInterceptors(PasswordSerializerInterceptor)
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {}
 
   @Post('sign-up')
   @ApiOperation({ summary: '회원가입', description: '사용자가 이메일과 비밀번호를 입력하면 회원가입을 한다.' })

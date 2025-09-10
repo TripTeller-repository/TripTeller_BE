@@ -30,7 +30,8 @@ import mongoose from 'mongoose';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        if (process.env.NODE_ENV === 'development') {
+        const nodeEnv = configService.get<string>('nodeEnv');
+        if (nodeEnv === 'development') {
           mongoose.set('debug', true);
         }
 

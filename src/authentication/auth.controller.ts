@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   UseGuards,
   Inject,
-  Logger,
 } from '@nestjs/common';
 import { Request as expReq, Response as expRes, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
@@ -32,9 +31,10 @@ import { RateLimitGuard } from '@common/guards';
 import { Setup2faDto } from './dto/setup-2fa.dto';
 import { Verify2faDto } from './dto/verify-2fa.dto';
 import { DeviceInfoUtil } from '@common/utils/device-info.util';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @UseInterceptors(PasswordSerializerInterceptor)
 @ApiTags('Authentication')
@@ -317,7 +317,8 @@ export class AuthController {
       this.setRefreshTokenCookie(res, refreshToken);
       this.setAccessTokenCookie(res, accessToken);
 
-      return res.redirect(process.env.KAKAO_REDIRECT_URI);
+      const redirectUri = this.configService.get<string>('kakao.redirectUri');
+      return res.redirect(redirectUri);
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException('카카오 로그인에 실패하였습니다.');
@@ -586,18 +587,30 @@ export class AuthController {
   })
   async postSetup2FA(@Body() body: { tempToken: string }) {
     try {
-      console.log('Received tempToken:', body.tempToken);
-      const decoded = jwt.verify(body.tempToken, process.env.SECRET_KEY) as any;
-      console.log('Decoded token:', decoded);
+      this.logger.info('2FA setup started', { hasTempToken: !!body.tempToken, service: 'AuthController' });
+      // console.log('Received tempToken:', body.tempToken);
+
+      const jwtTempSecret = this.configService.get<string>('jwt.temp.secretKey');
+      const decoded = jwt.verify(body.tempToken, jwtTempSecret) as any;
+
+      this.logger.debug('Token decoded successfully', {
+        userId: decoded.userId,
+        type: decoded.type,
+        service: 'AuthController',
+      });
+      // console.log('Decoded token:', decoded);
+
       if (decoded.type !== 'temp') {
         throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
-      console.log('Calling setup2FA with userId:', decoded.userId);
-      const result = await this.authService.setup2FA(decoded.userId);
-      console.log('Setup2FA result:', result);
 
+      this.logger.info('Calling setup2FA service', { userId: decoded.userId, service: 'AuthController' });
+      const result = await this.authService.setup2FA(decoded.userId);
+
+      this.logger.info('2FA setup completed successfully', { userId: decoded.userId, service: 'AuthController' });
       return result;
     } catch (error) {
+      this.logger.error('2FA setup failed', { error: error.message, service: 'AuthController' });
       throw new UnauthorizedException('2FA 설정에 실패했습니다.');
     }
   }
@@ -659,7 +672,9 @@ export class AuthController {
   })
   async postVerify2FASetup(@Body() body: { tempToken: string; token: string }) {
     try {
-      const decoded = jwt.verify(body.tempToken, process.env.SECRET_KEY) as any;
+      const jwtTempSecret = this.configService.get<string>('jwt.temp.secretKey');
+      const decoded = jwt.verify(body.tempToken, jwtTempSecret) as any;
+
       if (decoded.type !== 'temp') {
         throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
@@ -670,7 +685,7 @@ export class AuthController {
         backupCodes: result.backupCodes,
       };
     } catch (error) {
-      console.error('2FA verify setup error:', error);
+      this.logger.error('2FA verify setup error', { error: error.message, service: 'AuthController' });
 
       if (error instanceof jwt.TokenExpiredError) {
         throw new UnauthorizedException('토큰이 만료되었습니다.');
@@ -994,10 +1009,12 @@ export class AuthController {
 
   // 쿠키 옵션 공통 부분
   private getCookieOptions(): CookieOptions {
-    const isProd = process.env.NODE_ENV === 'production';
+    const nodeEnv = this.configService.get<string>('nodeEnv');
+    const cookieDomain = this.configService.get<string>('cookieDomain');
+    const isProd = nodeEnv === 'production';
 
     return {
-      domain: process.env.COOKIE_DOMAIN,
+      domain: cookieDomain,
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
     };

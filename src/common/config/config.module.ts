@@ -20,7 +20,9 @@ import * as Joi from 'joi';
         KAKAO_REDIRECT_URI: Joi.string().required(),
 
         // 서버 비밀키
-        SECRET_KEY: Joi.string().required(),
+        JWT_ACCESS_SECRET: Joi.string().min(32).required(),
+        JWT_REFRESH_SECRET: Joi.string().min(32).required(),
+        JWT_TEMP_SECRET: Joi.string().min(32).required(),
 
         // AWS S3
         AWS_S3_ACCESSKEYID: Joi.string().required(),
@@ -32,6 +34,7 @@ import * as Joi from 'joi';
         // 기타
         DATABASE_HOST: Joi.string().required(),
         COOKIE_DOMAIN: Joi.string().required(),
+        SLACK_WEBHOOK_URL: Joi.string().uri().optional(),
       }),
     }),
   ],

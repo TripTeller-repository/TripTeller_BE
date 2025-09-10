@@ -14,7 +14,10 @@ import * as speakeasy from 'speakeasy';
 import * as QRCode from 'qrcode';
 import { TwoFactor } from './schemas/two-factor.schema';
 import { DeviceInfoUtil } from '../common/utils/device-info.util';
-import { performance } from 'node:perf_hooks';
+// import { performance } from 'node:perf_hooks';
+import { ConfigService } from '@nestjs/config';
+import { JwtConfig, KakaoConfig } from './interfaces/config.interfaces';
+import { TempTokenPayload } from './interfaces/token.interfaces';
 
 // 소셜 로그인 사용자 정보 제공자
 export enum EAuthProvider {
@@ -36,12 +39,19 @@ export enum EAuthProvider {
  */
 @Injectable()
 export class AuthService {
+  private readonly jwtConfig: JwtConfig;
+  private readonly kakaoConfig: KakaoConfig;
+
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Login') private readonly loginModel: Model<Login>,
     @InjectModel('TwoFactor') private readonly twoFactorModel: Model<TwoFactor>,
+    private readonly configService: ConfigService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+    this.jwtConfig = this.configService.get('jwt');
+    this.kakaoConfig = this.configService.get('kakao');
+  }
 
   /**
    * 회원 가입
@@ -98,11 +108,15 @@ export class AuthService {
       sessionId: loginSession._id.toString(),
     };
 
-    // Access Token 생성 (10분)
-    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '10m' });
+    // Access Token 생성
+    const accessToken = jwt.sign(payload, this.jwtConfig.access.secretKey, {
+      expiresIn: this.jwtConfig.access.expiresIn,
+    });
 
-    // Refresh Token 생성 (1시간)
-    const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
+    // Refresh Token 생성
+    const refreshToken = jwt.sign(payload, this.jwtConfig.refresh.secretKey, {
+      expiresIn: this.jwtConfig.refresh.expiresIn,
+    });
 
     return { accessToken, refreshToken };
   }
@@ -118,7 +132,7 @@ export class AuthService {
   async refreshAccessToken(refreshToken: string, deviceInfo: UserDevice, ip: string) {
     try {
       // Refresh 토큰 검증
-      const decoded = jwt.verify(refreshToken, process.env.SECRET_KEY) as jwt.JwtPayload;
+      const decoded = jwt.verify(refreshToken, this.jwtConfig.refresh.secretKey) as jwt.JwtPayload;
       const { userId, authProvider, sessionId } = decoded;
 
       // 로그인 세션 확인
@@ -140,7 +154,6 @@ export class AuthService {
       const payload = {
         userId,
         authProvider,
-        // deviceId: deviceInfo.deviceId,
         browser: deviceInfo.browser,
         os: deviceInfo.os,
         ip,
@@ -150,7 +163,9 @@ export class AuthService {
       };
 
       // 새 액세스 토큰 생성 (10분)
-      const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '10m' });
+      const accessToken = jwt.sign(payload, this.jwtConfig.access.secretKey, {
+        expiresIn: this.jwtConfig.access.expiresIn,
+      });
 
       return { accessToken, suspicious: isSuspicious };
     } catch (error) {
@@ -174,7 +189,7 @@ export class AuthService {
   async validateSignIn(signInDto: SignInDto, deviceInfo: UserDevice, ip: string) {
     try {
       // 이메일로 특정 회원 조회
-      const t0 = performance.now();
+      // const t0 = performance.now();
       const user = await this.userService.findUserByEmail(signInDto.email);
 
       // 회원이 존재하지 않을 경우
@@ -188,14 +203,14 @@ export class AuthService {
       }
 
       // 비밀번호 확인
-      const t1 = performance.now();
+      // const t1 = performance.now();
       const isPasswordValid = await this.verifyPassword(signInDto.password, user.password);
       if (!isPasswordValid) {
         throw new UnauthorizedException('잘못된 비밀번호입니다.');
       }
 
       // 최근 로그인 세션 확인
-      const t2 = performance.now();
+      // const t2 = performance.now();
       const lastSession = await this.loginModel.findOne({ userId: user._id.toString() }).sort({ lastLoginAt: -1 });
 
       // 의심스러운 로그인 감지
@@ -204,16 +219,16 @@ export class AuthService {
         suspicious = this.detectSuspiciousLogin(lastSession, deviceInfo, ip);
       }
 
-      console.log('[DEBUG] lastSession:', lastSession);
-      console.log('[DEBUG] current deviceInfo:', deviceInfo);
-      console.log('[DEBUG] current ip:', ip);
-      console.log('[DEBUG] suspicious result:', suspicious);
+      // console.log('[DEBUG] lastSession:', lastSession);
+      // console.log('[DEBUG] current deviceInfo:', deviceInfo);
+      // console.log('[DEBUG] current ip:', ip);
+      // console.log('[DEBUG] suspicious result:', suspicious);
 
       // 2FA 활성화 여부 확인
-      const t3 = performance.now();
+      // const t3 = performance.now();
       const userHas2FA = await this.is2FAEnabled(user._id.toString());
 
-      const t4 = performance.now();
+      // const t4 = performance.now();
 
       // tempToken 생성
       const tempPayload = {
@@ -223,15 +238,20 @@ export class AuthService {
         userHas2FA: userHas2FA,
         browser: deviceInfo.browser,
         os: deviceInfo.os,
+        device: deviceInfo.device,
+        userAgent: deviceInfo.userAgent,
+        deviceId: deviceInfo.deviceId,
         ip,
         authProvider: user.authProvider || null,
       };
 
-      const tempToken = jwt.sign(tempPayload, process.env.SECRET_KEY, { expiresIn: '10m' });
+      const tempToken = jwt.sign(tempPayload, this.jwtConfig.temp.secretKey, {
+        expiresIn: this.jwtConfig.temp.expiresIn,
+      });
 
-      console.log(
-        `[perf][sign-in] user ${Math.round(t1 - t0)}ms | bcrypt ${Math.round(t2 - t1)}ms | login ${Math.round(t3 - t2)}ms | 2fa ${Math.round(t4 - t3)}ms`,
-      );
+      // console.log(
+      //   `[perf][sign-in] user ${Math.round(t1 - t0)}ms | bcrypt ${Math.round(t2 - t1)}ms | login ${Math.round(t3 - t2)}ms | 2fa ${Math.round(t4 - t3)}ms`,
+      // );
       return {
         requiresTwoFactor: userHas2FA,
         isSuspiciousLogin: suspicious,
@@ -252,7 +272,7 @@ export class AuthService {
    */
   async proceedLogin(tempToken: string) {
     try {
-      const decoded = jwt.verify(tempToken, process.env.SECRET_KEY) as any;
+      const decoded = jwt.verify(tempToken, this.jwtConfig.temp.secretKey) as TempTokenPayload;
 
       if (decoded.type !== 'temp') {
         throw new UnauthorizedException('유효하지 않은 토큰입니다.');
@@ -288,9 +308,10 @@ export class AuthService {
    * @returns 디코딩된 payload
    * @throws {UnauthorizedException} 유효하지 않은 토큰일 경우
    */
-  async verifyToken(token: string): Promise<jwt.JwtPayload> {
+  async verifyToken(token: string, tokenType: 'access' | 'refresh' | 'temp' = 'access'): Promise<jwt.JwtPayload> {
     try {
-      const decoded = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
+      const secretKey = this.jwtConfig[tokenType].secretKey;
+      const decoded = jwt.verify(token, secretKey) as jwt.JwtPayload;
 
       // 세션 ID가 있는 경우 세션 유효성 확인
       if (decoded.sessionId) {
@@ -323,8 +344,8 @@ export class AuthService {
       const url = 'https://kauth.kakao.com/oauth/token';
       const data = {
         grant_type: 'authorization_code',
-        client_id: process.env.KAKAO_CLIENT_ID,
-        redirect_uri: process.env.KAKAO_CALLBACK_URL,
+        client_id: this.kakaoConfig.clientId,
+        redirect_uri: this.kakaoConfig.callbackUrl,
         code: code,
       };
       const headers = {
@@ -537,7 +558,7 @@ export class AuthService {
         { upsert: true, new: true },
       );
 
-      if (existingTwoFactor.tempSecretExpiresAt && existingTwoFactor.tempSecretExpiresAt < new Date()) {
+      if (existingTwoFactor?.tempSecretExpiresAt && existingTwoFactor.tempSecretExpiresAt < new Date()) {
         await this.twoFactorModel.updateOne({ userId }, { $unset: { tempSecret: 1, tempSecretExpiresAt: 1 } });
         throw new GoneException('2FA 설정 시간이 만료되었습니다. 다시 QR을 발급받아 시작하세요.');
       }
@@ -772,7 +793,7 @@ export class AuthService {
    */
   async verify2FALogin(tempToken: string, totpCode?: string, skipTwoFactor?: boolean, backupCode?: string) {
     try {
-      const decoded = jwt.verify(tempToken, process.env.SECRET_KEY) as any;
+      const decoded = jwt.verify(tempToken, this.jwtConfig.temp.secretKey) as any;
       if (decoded.type !== 'temp') {
         throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
@@ -845,7 +866,7 @@ export class AuthService {
       // refreshToken이 있으면 해당 세션 찾기
       if (refreshToken) {
         try {
-          const decoded = jwt.verify(refreshToken, process.env.SECRET_KEY) as any;
+          const decoded = jwt.verify(refreshToken, this.jwtConfig.refresh.secretKey) as any;
           if (decoded.sessionId) {
             await this.loginModel.findByIdAndDelete(decoded.sessionId);
             return { message: '로그아웃되었습니다.' };

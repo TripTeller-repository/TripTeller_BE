@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
 import { IProfileImageService } from '../interfaces/profile-image.interface';
 import { FileUtilService } from '@common/files/file-util.service';
+import { SignedUrlResult } from '@common/files/signed-url.interface';
 
 @Injectable()
 export class ProfileImageService implements IProfileImageService {
@@ -31,7 +32,7 @@ export class ProfileImageService implements IProfileImageService {
    * @param userId - 사용자 ID
    * @returns Signed URL
    */
-  async fetchProfileImageSignedUrl(fileName: string, userId: string): Promise<string> {
+  async fetchProfileImageSignedUrl(fileName: string, userId: string): Promise<SignedUrlResult> {
     const fileNameInBucket = this.fileUtilService.createFileUnixName(fileName, userId);
     const filePathName = `profile-image/${fileNameInBucket}`;
     return await this.fileUtilService.createSignedUrl(filePathName);

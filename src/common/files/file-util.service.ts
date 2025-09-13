@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import dayjs from 'dayjs';
 import { S3Service } from './s3.service';
+import { SignedUrlResult } from './signed-url.interface';
 
 /**
  * 파일 관련 유틸리티 기능을 제공하는 서비스
@@ -20,20 +21,44 @@ export class FileUtilService {
    * 지정한 파일 경로에 대해 S3 Presigned URL을 생성
    *
    * @param filePath - S3에 업로드할 파일 경로 (Key)
-   * @param expiresIn - URL 유효 시간 (초), 기본값: 120초
-   * @returns 생성된 서명된 URL
+   * @param contentType - 프론트에서 받은 파일 타입
+   * @param uploadExpiresIn - 업로드 URL 유효 시간 (초), 기본값: 300초
+   * @param downloadExpiresIn - 다운로드 URL 유효 시간 (초), 기본값: 60초
+   * @returns 생성된 서명된 URL들과 키 정보
    * @throws {Error} URL 생성 실패 시 예외 발생
    */
-  async createSignedUrl(filePath: string, expiresIn = 120): Promise<string> {
+  async createSignedUrl(
+    filePath: string,
+    contentType: string = 'image/jpeg',
+    uploadExpiresIn = 300,
+    downloadExpiresIn = 60,
+  ): Promise<SignedUrlResult> {
     try {
       const s3Client = this.s3Service.getS3Client();
       const bucketName = this.s3Service.getBucketName();
 
-      const command = new PutObjectCommand({ Bucket: bucketName, Key: filePath });
-      const signedUrl = await getSignedUrl(s3Client, command, { expiresIn });
+      // 업로드용 (PUT)
+      const uploadCommand = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: filePath,
+        ContentType: contentType,
+      });
+
+      const uploadUrl = await getSignedUrl(s3Client, uploadCommand, {
+        expiresIn: uploadExpiresIn,
+      });
+
+      // 다운로드용 (GET)
+      const downloadCommand = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: filePath,
+      });
+      const downloadUrl = await getSignedUrl(s3Client, downloadCommand, {
+        expiresIn: downloadExpiresIn,
+      });
 
       this.logger.log(`Signed URL created for: ${filePath}`);
-      return signedUrl;
+      return { uploadUrl, downloadUrl, key: filePath };
     } catch (error) {
       this.logger.error(`Failed to create signed URL: ${error.message}`);
       throw error;

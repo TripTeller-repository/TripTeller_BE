@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Logger } from 'winston';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -15,7 +14,7 @@ export class S3Service {
 
   constructor(
     private readonly configService: ConfigService,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
   ) {}
 
   /**
@@ -36,7 +35,7 @@ export class S3Service {
       };
 
       this.s3Client = new S3Client(s3Config);
-      this.logger.info('S3 client initialized', { service: 'S3Service' });
+      this.logger.log('S3 client initialized', { service: 'S3Service' });
     }
 
     return this.s3Client;

@@ -2,7 +2,7 @@ import { Controller, Post, Delete, Param, Body, Req, UseGuards } from '@nestjs/c
 import { ScrapService } from './scrap.service';
 import { CreateScrapDto } from './dto/create-scrap.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@common/guards';
+import { JwtAuthGuard } from '@auth/guards/auth.guard';
 
 @ApiTags('Scrap')
 @ApiBearerAuth()

@@ -3,7 +3,7 @@ import { CreateDailyScheduleDto } from '../daily-schedule/dto/create-daily-sched
 import { PutDailyScheduleDto } from '../daily-schedule/dto/put-daily-schedule.dto';
 import { DailyScheduleService } from '../daily-schedule/daily-schedule.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@common/guards';
+import { JwtAuthGuard } from '@auth/guards/auth.guard';
 
 @ApiTags('DailySchedule')
 @ApiBearerAuth()

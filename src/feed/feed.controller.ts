@@ -1,7 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FeedService } from '@feed/feed.service';
-import { JwtAuthGuard } from '@common/guards';
+import { JwtAuthGuard } from '@auth/guards/auth.guard';
 
 @ApiTags('Scrap')
 @Controller('scrap')

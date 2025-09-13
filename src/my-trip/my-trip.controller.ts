@@ -4,7 +4,7 @@ import { CreateFeedDto } from '../feed/dto/request/create-feed.dto';
 import { UpdateFeedDto } from '../feed/dto/request/update-feed.dto';
 import { PostCoverImageDto } from '../feed/dto/request/post-cover-Image.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiParam, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@common/guards';
+import { JwtAuthGuard } from '@auth/guards/auth.guard';
 
 @ApiTags('MyTrip')
 @ApiBearerAuth()

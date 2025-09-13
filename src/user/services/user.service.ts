@@ -7,6 +7,7 @@ import { UserReaderService } from './user-reader.service';
 import { UserUpdaterService } from './user-updater.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserInfoDto } from '../dto/user-info.dto';
+import { SignedUrlResult } from '@common/files/signed-url.interface';
 
 /**
  * 메인 UserService - Facade 패턴
@@ -51,7 +52,7 @@ export class UserService {
    * @param {string} userId - 사용자 ID
    * @returns {Promise<string>} 생성된 Signed URL
    */
-  async fetchProfileImageSignedUrl(fileName: string, userId: string): Promise<string> {
+  async fetchProfileImageSignedUrl(fileName: string, userId: string): Promise<SignedUrlResult> {
     return this.profileImageService.fetchProfileImageSignedUrl(fileName, userId);
   }
 

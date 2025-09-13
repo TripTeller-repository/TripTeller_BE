@@ -66,6 +66,51 @@ export class OurTripController {
     }
   }
 
+  @Get(':feedId/travel-plan/:travelPlanId')
+  @ApiOperation({
+    summary: '특정 여행 일정을 여행 일정 ID로 조회',
+    description: '여행 일정 ID를 통해 특정 여행 일정을 조회한다. 해당 일정의 상세 정보를 포함하여 반환된다.',
+  })
+  @ApiParam({ name: 'feedId', description: 'Feed ID' })
+  @ApiResponse({
+    status: 200,
+    description: '여행 일정을 성공적으로 조회',
+    schema: {
+      example: {
+        _id: '605c72ef153207001f6470f',
+        title: '겨울 여행',
+        region: 'SEOUL',
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: '2024-12-01T00:00:00.000Z',
+        endDate: '2024-12-07T00:00:00.000Z',
+        dailySchedules: [],
+        dailyPlans: [],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '여행 일정을 성공적으로 조회',
+    schema: {
+      example: {
+        _id: '605c72ef153207001f6470f',
+        title: '겨울 여행',
+        region: 'SEOUL',
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: '2024-12-01T00:00:00.000Z',
+        endDate: '2024-12-07T00:00:00.000Z',
+        dailySchedules: [],
+        dailyPlans: [],
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: '여행 일정을 찾을 수 없음' })
+  async getTravelPlan(@Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {
+    return await this.ourTripService.fetchTravelPlan(feedId, travelPlanId);
+  }
+
   @Get('date')
   @ApiOperation({
     summary: '모든 공개 게시물 기간별 조회',

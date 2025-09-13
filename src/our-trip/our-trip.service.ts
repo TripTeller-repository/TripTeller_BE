@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import Feed from '@feed/feed.schema';
@@ -47,6 +47,18 @@ export class OurTripService {
         data,
       },
     };
+  }
+
+  // 특정 여행 일정 조회
+  async fetchTravelPlan(feedId: string, travelPlanId: string) {
+    await this.fetchOurFeed(feedId);
+    const plan = await (await this.travelPlanModel.findById({ _id: travelPlanId })).populate('dailyPlans');
+
+    if (!plan) {
+      throw new NotFoundException('해당 여행 일정을 조회할 수 없습니다.');
+    }
+
+    return plan;
   }
 
   /**

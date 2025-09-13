@@ -8,6 +8,7 @@ import { LoginSchema } from './login.schema';
 import { UserSchema } from '@user/schemas/user.schema';
 import { UserModule } from '@user/user.module';
 import { TwoFactorSchema } from './schemas/two-factor.schema';
+import { JwtAuthGuard } from './guards/auth.guard';
 
 @Module({
   imports: [
@@ -26,8 +27,8 @@ import { TwoFactorSchema } from './schemas/two-factor.schema';
     ConfigModule,
     UserModule,
   ],
-  providers: [AuthService],
-  exports: [AuthService, MongooseModule],
+  providers: [AuthService, JwtAuthGuard],
+  exports: [AuthService, MongooseModule, JwtAuthGuard],
   controllers: [AuthController],
 })
 export class AuthModule {}

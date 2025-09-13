@@ -274,6 +274,9 @@ export class AuthService {
     try {
       const decoded = jwt.verify(tempToken, this.jwtConfig.temp.secretKey) as TempTokenPayload;
 
+      // 디버깅 추가
+      console.log('[DEBUG] tempToken decoded:', decoded);
+
       if (decoded.type !== 'temp') {
         throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
@@ -292,6 +295,10 @@ export class AuthService {
         deviceInfo,
         decoded.ip,
       );
+
+      // 생성된 토큰 디버깅
+      const accessDecoded = jwt.verify(accessToken, this.jwtConfig.access.secretKey);
+      console.log('[DEBUG] generated accessToken payload:', accessDecoded);
 
       return { accessToken, refreshToken };
     } catch (error) {

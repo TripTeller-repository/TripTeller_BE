@@ -72,9 +72,15 @@ export class TravelLogService {
   }
 
   // AWS S3 TravelLog 이미지 Signed URL 불러오기
-  async fetchTravelLogImageSignedUrl(fileName: string, userId: string) {
-    const fileNameInBucket = this.fileUtilService.createFileUnixName(fileName, userId);
+  async fetchTravelLogImageSignedUrl(fileName: string, userId: string, contentType: string) {
+    // 파일명에서 확장자 제거하고 처리
+    const baseFileName = fileName.replace(/\.[^/.]+$/, '');
+    const fileNameInBucket = this.fileUtilService.createFileUnixName(`${baseFileName}.jpeg`, userId);
     const filePathName = `travel-log-image/${fileNameInBucket}`;
-    return await this.fileUtilService.createSignedUrl(filePathName);
+
+    console.log('=== Final file path:', filePathName);
+    console.log('=== Content-Type:', contentType);
+
+    return await this.fileUtilService.createSignedUrl(filePathName, 'image/jpeg');
   }
 }

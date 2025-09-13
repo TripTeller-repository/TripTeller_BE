@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } 
 import { DailyPlanService } from '@daily-plan/daily-plan.service';
 import { CreateDailyPlanDto } from '@daily-plan/dto/create-daily-plan.dto';
 import { PutDailyPlanDto } from '@daily-plan/dto/put-daily-plan.dto';
-import { JwtAuthGuard } from '@common/guards';
+import { JwtAuthGuard } from '@auth/guards/auth.guard';
 
 @ApiTags('DailyPlan')
 @ApiBearerAuth()

@@ -46,6 +46,7 @@ lerna-debug.log*
 .production.env
 .development.env
 *.pem
+cors.json
 
 # temp directory
 .temp

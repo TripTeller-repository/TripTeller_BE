@@ -1,6 +1,16 @@
-import { Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe, Query, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { Body } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '@user/services/user.service';
 import { Post } from '@nestjs/common';
 import { OurTripService } from './our-trip.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
@@ -37,8 +47,12 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getPublicFeeds(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req: Request) {
+  async getPublicFeeds(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
+      console.log('raw query:', (req as any).query);
       const userId = req['user']?.userId;
       return this.ourTripService.fetchOurFeeds(pageNumber, userId || null);
     } catch (error) {
@@ -50,6 +64,51 @@ export class OurTripController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @Get(':feedId/travel-plan/:travelPlanId')
+  @ApiOperation({
+    summary: '특정 여행 일정을 여행 일정 ID로 조회',
+    description: '여행 일정 ID를 통해 특정 여행 일정을 조회한다. 해당 일정의 상세 정보를 포함하여 반환된다.',
+  })
+  @ApiParam({ name: 'feedId', description: 'Feed ID' })
+  @ApiResponse({
+    status: 200,
+    description: '여행 일정을 성공적으로 조회',
+    schema: {
+      example: {
+        _id: '605c72ef153207001f6470f',
+        title: '겨울 여행',
+        region: 'SEOUL',
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: '2024-12-01T00:00:00.000Z',
+        endDate: '2024-12-07T00:00:00.000Z',
+        dailySchedules: [],
+        dailyPlans: [],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '여행 일정을 성공적으로 조회',
+    schema: {
+      example: {
+        _id: '605c72ef153207001f6470f',
+        title: '겨울 여행',
+        region: 'SEOUL',
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: '2024-12-01T00:00:00.000Z',
+        endDate: '2024-12-07T00:00:00.000Z',
+        dailySchedules: [],
+        dailyPlans: [],
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: '여행 일정을 찾을 수 없음' })
+  async getTravelPlan(@Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {
+    return await this.ourTripService.fetchTravelPlan(feedId, travelPlanId);
   }
 
   @Get('date')
@@ -85,7 +144,7 @@ export class OurTripController {
   async getFeedsByDate(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
-    @Query('pageNumber', ParseIntPipe) pageNumber: number = 1,
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
     @Req() req: Request,
   ) {
     try {
@@ -129,7 +188,10 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getOurFeedsOrderedByRecent(@Query('pageNumber', ParseIntPipe) pageNumber: number = 1, @Req() req: Request) {
+  async getOurFeedsOrderedByRecent(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
       const userId = req['user']?.userId;
       return this.ourTripService.sortOurFeedsByRecent(pageNumber, userId || null);
@@ -144,7 +206,6 @@ export class OurTripController {
     }
   }
 
-  // our-trip/order-by/like-count?pageNumber=1
   @Get('order-by/like-count')
   @ApiOperation({
     summary: '모든 공개 게시글 정렬 : 인기순',
@@ -172,7 +233,10 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getOurFeedsOrderedByLikeCount(@Query('pageNumber', ParseIntPipe) pageNumber: number = 1, @Req() req: Request) {
+  async getOurFeedsOrderedByLikeCount(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
       const userId = req['user']?.userId;
       return this.ourTripService.sortOurFeedsByLikeCount(pageNumber, userId || null);

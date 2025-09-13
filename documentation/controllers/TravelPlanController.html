@@ -1,0 +1,889 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>tripteller documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">tripteller documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content controller">
+                   <div class="content-data">
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Controllers</li>
+  <li class="breadcrumb-item" >TravelPlanController</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/travel-plan/travel-plan.controller.ts</code>
+        </p>
+
+            <p class="comment">
+                <h3>Prefix</h3>
+            </p>
+            <p class="comment">
+                <code>my-trip</code>
+            </p>
+
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteTravelPlan" >deleteTravelPlan</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTravelPlan" >getTravelPlan</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#postTravelPlan" >postTravelPlan</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#putTravelPlan" >putTravelPlan</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteTravelPlan"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteTravelPlan</b></span>
+                        <a href="#deleteTravelPlan"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteTravelPlan(feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, travelPlanId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Delete(&#x27;:feedId/travel-plan/:travelPlanId&#x27;)<br />@ApiOperation({summary: &#x27;여행 일정 삭제&#x27;, description: &#x27;지정한 여행 일정을 삭제한다.&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;Feed ID&#x27;})<br />@ApiParam({name: &#x27;travelPlanId&#x27;, description: &#x27;삭제할 여행 일정 ID&#x27;})<br />@ApiResponse({status: 200, description: &#x27;여행 일정이 성공적으로 삭제됨&#x27;, schema: undefined})<br />@ApiResponse({status: 404, description: &#x27;여행 일정을 찾을 수 없음&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="170"
+                                    class="link-to-prism">src/travel-plan/travel-plan.controller.ts:170</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>travelPlanId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTravelPlan"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getTravelPlan</b></span>
+                        <a href="#getTravelPlan"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTravelPlan(req, feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, travelPlanId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:feedId/travel-plan/:travelPlanId&#x27;)<br />@ApiOperation({summary: &#x27;특정 여행 일정을 여행 일정 ID로 조회&#x27;, description: &#x27;여행 일정 ID를 통해 특정 여행 일정을 조회한다. 해당 일정의 상세 정보를 포함하여 반환된다.&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;Feed ID&#x27;})<br />@ApiResponse({status: 200, description: &#x27;여행 일정을 성공적으로 조회&#x27;, schema: undefined})<br />@ApiResponse({status: 200, description: &#x27;여행 일정을 성공적으로 조회&#x27;, schema: undefined})<br />@ApiResponse({status: 404, description: &#x27;여행 일정을 찾을 수 없음&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">src/travel-plan/travel-plan.controller.ts:99</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>travelPlanId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="postTravelPlan"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>postTravelPlan</b></span>
+                        <a href="#postTravelPlan"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>postTravelPlan(req, feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, createTravelPlanDto: <a href="../classes/CreateTravelPlanDto.html" target="_self">CreateTravelPlanDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;:feedId/travel-plan&#x27;)<br />@ApiOperation({summary: &#x27;여행 일정 등록&#x27;, description: &#x27;특정 피드에 새로운 여행 일정을 등록한다. 여행 일정을 등록하면, 해당 일정에 맞춰 자동으로 일별 계획이 생성된다.&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;여행 일정의 Feed ID&#x27;})<br />@ApiBody({type: CreateTravelPlanDto, description: &#x27;여행 일정 등록에 필요한 정보&#x27;, examples: undefined})<br />@ApiResponse({status: 201, description: &#x27;여행 일정이 성공적으로 등록됨&#x27;, schema: undefined})<br />@ApiResponse({status: 400, description: &#x27;잘못된 입력 값&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/travel-plan/travel-plan.controller.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>createTravelPlanDto</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateTravelPlanDto.html" target="_self" >CreateTravelPlanDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="putTravelPlan"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>putTravelPlan</b></span>
+                        <a href="#putTravelPlan"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>putTravelPlan(req, feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, travelPlanId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, putTravelPlanDto: <a href="../classes/PutTravelPlanDto.html" target="_self">PutTravelPlanDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;:feedId/travel-plan/:travelPlanId&#x27;)<br />@ApiOperation({summary: &#x27;여행 일정 수정&#x27;, description: &#x27;기존의 여행 일정을 수정한다. 일정의 시작일과 종료일을 포함하여 기타 정보를 변경할 수 있다.&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;Feed ID&#x27;})<br />@ApiParam({name: &#x27;travelPlanId&#x27;, description: &#x27;여행 일정 ID&#x27;})<br />@ApiBody({type: PutTravelPlanDto, description: &#x27;여행 일정 수정에 필요한 정보&#x27;, examples: undefined})<br />@ApiResponse({status: 200, description: &#x27;여행 일정이 성공적으로 수정됨&#x27;, schema: undefined})<br />@ApiResponse({status: 404, description: &#x27;여행 일정을 찾을 수 없음&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="143"
+                                    class="link-to-prism">src/travel-plan/travel-plan.controller.ts:143</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>travelPlanId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>putTravelPlanDto</td>
+                                            <td>
+                                                            <code><a href="../classes/PutTravelPlanDto.html" target="_self" >PutTravelPlanDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Post, Delete, Get, Param, Body, Req, Put, UseGuards } from &#x27;@nestjs/common&#x27;;
+import { TravelPlanService } from &#x27;../travel-plan/travel-plan.service&#x27;;
+import { CreateTravelPlanDto } from &#x27;../travel-plan/dto/create-travel-plan.dto&#x27;;
+import { PutTravelPlanDto } from &#x27;../travel-plan/dto/put-travel-plan.dto&#x27;;
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { JwtAuthGuard } from &#x27;@common/guards&#x27;;
+
+@ApiTags(&#x27;TravelPlan&#x27;)
+@Controller(&#x27;my-trip&#x27;)
+@UseGuards(JwtAuthGuard)
+export class TravelPlanController {
+  constructor(private readonly travelPlanService: TravelPlanService) {}
+
+  @Post(&#x27;:feedId/travel-plan&#x27;)
+  @ApiOperation({
+    summary: &#x27;여행 일정 등록&#x27;,
+    description:
+      &#x27;특정 피드에 새로운 여행 일정을 등록한다. 여행 일정을 등록하면, 해당 일정에 맞춰 자동으로 일별 계획이 생성된다.&#x27;,
+  })
+  @ApiParam({ name: &#x27;feedId&#x27;, description: &#x27;여행 일정의 Feed ID&#x27; })
+  @ApiBody({
+    type: CreateTravelPlanDto,
+    description: &#x27;여행 일정 등록에 필요한 정보&#x27;,
+    examples: {
+      example1: {
+        value: {
+          title: &#x27;겨울 여행&#x27;,
+          region: &#x27;SEOUL&#x27;,
+          numberOfPeople: 4,
+          totalExpense: 100000,
+          startDate: &#x27;2024-12-01&#x27;,
+          endDate: &#x27;2024-12-07&#x27;,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: &#x27;여행 일정이 성공적으로 등록됨&#x27;,
+    schema: {
+      example: {
+        _id: &#x27;605c72ef153207001f6470f&#x27;,
+        title: &#x27;겨울 여행&#x27;,
+        region: &#x27;SEOUL&#x27;,
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: &#x27;2024-12-01T00:00:00.000Z&#x27;,
+        endDate: &#x27;2024-12-07T00:00:00.000Z&#x27;,
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: &#x27;잘못된 입력 값&#x27; })
+  async postTravelPlan(@Req() req, @Param(&#x27;feedId&#x27;) feedId: string, @Body() createTravelPlanDto: CreateTravelPlanDto) {
+    const { userId } &#x3D; req.user;
+    return await this.travelPlanService.createTravelPlan(feedId, createTravelPlanDto, userId);
+  }
+
+  @Get(&#x27;:feedId/travel-plan/:travelPlanId&#x27;)
+  @ApiOperation({
+    summary: &#x27;특정 여행 일정을 여행 일정 ID로 조회&#x27;,
+    description: &#x27;여행 일정 ID를 통해 특정 여행 일정을 조회한다. 해당 일정의 상세 정보를 포함하여 반환된다.&#x27;,
+  })
+  @ApiParam({ name: &#x27;feedId&#x27;, description: &#x27;Feed ID&#x27; })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;여행 일정을 성공적으로 조회&#x27;,
+    schema: {
+      example: {
+        _id: &#x27;605c72ef153207001f6470f&#x27;,
+        title: &#x27;겨울 여행&#x27;,
+        region: &#x27;SEOUL&#x27;,
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: &#x27;2024-12-01T00:00:00.000Z&#x27;,
+        endDate: &#x27;2024-12-07T00:00:00.000Z&#x27;,
+        dailySchedules: [],
+        dailyPlans: [],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;여행 일정을 성공적으로 조회&#x27;,
+    schema: {
+      example: {
+        _id: &#x27;605c72ef153207001f6470f&#x27;,
+        title: &#x27;겨울 여행&#x27;,
+        region: &#x27;SEOUL&#x27;,
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: &#x27;2024-12-01T00:00:00.000Z&#x27;,
+        endDate: &#x27;2024-12-07T00:00:00.000Z&#x27;,
+        dailySchedules: [],
+        dailyPlans: [],
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: &#x27;여행 일정을 찾을 수 없음&#x27; })
+  async getTravelPlan(@Req() req, @Param(&#x27;feedId&#x27;) feedId: string, @Param(&#x27;travelPlanId&#x27;) travelPlanId: string) {
+    const { userId } &#x3D; req.user;
+    return await this.travelPlanService.fetchTravelPlan(feedId, travelPlanId, userId);
+  }
+
+  @Put(&#x27;:feedId/travel-plan/:travelPlanId&#x27;)
+  @ApiOperation({
+    summary: &#x27;여행 일정 수정&#x27;,
+    description: &#x27;기존의 여행 일정을 수정한다. 일정의 시작일과 종료일을 포함하여 기타 정보를 변경할 수 있다.&#x27;,
+  })
+  @ApiParam({ name: &#x27;feedId&#x27;, description: &#x27;Feed ID&#x27; })
+  @ApiParam({ name: &#x27;travelPlanId&#x27;, description: &#x27;여행 일정 ID&#x27; })
+  @ApiBody({
+    type: PutTravelPlanDto,
+    description: &#x27;여행 일정 수정에 필요한 정보&#x27;,
+    examples: {
+      example1: {
+        value: {
+          title: &#x27;겨울 여행 수정&#x27;,
+          region: &#x27;SEOUL&#x27;,
+          numberOfPeople: 5,
+          totalExpense: 120000,
+          startDate: &#x27;2024-12-02&#x27;,
+          endDate: &#x27;2024-12-08&#x27;,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;여행 일정이 성공적으로 수정됨&#x27;,
+    schema: {
+      example: {
+        _id: &#x27;605c72ef153207001f6470f&#x27;,
+        title: &#x27;겨울 여행 수정&#x27;,
+        region: &#x27;SEOUL&#x27;,
+        numberOfPeople: 5,
+        totalExpense: 120000,
+        startDate: &#x27;2024-12-02T00:00:00.000Z&#x27;,
+        endDate: &#x27;2024-12-08T00:00:00.000Z&#x27;,
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: &#x27;여행 일정을 찾을 수 없음&#x27; })
+  async putTravelPlan(
+    @Req() req,
+    @Param(&#x27;feedId&#x27;) feedId: string,
+    @Param(&#x27;travelPlanId&#x27;) travelPlanId: string,
+    @Body() putTravelPlanDto: PutTravelPlanDto,
+  ) {
+    const { userId } &#x3D; req.user;
+    return await this.travelPlanService.updateTravelPlan(feedId, travelPlanId, putTravelPlanDto, userId);
+  }
+
+  @Delete(&#x27;:feedId/travel-plan/:travelPlanId&#x27;)
+  @ApiOperation({
+    summary: &#x27;여행 일정 삭제&#x27;,
+    description: &#x27;지정한 여행 일정을 삭제한다.&#x27;,
+  })
+  @ApiParam({ name: &#x27;feedId&#x27;, description: &#x27;Feed ID&#x27; })
+  @ApiParam({ name: &#x27;travelPlanId&#x27;, description: &#x27;삭제할 여행 일정 ID&#x27; })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;여행 일정이 성공적으로 삭제됨&#x27;,
+    schema: {
+      example: {
+        message: &#x27;여행 일정이 삭제되었습니다.&#x27;,
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: &#x27;여행 일정을 찾을 수 없음&#x27; })
+  async deleteTravelPlan(@Param(&#x27;feedId&#x27;) feedId: string, @Param(&#x27;travelPlanId&#x27;) travelPlanId: string) {
+    return this.travelPlanService.removeTravelPlan(feedId, travelPlanId);
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
+            var COMPODOC_CURRENT_PAGE_URL = 'TravelPlanController.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

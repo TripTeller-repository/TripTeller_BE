@@ -1,0 +1,2288 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>tripteller documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">tripteller documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content controller">
+                   <div class="content-data">
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Controllers</li>
+  <li class="breadcrumb-item" >MyTripController</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/my-trip/my-trip.controller.ts</code>
+        </p>
+
+            <p class="comment">
+                <h3>Prefix</h3>
+            </p>
+            <p class="comment">
+                <code>my-trip</code>
+            </p>
+
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteOneFeed" >deleteOneFeed</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAllFeeds" >getAllFeeds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getCoverImageSignedUrl" >getCoverImageSignedUrl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFeedCoverImage" >getFeedCoverImage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFeedsByDate" >getFeedsByDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMyFeedOrderedByLikeCount" >getMyFeedOrderedByLikeCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMyFeedOrderedByRecent" >getMyFeedOrderedByRecent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMyPrivateFeed" >getMyPrivateFeed</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMyPublicFeed" >getMyPublicFeed</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getOneFeed" >getOneFeed</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#postOneFeed" >postOneFeed</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#postProfileImage" >postProfileImage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#putOneFeed" >putOneFeed</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteOneFeed"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteOneFeed</b></span>
+                        <a href="#deleteOneFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteOneFeed(req, feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Delete(&#x27;:feedId&#x27;)<br />@ApiOperation({summary: &#x27;게시물 삭제&#x27;, description: &#x27;특정 게시물을 삭제한다.&#x27;, operationId: &#x27;deleteOneFeed&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;게시물 ID&#x27;, required: true, type: String})<br />@ApiResponse({status: 200, description: &#x27;게시물이 성공적으로 삭제되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 404, description: &#x27;게시물이 존재하지 않습니다.&#x27;})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="636"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:636</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAllFeeds"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getAllFeeds</b></span>
+                        <a href="#getAllFeeds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllFeeds(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get()<br />@ApiOperation({summary: &#x27;본인의 모든 게시물 조회&#x27;, description: &#x27;본인이 작성한 모든 게시물을 페이지네이션을 통해 조회한다.&#x27;, operationId: &#x27;getAllFeeds&#x27;})<br />@ApiQuery({name: &#x27;pageNumber&#x27;, description: &#x27;페이지 번호 (기본값: 1)&#x27;, required: true, type: Number})<br />@ApiResponse({status: 200, description: &#x27;본인의 모든 게시물이 정상적으로 조회되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCoverImageSignedUrl"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getCoverImageSignedUrl</b></span>
+                        <a href="#getCoverImageSignedUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getCoverImageSignedUrl(req, fileName)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;cover-image-signed-url/:fileName&#x27;)<br />@ApiParam({name: &#x27;fileName&#x27;, description: &#x27;파일 이름&#x27;, required: true, type: String})<br />@ApiOperation({summary: &#x27;AWS S3 프로필 이미지 Signed URL 불러오기&#x27;, description: &#x27;S3에서 프로필 이미지의 signed URL을 가져온다.&#x27;, operationId: &#x27;getCoverImageSignedUrl&#x27;})<br />@ApiResponse({status: 200, description: &#x27;S3 Signed URL이 정상적으로 반환되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:358</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>fileName</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFeedCoverImage"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getFeedCoverImage</b></span>
+                        <a href="#getFeedCoverImage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFeedCoverImage(req, feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:feedId/cover-image&#x27;)<br />@ApiOperation({summary: &#x27;특정 게시물의 커버 이미지 url 불러오기&#x27;, description: &#x27;특정 게시물의 커버 이미지 URL을 가져온다.&#x27;, operationId: &#x27;getFeedCoverImage&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;게시물 ID&#x27;, required: true, type: String})<br />@ApiResponse({status: 200, description: &#x27;커버 이미지 URL을 정상적으로 조회했습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 404, description: &#x27;게시물이 존재하지 않거나 커버 이미지가 없습니다.&#x27;})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="321"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:321</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFeedsByDate"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getFeedsByDate</b></span>
+                        <a href="#getFeedsByDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFeedsByDate(req, startDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, endDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;/date&#x27;)<br />@ApiOperation({summary: &#x27;본인이 쓴 게시물 기간별 조회&#x27;, description: &#x27;특정 기간 동안 본인이 작성한 게시물을 조회한다.&#x27;, operationId: &#x27;getFeedsByDate&#x27;})<br />@ApiQuery({name: &#x27;startDate&#x27;, description: &#x27;조회할 시작 날짜 (yyyy-MM-dd 형식)&#x27;, required: true, type: String})<br />@ApiQuery({name: &#x27;endDate&#x27;, description: &#x27;조회할 종료 날짜 (yyyy-MM-dd 형식)&#x27;, required: true, type: String})<br />@ApiResponse({status: 200, description: &#x27;입력한 기간에 해당하는 게시물이 정상적으로 조회되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 400, description: &#x27;잘못된 날짜 형식.&#x27;})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:124</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>startDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>endDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMyFeedOrderedByLikeCount"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMyFeedOrderedByLikeCount</b></span>
+                        <a href="#getMyFeedOrderedByLikeCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMyFeedOrderedByLikeCount(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;order-by/like-count&#x27;)<br />@ApiOperation({summary: &#x27;게시물을 인기순으로 조회&#x27;, description: &#x27;게시물이 인기순으로 정렬되어 조회된다.&#x27;, operationId: &#x27;getMyFeedsSortedByPopularity&#x27;})<br />@ApiResponse({status: 200, description: &#x27;게시물이 좋아요 수에 따라 인기순으로 정렬되어 조회되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="448"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:448</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMyFeedOrderedByRecent"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMyFeedOrderedByRecent</b></span>
+                        <a href="#getMyFeedOrderedByRecent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMyFeedOrderedByRecent(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;order-by/recent&#x27;)<br />@ApiOperation({summary: &#x27;본인이 쓴 게시물 최신순 조회&#x27;, description: &#x27;본인이 작성한 게시물을 최신순으로 조회한다.&#x27;, operationId: &#x27;getMyFeedOrderedByRecent&#x27;})<br />@ApiResponse({status: 200, description: &#x27;입력한 페이지에 해당하는 게시물이 최신순으로 정상적으로 조회되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 400, description: &#x27;잘못된 페이지 번호 형식.&#x27;})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="409"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:409</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMyPrivateFeed"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMyPrivateFeed</b></span>
+                        <a href="#getMyPrivateFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMyPrivateFeed(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;private&#x27;)<br />@ApiOperation({summary: &#x27;본인의 비공개 게시물 조회&#x27;, description: &#x27;본인이 작성한 비공개 게시물만 조회한다.&#x27;, operationId: &#x27;getMyPrivateFeed&#x27;})<br />@ApiQuery({name: &#x27;pageNumber&#x27;, description: &#x27;페이지 번호 (기본값: 1)&#x27;, required: true, type: Number})<br />@ApiResponse({status: 200, description: &#x27;본인의 비공개 게시물이 정상적으로 조회되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="233"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:233</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMyPublicFeed"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMyPublicFeed</b></span>
+                        <a href="#getMyPublicFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMyPublicFeed(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;public&#x27;)<br />@ApiOperation({summary: &#x27;본인의 공개 게시물 조회&#x27;, description: &#x27;본인이 작성한 공개 게시물만 조회한다.&#x27;, operationId: &#x27;getMyPublicFeed&#x27;})<br />@ApiQuery({name: &#x27;pageNumber&#x27;, description: &#x27;페이지 번호 (기본값: 1)&#x27;, required: true, type: Number})<br />@ApiResponse({status: 200, description: &#x27;본인의 공개 게시물이 정상적으로 조회되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="181"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:181</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getOneFeed"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getOneFeed</b></span>
+                        <a href="#getOneFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getOneFeed(req, feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:feedId&#x27;)<br />@ApiOperation({summary: &#x27;본인의 특정 게시물을 게시물 ID로 조회&#x27;, description: &#x27;본인의 게시물 ID를 통해 특정 게시물을 조회한다.&#x27;, operationId: &#x27;getOneFeed&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;게시물 ID&#x27;, required: true, type: String})<br />@ApiResponse({status: 200, description: &#x27;특정 게시물이 정상적으로 조회되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 404, description: &#x27;게시물이 존재하지 않거나 접근할 수 없습니다.&#x27;})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="280"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:280</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="postOneFeed"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>postOneFeed</b></span>
+                        <a href="#postOneFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>postOneFeed(req, createFeedDto: <a href="../classes/CreateFeedDto.html" target="_self">CreateFeedDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post()<br />@ApiOperation({summary: &#x27;게시물 작성&#x27;, description: &#x27;새로운 게시물을 작성한다. (제목, 내용, 커버 이미지 등을 포함)&#x27;, operationId: &#x27;postOneFeed&#x27;})<br />@ApiResponse({status: 201, description: &#x27;게시물이 성공적으로 작성되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 400, description: &#x27;잘못된 입력입니다.&#x27;})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="488"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:488</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>createFeedDto</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateFeedDto.html" target="_self" >CreateFeedDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="postProfileImage"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>postProfileImage</b></span>
+                        <a href="#postProfileImage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>postProfileImage(req, feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, postCoverImageDto: <a href="../classes/PostCoverImageDto.html" target="_self">PostCoverImageDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;:feedId/cover-image&#x27;)<br />@ApiOperation({summary: &#x27;커버 이미지 변경&#x27;, description: &#x27;사용자가 게시물의 커버 이미지를 변경하는 기능을 제공한다. 요청된 feedId에 해당하는 게시물의 커버 이미지를 새 이미지 URL로 업데이트한다.&#x27;, operationId: &#x27;updateCoverImage&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;게시물 ID&#x27;, required: true, type: String})<br />@ApiResponse({status: 200, description: &#x27;커버 이미지가 성공적으로 변경되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 400, description: &#x27;잘못된 요청 형식 또는 파라미터 오류.&#x27;})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 404, description: &#x27;게시물이 존재하지 않거나 사용자가 해당 게시물을 수정할 수 없습니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="542"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:542</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>postCoverImageDto</td>
+                                            <td>
+                                                            <code><a href="../classes/PostCoverImageDto.html" target="_self" >PostCoverImageDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="putOneFeed"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>putOneFeed</b></span>
+                        <a href="#putOneFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>putOneFeed(req, feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateFeedDto: <a href="../classes/UpdateFeedDto.html" target="_self">UpdateFeedDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;:feedId&#x27;)<br />@ApiOperation({summary: &#x27;게시물 수정&#x27;, description: &#x27;기존 게시물의 제목, 내용 또는 다른 정보를 수정한다.&#x27;, operationId: &#x27;putOneFeed&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;게시물 ID&#x27;, required: true, type: String})<br />@ApiResponse({status: 200, description: &#x27;게시물이 성공적으로 수정되었습니다.&#x27;, content: undefined})<br />@ApiResponse({status: 404, description: &#x27;게시물이 존재하지 않습니다.&#x27;})<br />@ApiResponse({status: 401, description: &#x27;인증이 필요합니다.&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="596"
+                                    class="link-to-prism">src/my-trip/my-trip.controller.ts:596</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>updateFeedDto</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateFeedDto.html" target="_self" >UpdateFeedDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Post, Delete, Get, Param, Body, Req, Put, Query, ParseIntPipe, UseGuards } from &#x27;@nestjs/common&#x27;;
+import { MyTripService } from &#x27;./my-trip.service&#x27;;
+import { CreateFeedDto } from &#x27;../feed/dto/request/create-feed.dto&#x27;;
+import { UpdateFeedDto } from &#x27;../feed/dto/request/update-feed.dto&#x27;;
+import { PostCoverImageDto } from &#x27;../feed/dto/request/post-cover-Image.dto&#x27;;
+import { ApiOperation, ApiQuery, ApiResponse, ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { JwtAuthGuard } from &#x27;@common/guards&#x27;;
+
+@ApiTags(&#x27;MyTrip&#x27;)
+@Controller(&#x27;my-trip&#x27;)
+@UseGuards(JwtAuthGuard)
+export class MyTripController {
+  constructor(private readonly myTripService: MyTripService) {}
+
+  // my-trip?pageNumber&#x3D;1
+  @Get()
+  @ApiOperation({
+    summary: &#x27;본인의 모든 게시물 조회&#x27;,
+    description: &#x27;본인이 작성한 모든 게시물을 페이지네이션을 통해 조회한다.&#x27;,
+    operationId: &#x27;getAllFeeds&#x27;,
+  })
+  @ApiQuery({
+    name: &#x27;pageNumber&#x27;,
+    description: &#x27;페이지 번호 (기본값: 1)&#x27;,
+    required: true,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;본인의 모든 게시물이 정상적으로 조회되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          data: [
+            {
+              id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+              title: &#x27;경주 여행 나들이~&#x27;,
+              content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+              createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+              likeCount: 23,
+              isPublic: true,
+              coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+            },
+          ],
+          pagination: {
+            totalPages: 3,
+            currentPage: 1,
+            pageSize: 9,
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getAllFeeds(@Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number, @Req() req) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.fetchAllMyFeedsPaginated(pageNumber, userId);
+  }
+
+  // my-trip/date?startDate&#x3D;2023-01-01&amp;endDate&#x3D;2023-01-31&amp;pageNumber&#x3D;1
+  @Get(&#x27;/date&#x27;)
+  @ApiOperation({
+    summary: &#x27;본인이 쓴 게시물 기간별 조회&#x27;,
+    description: &#x27;특정 기간 동안 본인이 작성한 게시물을 조회한다.&#x27;,
+    operationId: &#x27;getFeedsByDate&#x27;,
+  })
+  @ApiQuery({
+    name: &#x27;startDate&#x27;,
+    description: &#x27;조회할 시작 날짜 (yyyy-MM-dd 형식)&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiQuery({
+    name: &#x27;endDate&#x27;,
+    description: &#x27;조회할 종료 날짜 (yyyy-MM-dd 형식)&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;입력한 기간에 해당하는 게시물이 정상적으로 조회되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          data: [
+            {
+              id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+              title: &#x27;경주 여행 나들이~&#x27;,
+              content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+              createdAt: &#x27;2024-01-15T08:00:00Z&#x27;,
+              likeCount: 10,
+              isPublic: true,
+              coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+            },
+          ],
+          pagination: {
+            totalPages: 1,
+            currentPage: 1,
+            pageSize: 9,
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: &#x27;잘못된 날짜 형식.&#x27;,
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getFeedsByDate(
+    @Req() req,
+    @Query(&#x27;startDate&#x27;) startDate: string,
+    @Query(&#x27;endDate&#x27;) endDate: string,
+    @Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number,
+  ) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.fetchMyFeedsByDate(startDate, endDate, pageNumber, userId);
+  }
+
+  // my-trip/public?pageNumber&#x3D;1
+  @Get(&#x27;public&#x27;)
+  @ApiOperation({
+    summary: &#x27;본인의 공개 게시물 조회&#x27;,
+    description: &#x27;본인이 작성한 공개 게시물만 조회한다.&#x27;,
+    operationId: &#x27;getMyPublicFeed&#x27;,
+  })
+  @ApiQuery({
+    name: &#x27;pageNumber&#x27;,
+    description: &#x27;페이지 번호 (기본값: 1)&#x27;,
+    required: true,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;본인의 공개 게시물이 정상적으로 조회되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          data: [
+            {
+              id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+              title: &#x27;경주 여행 나들이~&#x27;,
+              content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+              createdAt: &#x27;2024-10-01T08:00:00Z&#x27;,
+              likeCount: 50,
+              isPublic: true,
+              coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+            },
+          ],
+          pagination: {
+            totalPages: 2,
+            currentPage: 1,
+            pageSize: 9,
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getMyPublicFeed(@Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number, @Req() req) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.fetchMyPublicFeeds(pageNumber, userId);
+  }
+
+  // my-trip/private?pageNumber&#x3D;1
+  @Get(&#x27;private&#x27;)
+  @ApiOperation({
+    summary: &#x27;본인의 비공개 게시물 조회&#x27;,
+    description: &#x27;본인이 작성한 비공개 게시물만 조회한다.&#x27;,
+    operationId: &#x27;getMyPrivateFeed&#x27;,
+  })
+  @ApiQuery({
+    name: &#x27;pageNumber&#x27;,
+    description: &#x27;페이지 번호 (기본값: 1)&#x27;,
+    required: true,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;본인의 비공개 게시물이 정상적으로 조회되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          data: [
+            {
+              id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+              title: &#x27;경주 여행 나들이~&#x27;,
+              content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+              createdAt: &#x27;2024-10-10T08:00:00Z&#x27;,
+              likeCount: 5,
+              isPublic: false,
+              coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+            },
+          ],
+          pagination: {
+            totalPages: 1,
+            currentPage: 1,
+            pageSize: 9,
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getMyPrivateFeed(@Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number, @Req() req) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.fetchMyPrivateFeeds(pageNumber, userId);
+  }
+
+  // my-trip/:feedId
+  @Get(&#x27;:feedId&#x27;)
+  @ApiOperation({
+    summary: &#x27;본인의 특정 게시물을 게시물 ID로 조회&#x27;,
+    description: &#x27;본인의 게시물 ID를 통해 특정 게시물을 조회한다.&#x27;,
+    operationId: &#x27;getOneFeed&#x27;,
+  })
+  @ApiParam({
+    name: &#x27;feedId&#x27;,
+    description: &#x27;게시물 ID&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;특정 게시물이 정상적으로 조회되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+          title: &#x27;경주 여행 나들이~&#x27;,
+          content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+          createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+          likeCount: 23,
+          isPublic: true,
+          coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: &#x27;게시물이 존재하지 않거나 접근할 수 없습니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getOneFeed(@Req() req, @Param(&#x27;feedId&#x27;) feedId: string) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.fetchMyFeedByFeedId(feedId, userId);
+  }
+
+  // my-trip/:feedId/cover-image
+  @Get(&#x27;:feedId/cover-image&#x27;)
+  @ApiOperation({
+    summary: &#x27;특정 게시물의 커버 이미지 url 불러오기&#x27;,
+    description: &#x27;특정 게시물의 커버 이미지 URL을 가져온다.&#x27;,
+    operationId: &#x27;getFeedCoverImage&#x27;,
+  })
+  @ApiParam({
+    name: &#x27;feedId&#x27;,
+    description: &#x27;게시물 ID&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;커버 이미지 URL을 정상적으로 조회했습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: &#x27;게시물이 존재하지 않거나 커버 이미지가 없습니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getFeedCoverImage(@Req() req, @Param(&#x27;feedId&#x27;) feedId: string) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.fetchMyFeedImgUrl(feedId, userId);
+  }
+
+  // my-trip/cover-image-signed-url/:fileName
+  @Get(&#x27;cover-image-signed-url/:fileName&#x27;)
+  @ApiParam({
+    name: &#x27;fileName&#x27;,
+    description: &#x27;파일 이름&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiOperation({
+    summary: &#x27;AWS S3 프로필 이미지 Signed URL 불러오기&#x27;,
+    description: &#x27;S3에서 프로필 이미지의 signed URL을 가져온다.&#x27;,
+    operationId: &#x27;getCoverImageSignedUrl&#x27;,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;S3 Signed URL이 정상적으로 반환되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          signedUrl: &#x27;https://s3.amazonaws.com/your-bucket-name/file-name&#x27;,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getCoverImageSignedUrl(@Req() req, @Param(&#x27;fileName&#x27;) fileName) {
+    const { userId } &#x3D; req.user;
+    const signedUrl &#x3D; await this.myTripService.fetchCoverImageSignedUrl(fileName, userId);
+    return { signedUrl };
+  }
+
+  // my-trip/order-by/recent
+  @Get(&#x27;order-by/recent&#x27;)
+  @ApiOperation({
+    summary: &#x27;본인이 쓴 게시물 최신순 조회&#x27;,
+    description: &#x27;본인이 작성한 게시물을 최신순으로 조회한다.&#x27;,
+    operationId: &#x27;getMyFeedOrderedByRecent&#x27;,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;입력한 페이지에 해당하는 게시물이 최신순으로 정상적으로 조회되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          data: [
+            {
+              id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+              title: &#x27;경주 여행 나들이~&#x27;,
+              content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+              createdAt: &#x27;2024-01-15T08:00:00Z&#x27;,
+              likeCount: 10,
+              isPublic: true,
+              coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+            },
+          ],
+          pagination: {
+            totalPages: 1,
+            currentPage: 1,
+            pageSize: 9,
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: &#x27;잘못된 페이지 번호 형식.&#x27;,
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getMyFeedOrderedByRecent(@Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number, @Req() req) {
+    const { userId } &#x3D; req.user;
+    return this.myTripService.sortMyFeedsByRecent(pageNumber, userId);
+  }
+
+  // my-trip/order-by/like-count
+  @Get(&#x27;order-by/like-count&#x27;)
+  @ApiOperation({
+    summary: &#x27;게시물을 인기순으로 조회&#x27;,
+    description: &#x27;게시물이 인기순으로 정렬되어 조회된다.&#x27;,
+    operationId: &#x27;getMyFeedsSortedByPopularity&#x27;,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;게시물이 좋아요 수에 따라 인기순으로 정렬되어 조회되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: [
+          {
+            id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+            title: &#x27;경주 여행 나들이~&#x27;,
+            content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+            createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+            likeCount: 23,
+            isPublic: true,
+            coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async getMyFeedOrderedByLikeCount(@Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number, @Req() req) {
+    const { userId } &#x3D; req.user;
+    return this.myTripService.sortMyFeedsByLikeCount(pageNumber, userId);
+  }
+
+  @Post()
+  @ApiOperation({
+    summary: &#x27;게시물 작성&#x27;,
+    description: &#x27;새로운 게시물을 작성한다. (제목, 내용, 커버 이미지 등을 포함)&#x27;,
+    operationId: &#x27;postOneFeed&#x27;,
+  })
+  @ApiResponse({
+    status: 201,
+    description: &#x27;게시물이 성공적으로 작성되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+          title: &#x27;경주 여행 나들이~&#x27;,
+          content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+          createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+          likeCount: 10,
+          isPublic: true,
+          coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: &#x27;잘못된 입력입니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async postOneFeed(@Req() req, @Body() createFeedDto: CreateFeedDto) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.createFeed(createFeedDto, userId);
+  }
+
+  @Post(&#x27;:feedId/cover-image&#x27;)
+  @ApiOperation({
+    summary: &#x27;커버 이미지 변경&#x27;,
+    description:
+      &#x27;사용자가 게시물의 커버 이미지를 변경하는 기능을 제공한다. 요청된 feedId에 해당하는 게시물의 커버 이미지를 새 이미지 URL로 업데이트한다.&#x27;,
+    operationId: &#x27;updateCoverImage&#x27;,
+  })
+  @ApiParam({
+    name: &#x27;feedId&#x27;,
+    description: &#x27;게시물 ID&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;커버 이미지가 성공적으로 변경되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          message: &#x27;커버 이미지가 성공적으로 변경되었습니다.&#x27;,
+          updatedFeed: {
+            id: &#x27;60d72b2f9f1b2b7b8d5a5c5a&#x27;,
+            title: &#x27;경주 여행 나들이~&#x27;,
+            content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+            createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+            likeCount: 23,
+            isPublic: true,
+            coverImage: &#x27;http://example.com/new-cover.jpg&#x27;,
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: &#x27;잘못된 요청 형식 또는 파라미터 오류.&#x27;,
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 404,
+    description: &#x27;게시물이 존재하지 않거나 사용자가 해당 게시물을 수정할 수 없습니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async postProfileImage(@Req() req, @Param(&#x27;feedId&#x27;) feedId: string, @Body() postCoverImageDto: PostCoverImageDto) {
+    try {
+      // 해당 게시물의 커버 이미지 변경
+      const { userId } &#x3D; req.user;
+      const { imageUrl } &#x3D; postCoverImageDto;
+
+      // 커버 이미지가 변경된 게시물 정보 업데이트
+      const updatedFeed &#x3D; await this.myTripService.updateCoverImageById(feedId, userId, imageUrl);
+
+      if (updatedFeed) {
+        return { message: &#x27;커버 이미지가 성공적으로 변경되었습니다.&#x27;, updatedFeed };
+      } else {
+        return { message: &#x27;사용자를 찾을 수 없습니다.&#x27; };
+      }
+    } catch (error) {
+      return { message: &#x27;프로필 이미지 변경 중 오류가 발생했습니다.&#x27; };
+    }
+  }
+
+  @Put(&#x27;:feedId&#x27;)
+  @ApiOperation({
+    summary: &#x27;게시물 수정&#x27;,
+    description: &#x27;기존 게시물의 제목, 내용 또는 다른 정보를 수정한다.&#x27;,
+    operationId: &#x27;putOneFeed&#x27;,
+  })
+  @ApiParam({
+    name: &#x27;feedId&#x27;,
+    description: &#x27;게시물 ID&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;게시물이 성공적으로 수정되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          message: &#x27;게시물이 성공적으로 수정되었습니다.&#x27;,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: &#x27;게시물이 존재하지 않습니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async putOneFeed(@Req() req, @Param(&#x27;feedId&#x27;) feedId: string, @Body() updateFeedDto: UpdateFeedDto) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.updateFeed(feedId, userId, updateFeedDto);
+  }
+
+  @Delete(&#x27;:feedId&#x27;)
+  @ApiOperation({
+    summary: &#x27;게시물 삭제&#x27;,
+    description: &#x27;특정 게시물을 삭제한다.&#x27;,
+    operationId: &#x27;deleteOneFeed&#x27;,
+  })
+  @ApiParam({
+    name: &#x27;feedId&#x27;,
+    description: &#x27;게시물 ID&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;게시물이 성공적으로 삭제되었습니다.&#x27;,
+    content: {
+      &#x27;application/json&#x27;: {
+        example: {
+          message: &#x27;게시물이 성공적으로 삭제되었습니다.&#x27;,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: &#x27;게시물이 존재하지 않습니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 401,
+    description: &#x27;인증이 필요합니다.&#x27;,
+  })
+  @ApiResponse({
+    status: 500,
+    description: &#x27;서버 오류&#x27;,
+  })
+  async deleteOneFeed(@Req() req, @Param(&#x27;feedId&#x27;) feedId: string) {
+    const { userId } &#x3D; req.user;
+    return await this.myTripService.removeFeed(feedId, userId);
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
+            var COMPODOC_CURRENT_PAGE_URL = 'MyTripController.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

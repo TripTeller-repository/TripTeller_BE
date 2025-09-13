@@ -1,0 +1,2083 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>tripteller documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">tripteller documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >MyTripService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/my-trip/my-trip.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#createFeed" >createFeed</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchAllMyFeedsPaginated" >fetchAllMyFeedsPaginated</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchCoverImageSignedUrl" >fetchCoverImageSignedUrl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchMyFeedByFeedId" >fetchMyFeedByFeedId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchMyFeedImgUrl" >fetchMyFeedImgUrl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchMyFeedsByDate" >fetchMyFeedsByDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchMyPrivateFeeds" >fetchMyPrivateFeeds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchMyPublicFeeds" >fetchMyPublicFeeds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeFeed" >removeFeed</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#sortMyFeedsByLikeCount" >sortMyFeedsByLikeCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#sortMyFeedsByRecent" >sortMyFeedsByRecent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateCoverImageById" >updateCoverImageById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateFeed" >updateFeed</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(feedService: <a href="../injectables/FeedService.html" target="_self">FeedService</a>, feedExtractor: <a href="../injectables/FeedExtractor.html" target="_self">FeedExtractor</a>, fileUtilService: <a href="../injectables/FileUtilService.html" target="_self">FileUtilService</a>, feedModel: <a href="../classes/Feed.html" target="_self">Model&lt;FeedDocument&gt;</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/my-trip/my-trip.service.ts:12</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>feedService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FeedService.html" target="_self" >FeedService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>feedExtractor</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FeedExtractor.html" target="_self" >FeedExtractor</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fileUtilService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FileUtilService.html" target="_self" >FileUtilService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>feedModel</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Feed.html" target="_self" >Model&lt;FeedDocument&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createFeed"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>createFeed</b></span>
+                        <a href="#createFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createFeed(createFeedDto: <a href="../classes/CreateFeedDto.html" target="_self">CreateFeedDto</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>새로운 게시물을 생성</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>createFeedDto</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateFeedDto.html" target="_self" >CreateFeedDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>게시물 생성 DTO</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>작성자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>생성된 게시물</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchAllMyFeedsPaginated"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchAllMyFeedsPaginated</b></span>
+                        <a href="#fetchAllMyFeedsPaginated"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchAllMyFeedsPaginated(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:123</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>본인이 작성한 게시물 전체를 페이지네이션으로 조회</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>1</code>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>페이지 번호</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>페이지네이션된 게시물 데이터</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchCoverImageSignedUrl"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchCoverImageSignedUrl</b></span>
+                        <a href="#fetchCoverImageSignedUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchCoverImageSignedUrl(fileName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="315"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:315</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>AWS S3에 업로드할 커버 이미지용 Signed URL을 생성</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>fileName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>원본 파일명</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID (파일명 유니크 처리용)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>AWS S3 Signed URL</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchMyFeedByFeedId"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchMyFeedByFeedId</b></span>
+                        <a href="#fetchMyFeedByFeedId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchMyFeedByFeedId(feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="143"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:143</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>특정 ID의 본인 게시물을 조회</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>해당 게시물 정보</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchMyFeedImgUrl"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchMyFeedImgUrl</b></span>
+                        <a href="#fetchMyFeedImgUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchMyFeedImgUrl(feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>사용자가 작성한 게시물의 커버 이미지 URL을 반환</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>요청한 사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>커버 이미지 URL</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchMyFeedsByDate"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchMyFeedsByDate</b></span>
+                        <a href="#fetchMyFeedsByDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchMyFeedsByDate(startDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, endDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="256"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:256</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>본인이 작성한 게시물 중 특정 날짜 범위(startDate ~ endDate)에 해당하는 게시물을 조회</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>startDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>조회 시작 날짜 (YYYY-MM-DD 형식)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>endDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>조회 종료 날짜 (YYYY-MM-DD 형식)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>페이지 번호</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>필터링된 게시물 목록 또는 메시지</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchMyPrivateFeeds"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchMyPrivateFeeds</b></span>
+                        <a href="#fetchMyPrivateFeeds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchMyPrivateFeeds(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="188"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:188</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>본인이 작성한 모든 게시물 중 &quot;비공개&quot; 게시물만 조회</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>1</code>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>페이지 번호 (기본값: 1)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>페이지네이션된 비공개 게시물 목록</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchMyPublicFeeds"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchMyPublicFeeds</b></span>
+                        <a href="#fetchMyPublicFeeds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchMyPublicFeeds(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="167"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:167</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>본인이 작성한 모든 게시물 중 &quot;공개&quot; 게시물만 조회</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>1</code>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>페이지 번호 (기본값: 1)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>페이지네이션된 공개 게시물 목록</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeFeed"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>removeFeed</b></span>
+                        <a href="#removeFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeFeed(feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:103</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>게시물 삭제(soft delete)</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>요청한 사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>삭제 완료 메시지</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sortMyFeedsByLikeCount"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>sortMyFeedsByLikeCount</b></span>
+                        <a href="#sortMyFeedsByLikeCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sortMyFeedsByLikeCount(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="232"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:232</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>본인이 작성한 게시물을 좋아요 수(likeCount) 기준으로 정렬하여 조회</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>1</code>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>페이지 번호 (기본값: 1)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>인기순 정렬된 게시물 목록</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sortMyFeedsByRecent"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>sortMyFeedsByRecent</b></span>
+                        <a href="#sortMyFeedsByRecent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sortMyFeedsByRecent(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:210</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>본인이 작성한 게시물을 최신순으로 정렬하여 조회</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>1</code>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>페이지 번호 (기본값: 1)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>최신순 정렬된 게시물 목록</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateCoverImageById"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>updateCoverImageById</b></span>
+                        <a href="#updateCoverImageById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateCoverImageById(feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, imageUrl: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="329"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:329</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>게시물의 커버 이미지를 업데이트</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>대상 피드 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>imageUrl</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>새 커버 이미지 URL</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>업데이트된 게시물 문서</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateFeed"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>updateFeed</b></span>
+                        <a href="#updateFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateFeed(feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateFeedDto: <a href="../classes/UpdateFeedDto.html" target="_self">UpdateFeedDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">src/my-trip/my-trip.service.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>게시물을 수정</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>수정할 게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>요청한 사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>updateFeedDto</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateFeedDto.html" target="_self" >UpdateFeedDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>수정 데이터</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>수정 완료 메시지</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
+import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
+import { FeedDocument } from &#x27;../feed/feed.schema&#x27;;
+import { CreateFeedDto } from &#x27;../feed/dto/request/create-feed.dto&#x27;;
+import { Model } from &#x27;mongoose&#x27;;
+import { UpdateFeedDto } from &#x27;../feed/dto/request/update-feed.dto&#x27;;
+import { FileUtilService } from &#x27;@common/files/file-util.service&#x27;;
+import { FeedExtractor } from &#x27;@feed/feed-extractor&#x27;;
+import { FeedService } from &#x27;@feed/feed.service&#x27;;
+
+@Injectable()
+export class MyTripService {
+  constructor(
+    private readonly feedService: FeedService,
+    private readonly feedExtractor: FeedExtractor,
+    private readonly fileUtilService: FileUtilService,
+    @InjectModel(&#x27;Feed&#x27;) private readonly feedModel: Model&lt;FeedDocument&gt;,
+  ) {}
+
+  /**
+   * 사용자가 작성한 게시물의 커버 이미지 URL을 반환
+   *
+   * @param {string} feedId - 게시물 ID
+   * @param {string} userId - 요청한 사용자 ID
+   * @throws {UnauthorizedException} 게시물 작성자와 사용자 불일치 시
+   * @throws {NotFoundException} 게시물 또는 커버 이미지가 존재하지 않을 시
+   * @returns {{ coverImage: string }} 커버 이미지 URL
+   */
+  async fetchMyFeedImgUrl(feedId: string, userId: string) {
+    // 해당 게시물 찾기
+    const feed &#x3D; await this.feedModel.findById(feedId).exec();
+
+    // 해당 회원 일치 여부 확인
+    if (userId !&#x3D;&#x3D; feed.userId) {
+      throw new UnauthorizedException(&#x27;해당 회원의 게시물이 아닙니다.&#x27;);
+    }
+
+    // 해당 게시물이 존재하는지 확인
+    if (!feed) {
+      throw new NotFoundException(&#x27;해당 게시물이 존재하지 않습니다.&#x27;);
+    }
+
+    // coverImage 필드 가져오기
+    const coverImage &#x3D; feed.coverImage;
+
+    // 커버 이미지가 존재하는지 확인
+    if (!feed) {
+      throw new NotFoundException(&#x27;해당 게시물의 커버 이미지가 존재하지 않습니다.&#x27;);
+    }
+
+    return { coverImage };
+  }
+
+  /**
+   * 새로운 게시물을 생성
+   *
+   * @param {CreateFeedDto} createFeedDto - 게시물 생성 DTO
+   * @param {string} userId - 작성자 ID
+   * @returns {Promise&lt;FeedDocument&gt;} 생성된 게시물
+   */
+  async createFeed(createFeedDto: CreateFeedDto, userId: string) {
+    createFeedDto.userId &#x3D; userId;
+    const createdFeed &#x3D; await this.feedModel.create(createFeedDto);
+    return createdFeed.save();
+  }
+
+  /**
+   * 게시물을 수정
+   *
+   * @param {string} feedId - 수정할 게시물 ID
+   * @param {string} userId - 요청한 사용자 ID
+   * @param {UpdateFeedDto} updateFeedDto - 수정 데이터
+   * @throws {NotFoundException} 게시물 미존재 혹은 권한 없음
+   * @returns {{ message: string }} 수정 완료 메시지
+   */
+  async updateFeed(feedId: string, userId: string, updateFeedDto: UpdateFeedDto) {
+    const feed &#x3D; await this.feedModel.findById({ _id: feedId }).exec();
+    if (!feed) {
+      throw new NotFoundException(&#x27;해당 게시물을 찾을 수 없습니다.&#x27;);
+    }
+    if (feed.userId !&#x3D;&#x3D; userId) {
+      throw new NotFoundException(&#x27;게시물 작성자만 수정이 가능합니다.&#x27;);
+    }
+    const updatedFeed &#x3D; await this.feedModel.findByIdAndUpdate({ _id: feedId }, updateFeedDto, {
+      runValidators: true,
+      new: true,
+    });
+    if (!updatedFeed) {
+      throw new NotFoundException(&#x27;게시물 수정 중 오류가 발생하였습니다.&#x27;);
+    } else {
+      return { message: &#x27;해당 게시물이 수정되었습니다.&#x27; };
+    }
+  }
+
+  /**
+   * 게시물 삭제(soft delete)
+   *
+   * @param {string} feedId - 게시물 ID
+   * @param {string} userId - 요청한 사용자 ID
+   * @throws {NotFoundException} 게시물 미존재 혹은 권한 없음
+   * @returns {{ message: string }} 삭제 완료 메시지
+   */
+  async removeFeed(feedId: string, userId: string) {
+    const feed &#x3D; await this.feedModel.findById(feedId).exec();
+    if (!feed) {
+      throw new NotFoundException(&#x27;해당 게시물을 찾을 수 없습니다.&#x27;);
+    }
+    if (feed.userId !&#x3D;&#x3D; userId) {
+      throw new NotFoundException(&#x27;게시물 작성자만 삭제가 가능합니다.&#x27;);
+    }
+    feed.deletedAt &#x3D; new Date();
+    feed.save();
+    return { message: &#x27;해당 게시물이 삭제되었습니다.&#x27; };
+  }
+
+  /**
+   * 본인이 작성한 게시물 전체를 페이지네이션으로 조회
+   *
+   * @param {number} pageNumber - 페이지 번호
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise&lt;any&gt;} 페이지네이션된 게시물 데이터
+   */
+  async fetchAllMyFeedsPaginated(pageNumber: number &#x3D; 1, userId: string) {
+    const pageSize &#x3D; 9;
+    const criteria &#x3D; {
+      userId,
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    };
+    const paginatedResult &#x3D; await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
+    const extractedFeeds &#x3D; await this.feedExtractor.extractFeeds(paginatedResult.feeds.data);
+    paginatedResult.feeds.data &#x3D; extractedFeeds;
+
+    return paginatedResult;
+  }
+
+  /**
+   * 특정 ID의 본인 게시물을 조회
+   *
+   * @param {string} feedId - 게시물 ID
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise&lt;any&gt;} 해당 게시물 정보
+   */
+  async fetchMyFeedByFeedId(feedId: string, userId: string) {
+    const feed &#x3D; await this.feedModel.findById(feedId).exec();
+    if (!feed) {
+      throw new NotFoundException(&#x27;게시물을 찾을 수 없습니다.&#x27;);
+    }
+    if (feed.userId !&#x3D;&#x3D; userId) {
+      throw new NotFoundException(&#x27;게시물 작성자만 조회가 가능합니다.&#x27;);
+    }
+    const feeds &#x3D; await this.feedModel
+      .find({
+        _id: feedId,
+        $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+      })
+      .exec();
+    return this.feedExtractor.extractFeeds(feeds);
+  }
+
+  /**
+   * 본인이 작성한 모든 게시물 중 &quot;공개&quot; 게시물만 조회
+   *
+   * @param {number} pageNumber - 페이지 번호 (기본값: 1)
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise&lt;any&gt;} 페이지네이션된 공개 게시물 목록
+   */
+  async fetchMyPublicFeeds(pageNumber: number &#x3D; 1, userId: string) {
+    const pageSize &#x3D; 9;
+    const criteria &#x3D; {
+      userId,
+      isPublic: true,
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    };
+    const paginatedResult &#x3D; await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
+    const sortedFeeds &#x3D; paginatedResult.feeds.data;
+    paginatedResult.feeds.data &#x3D; await this.feedExtractor.extractFeeds(sortedFeeds);
+
+    return paginatedResult;
+  }
+
+  /**
+   * 본인이 작성한 모든 게시물 중 &quot;비공개&quot; 게시물만 조회
+   *
+   * @param {number} pageNumber - 페이지 번호 (기본값: 1)
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise&lt;any&gt;} 페이지네이션된 비공개 게시물 목록
+   */
+  async fetchMyPrivateFeeds(pageNumber: number &#x3D; 1, userId: string) {
+    const pageSize &#x3D; 9;
+    const criteria &#x3D; {
+      userId,
+      isPublic: false,
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    };
+
+    const paginatedResult &#x3D; await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
+    const sortedFeeds &#x3D; paginatedResult.feeds.data;
+    paginatedResult.feeds.data &#x3D; await this.feedExtractor.extractFeeds(sortedFeeds);
+
+    return paginatedResult;
+  }
+
+  /**
+   * 본인이 작성한 게시물을 최신순으로 정렬하여 조회
+   *
+   * @param {number} pageNumber - 페이지 번호 (기본값: 1)
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise&lt;any&gt;} 최신순 정렬된 게시물 목록
+   */
+  async sortMyFeedsByRecent(pageNumber: number &#x3D; 1, userId: string) {
+    const pageSize &#x3D; 9;
+    const criteria &#x3D; {
+      userId,
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    };
+    const sort &#x3D; { createdAt: -1 }; // 최신순으로 정렬
+
+    // 최신순으로 정렬 후 페이지네이션
+    const paginatedResult &#x3D; await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
+    paginatedResult.feeds.data &#x3D; await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
+
+    return paginatedResult;
+  }
+
+  /**
+   * 본인이 작성한 게시물을 좋아요 수(likeCount) 기준으로 정렬하여 조회
+   *
+   * @param {number} pageNumber - 페이지 번호 (기본값: 1)
+   * @param {string} userId - 사용자 ID
+   * @returns {Promise&lt;any&gt;} 인기순 정렬된 게시물 목록
+   */
+  async sortMyFeedsByLikeCount(pageNumber: number &#x3D; 1, userId: string) {
+    const pageSize &#x3D; 9;
+    const criteria &#x3D; {
+      userId,
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    };
+    const sort &#x3D; { likeCount: -1 }; // 인기순 정렬
+
+    const paginatedResult &#x3D; await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
+    paginatedResult.feeds.data &#x3D; await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
+
+    return paginatedResult;
+  }
+
+  /**
+   * 본인이 작성한 게시물 중 특정 날짜 범위(startDate ~ endDate)에 해당하는 게시물을 조회
+   *
+   * @param {string} startDate - 조회 시작 날짜 (YYYY-MM-DD 형식)
+   * @param {string} endDate - 조회 종료 날짜 (YYYY-MM-DD 형식)
+   * @param {number} pageNumber - 페이지 번호
+   * @param {string} userId - 사용자 ID
+   * @throws {BadRequestException} startDate가 endDate보다 늦은 경우
+   * @returns {Promise&lt;any&gt;} 필터링된 게시물 목록 또는 메시지
+   */
+  async fetchMyFeedsByDate(startDate: string, endDate: string, pageNumber: number, userId: string) {
+    const pageSize &#x3D; 9;
+    const InputStartDate: Date &#x3D; new Date(startDate);
+    const InputEndDate: Date &#x3D; new Date(endDate);
+
+    if (InputStartDate &gt; InputEndDate) {
+      throw new BadRequestException(&#x27;startDate는 endDate보다 이전이어야 합니다.&#x27;);
+    }
+    try {
+      // travelPlan의 startDate가 InputStartDate보다 크고
+      // travelPlan의 endDate가 InputEndDate보다 작음
+
+      const criteria &#x3D; {
+        userId,
+        $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+      };
+
+      const AllFeeds &#x3D; await this.feedModel.find(criteria).exec();
+
+      const filteredFeeds &#x3D; AllFeeds.filter((feed) &#x3D;&gt; {
+        if (feed.isPublic &#x3D;&#x3D;&#x3D; false) return false;
+
+        if (!feed.travelPlan) return false;
+
+        if (!feed.travelPlan.dailyPlans) return false;
+
+        for (const dailyPlan of feed.travelPlan.dailyPlans) {
+          if (dailyPlan.date &lt; InputStartDate || dailyPlan.date &gt; InputEndDate) return false;
+        }
+        return feed.travelPlan.dailyPlans.some((dailyPlan) &#x3D;&gt; {
+          const planDate &#x3D; new Date(dailyPlan.date);
+          return planDate &gt;&#x3D; InputStartDate &amp;&amp; planDate &lt;&#x3D; InputEndDate;
+        });
+      });
+
+      if (!filteredFeeds || filteredFeeds.length &#x3D;&#x3D;&#x3D; 0) {
+        return { message: &#x27;게시물이 해당 날짜 사이에 존재하지 않습니다.&#x27; };
+      }
+
+      // 필터링된 배열의 id목록과 일치하는 게시글을 가져오도록 함.
+      const paginationCriteria &#x3D; { _id: { $in: filteredFeeds.map((feed) &#x3D;&gt; feed._id) } };
+
+      const paginatedResult &#x3D; await this.feedService.getPaginatedFeeds(pageNumber, pageSize, paginationCriteria);
+
+      paginatedResult.feeds.data &#x3D; await this.feedExtractor.extractFeeds(paginatedResult.feeds.data, userId || null);
+
+      return paginatedResult;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * AWS S3에 업로드할 커버 이미지용 Signed URL을 생성
+   *
+   * @param {string} fileName - 원본 파일명
+   * @param {string} userId - 사용자 ID (파일명 유니크 처리용)
+   * @returns {Promise&lt;string&gt;} AWS S3 Signed URL
+   */
+  async fetchCoverImageSignedUrl(fileName: string, userId: string) {
+    const fileNameInBucket &#x3D; this.fileUtilService.createFileUnixName(fileName, userId);
+    const filePathName &#x3D; &#x60;cover-image/${fileNameInBucket}&#x60;;
+    return await this.fileUtilService.createSignedUrl(filePathName);
+  }
+
+  /**
+   * 게시물의 커버 이미지를 업데이트
+   *
+   * @param {string} feedId - 대상 피드 ID
+   * @param {string} userId - 사용자 ID
+   * @param {string} imageUrl - 새 커버 이미지 URL
+   * @returns {Promise&lt;FeedDocument | null&gt;} 업데이트된 게시물 문서
+   */
+  async updateCoverImageById(feedId: string, userId: string, imageUrl: string) {
+    const updatedFeed &#x3D; await this.feedModel
+      .findOneAndUpdate({ _id: feedId, userId }, { coverImage: imageUrl }, { runValidators: true, new: true })
+      .exec();
+    return updatedFeed;
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'MyTripService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

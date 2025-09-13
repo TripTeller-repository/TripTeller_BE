@@ -1,0 +1,797 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>tripteller documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">tripteller documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content miscellaneous-variables">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Miscellaneous</li>
+  <li class="breadcrumb-item">Variables</li>
+</ol>
+
+<section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <ul class="index-list">
+                        <li>
+                            <a href="#configuration" title="src/common/config/config.service.ts" ><b>configuration</b>&nbsp;&nbsp;&nbsp;(src/.../config.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#DailyPlanSchema" title="src/daily-plan/daily-plan.schema.ts" ><b>DailyPlanSchema</b>&nbsp;&nbsp;&nbsp;(src/.../daily-plan.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#DailyScheduleSchema" title="src/daily-schedule/daily-schedule.schema.ts" ><b>DailyScheduleSchema</b>&nbsp;&nbsp;&nbsp;(src/.../daily-schedule.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#defaultProfileImage" title="src/user/schemas/user.schema.ts" ><b>defaultProfileImage</b>&nbsp;&nbsp;&nbsp;(src/.../user.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ExpenseSchema" title="src/expense/expense.schema.ts" ><b>ExpenseSchema</b>&nbsp;&nbsp;&nbsp;(src/.../expense.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FeedSchema" title="src/feed/feed.schema.ts" ><b>FeedSchema</b>&nbsp;&nbsp;&nbsp;(src/.../feed.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LoginSchema" title="src/authentication/login.schema.ts" ><b>LoginSchema</b>&nbsp;&nbsp;&nbsp;(src/.../login.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#message" title="src/user/dto/update-user.dto.ts" ><b>message</b>&nbsp;&nbsp;&nbsp;(src/.../update-user.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#passwordMessage" title="src/authentication/dto/create-user.dto.ts" ><b>passwordMessage</b>&nbsp;&nbsp;&nbsp;(src/.../create-user.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#passwordMessage" title="src/authentication/dto/sign-in.dto.ts" ><b>passwordMessage</b>&nbsp;&nbsp;&nbsp;(src/.../sign-in.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#passwordRegex" title="src/authentication/dto/create-user.dto.ts" ><b>passwordRegex</b>&nbsp;&nbsp;&nbsp;(src/.../create-user.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#passwordRegex" title="src/authentication/dto/sign-in.dto.ts" ><b>passwordRegex</b>&nbsp;&nbsp;&nbsp;(src/.../sign-in.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#populate" title="src/feed/feed.schema.ts" ><b>populate</b>&nbsp;&nbsp;&nbsp;(src/.../feed.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#populateDailyPlans" title="src/travel-plan/travel-plan.schema.ts" ><b>populateDailyPlans</b>&nbsp;&nbsp;&nbsp;(src/.../travel-plan.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#populateExpenses" title="src/daily-plan/daily-plan.schema.ts" ><b>populateExpenses</b>&nbsp;&nbsp;&nbsp;(src/.../daily-plan.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#regex" title="src/user/dto/update-user.dto.ts" ><b>regex</b>&nbsp;&nbsp;&nbsp;(src/.../update-user.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ScrapSchema" title="src/scrap/scrap.schema.ts" ><b>ScrapSchema</b>&nbsp;&nbsp;&nbsp;(src/.../scrap.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#TravelPlanSchema" title="src/travel-plan/travel-plan.schema.ts" ><b>TravelPlanSchema</b>&nbsp;&nbsp;&nbsp;(src/.../travel-plan.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#UserSchema" title="src/user/schemas/user.schema.ts" ><b>UserSchema</b>&nbsp;&nbsp;&nbsp;(src/.../user.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#winstonConfig" title="src/common/logger/winston.config.ts" ><b>winstonConfig</b>&nbsp;&nbsp;&nbsp;(src/.../winston.config.ts)</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    <h3>src/common/config/config.service.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="configuration"></a>
+                    <span class="name">
+                        <span ><b>configuration</b></span>
+                        <a href="#configuration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; ({
+  nodeEnv: process.env.NODE_ENV || &#x27;development&#x27;,
+  port: parseInt(process.env.PORT ?? &#x27;3000&#x27;, 10),
+  mongoUri: process.env.MONGODB_URL,
+  allowedOrigins:
+    process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;
+      ? [&#x27;http://localhost:5173&#x27;, &#x27;http://127.0.0.1:5173&#x27;, &#x27;http://localhost:5500&#x27;, &#x27;http://127.0.0.1:5500&#x27;]
+      : [&#x27;https://trip-teller.com&#x27;, &#x27;https://www.trip-teller.com&#x27;],
+
+  // 카카오 로그인
+  kakaoClientId: process.env.KAKAO_CLIENT_ID,
+  kakaoCallbackUrl: process.env.KAKAO_CALLBACK_URL,
+  kakaoRedirectUri: process.env.KAKAO_REDIRECT_URI,
+
+  // 서버 비밀키
+  secretKey: process.env.SECRET_KEY,
+
+  // 슬랙 웹훅
+  slackWebHookUrl: process.env.SLACK_WEBHOOK_URL,
+
+  // AWS S3
+  awsS3AccessKeyId: process.env.AWS_S3_ACCESSKEYID,
+  awsS3SecretAccessKey: process.env.AWS_S3_SECRETACCESSKEY,
+  awsS3Region: process.env.AWS_S3_REGION,
+  awsS3BucketName: process.env.AWS_S3_BUCKET_NAME,
+  awsS3ImgDirectory: process.env.AWS_S3_IMG_DIRECTORY,
+
+  // 기타
+  databaseHost: process.env.DATABASE_HOST,
+  cookieDomain: process.env.COOKIE_DOMAIN,
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/daily-plan/daily-plan.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DailyPlanSchema"></a>
+                    <span class="name">
+                        <span ><b>DailyPlanSchema</b></span>
+                        <a href="#DailyPlanSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(DailyPlan)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="populateExpenses"></a>
+                    <span class="name">
+                        <span ><b>populateExpenses</b></span>
+                        <a href="#populateExpenses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>function (next) {
+  this.populate({
+    path: &#x27;expenses&#x27;,
+    model: &#x27;Expense&#x27;,
+  });
+  this.populate({
+    path: &#x27;dailySchedules&#x27;,
+    model: &#x27;DailySchedule&#x27;,
+  });
+  next();
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/daily-schedule/daily-schedule.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DailyScheduleSchema"></a>
+                    <span class="name">
+                        <span ><b>DailyScheduleSchema</b></span>
+                        <a href="#DailyScheduleSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(DailySchedule)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/user/schemas/user.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="defaultProfileImage"></a>
+                    <span class="name">
+                        <span ><b>defaultProfileImage</b></span>
+                        <a href="#defaultProfileImage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;https://tripteller-images.s3.ap-northeast-2.amazonaws.com/user-profile/%EC%8D%AC%EA%B5%AC%EB%A6%AC.webp&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="UserSchema"></a>
+                    <span class="name">
+                        <span ><b>UserSchema</b></span>
+                        <a href="#UserSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(User)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/expense/expense.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ExpenseSchema"></a>
+                    <span class="name">
+                        <span ><b>ExpenseSchema</b></span>
+                        <a href="#ExpenseSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Expense)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/feed/feed.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FeedSchema"></a>
+                    <span class="name">
+                        <span ><b>FeedSchema</b></span>
+                        <a href="#FeedSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Feed)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="populate"></a>
+                    <span class="name">
+                        <span ><b>populate</b></span>
+                        <a href="#populate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>function (next) {
+  this.populate({
+    path: &#x27;travelPlan&#x27;,
+    model: &#x27;TravelPlan&#x27;,
+  });
+  next();
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/authentication/login.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LoginSchema"></a>
+                    <span class="name">
+                        <span ><b>LoginSchema</b></span>
+                        <a href="#LoginSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Login)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/user/dto/update-user.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="message"></a>
+                    <span class="name">
+                        <span ><b>message</b></span>
+                        <a href="#message"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+  message:
+    &#x27;한글, 영문자, 숫자만 입력 가능합니다. 한글 또는 영문자가 최소 1개 이상 있어야 하고, 총 6글자 이하여야 합니다.&#x27;,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="regex"></a>
+                    <span class="name">
+                        <span ><b>regex</b></span>
+                        <a href="#regex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>/^(?&#x3D;.*[가-힣a-zA-Z])[가-힣\dA-Za-z]{1,6}$/</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/authentication/dto/create-user.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="passwordMessage"></a>
+                    <span class="name">
+                        <span ><b>passwordMessage</b></span>
+                        <a href="#passwordMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+  message:
+    &#x27;한글, 영문자, 숫자만 입력 가능합니다. 한글 또는 영문자가 최소 1개 이상 있어야 하고, 총 6글자 이하여야 합니다.&#x27;,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="passwordRegex"></a>
+                    <span class="name">
+                        <span ><b>passwordRegex</b></span>
+                        <a href="#passwordRegex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>/^(?&#x3D;.*[A-Za-z])(?&#x3D;.*\d)(?&#x3D;.*[@$!%*#?&amp;])[A-Za-z\d@$!%*#?&amp;]{8,}$/</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/authentication/dto/sign-in.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="passwordMessage"></a>
+                    <span class="name">
+                        <span ><b>passwordMessage</b></span>
+                        <a href="#passwordMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+  message:
+    &#x27;한글, 영문자, 숫자만 입력 가능합니다. 한글 또는 영문자가 최소 1개 이상 있어야 하고, 총 6글자 이하여야 합니다.&#x27;,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="passwordRegex"></a>
+                    <span class="name">
+                        <span ><b>passwordRegex</b></span>
+                        <a href="#passwordRegex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>/^(?&#x3D;.*[A-Za-z])(?&#x3D;.*\d)(?&#x3D;.*[@$!%*#?&amp;])[A-Za-z\d@$!%*#?&amp;]{8,}$/</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/travel-plan/travel-plan.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="populateDailyPlans"></a>
+                    <span class="name">
+                        <span ><b>populateDailyPlans</b></span>
+                        <a href="#populateDailyPlans"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>function (next) {
+  this.populate({
+    path: &#x27;dailyPlans&#x27;,
+    model: &#x27;DailyPlan&#x27;,
+  });
+  next();
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TravelPlanSchema"></a>
+                    <span class="name">
+                        <span ><b>TravelPlanSchema</b></span>
+                        <a href="#TravelPlanSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(TravelPlan)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/scrap/scrap.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ScrapSchema"></a>
+                    <span class="name">
+                        <span ><b>ScrapSchema</b></span>
+                        <a href="#ScrapSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Scrap)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/common/logger/winston.config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="winstonConfig"></a>
+                    <span class="name">
+                        <span ><b>winstonConfig</b></span>
+                        <a href="#winstonConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+  transports: [
+    new winston.transports.Console({
+      level: process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;production&#x27; ? &#x27;info&#x27; : &#x27;silly&#x27;,
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        nestWinstonModuleUtilities.format.nestLike(&#x27;TripTeller&#x27;, {
+          prettyPrint: true,
+          colors: true,
+        }),
+      ),
+    }),
+  ],
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'miscellaneous-variables';
+            var COMPODOC_CURRENT_PAGE_URL = 'variables.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

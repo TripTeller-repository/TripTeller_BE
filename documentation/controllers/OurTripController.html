@@ -1,0 +1,1148 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>tripteller documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">tripteller documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content controller">
+                   <div class="content-data">
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Controllers</li>
+  <li class="breadcrumb-item" >OurTripController</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/our-trip/our-trip.controller.ts</code>
+        </p>
+
+            <p class="comment">
+                <h3>Prefix</h3>
+            </p>
+            <p class="comment">
+                <code>our-trip</code>
+            </p>
+
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFeedsByDate" >getFeedsByDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#getOnePublicFeed" >getOnePublicFeed</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getOurFeedsOrderedByLikeCount" >getOurFeedsOrderedByLikeCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getOurFeedsOrderedByRecent" >getOurFeedsOrderedByRecent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getPublicFeeds" >getPublicFeeds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getUserInfoOurTrip" >getUserInfoOurTrip</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFeedsByDate"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getFeedsByDate</b></span>
+                        <a href="#getFeedsByDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFeedsByDate(startDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, endDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req: Request)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;date&#x27;)<br />@ApiOperation({summary: &#x27;모든 공개 게시물 기간별 조회&#x27;, description: &#x27;특정 기간 동안의 공개 게시물을 조회한다.&#x27;})<br />@ApiQuery({name: &#x27;startDate&#x27;, required: true, type: String, description: &#x27;시작 날짜 (YYYY-MM-DD)&#x27;})<br />@ApiQuery({name: &#x27;endDate&#x27;, required: true, type: String, description: &#x27;종료 날짜 (YYYY-MM-DD)&#x27;})<br />@ApiQuery({name: &#x27;pageNumber&#x27;, required: false, type: Number, description: &#x27;페이지 번호&#x27;})<br />@ApiResponse({status: 200, description: &#x27;특정 기간 내의 공개 게시물을 반환합니다.&#x27;, schema: undefined})<br />@ApiResponse({status: 400, description: &#x27;잘못된 날짜 형식 또는 논리적 오류&#x27;})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">src/our-trip/our-trip.controller.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>startDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>endDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>1</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                                        <code>Request</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getOnePublicFeed"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>getOnePublicFeed</b></span>
+                        <a href="#getOnePublicFeed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getOnePublicFeed(feedId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:feedId&#x27;)<br />@ApiOperation({summary: &#x27;게시물 ID로 특정 게시물 조회 (공개)&#x27;, description: &#x27;게시물 ID를 이용해 특정 공개 게시물을 조회한다.&#x27;})<br />@ApiParam({name: &#x27;feedId&#x27;, description: &#x27;조회할 게시물의 ID&#x27;, required: true, type: String})<br />@ApiResponse({status: 200, description: &#x27;특정 게시물을 반환합니다.&#x27;, schema: undefined})<br />@ApiResponse({status: 404, description: &#x27;게시물이 존재하지 않음&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">src/our-trip/our-trip.controller.ts:217</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>feedId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getOurFeedsOrderedByLikeCount"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getOurFeedsOrderedByLikeCount</b></span>
+                        <a href="#getOurFeedsOrderedByLikeCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getOurFeedsOrderedByLikeCount(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req: Request)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;order-by/like-count&#x27;)<br />@ApiOperation({summary: &#x27;모든 공개 게시글 정렬 : 인기순&#x27;, description: &#x27;공개 게시물들을 인기순으로 정렬하여 보여준다.&#x27;})<br />@ApiQuery({name: &#x27;pageNumber&#x27;, required: false, type: Number, description: &#x27;페이지 번호&#x27;})<br />@ApiResponse({status: 200, description: &#x27;인기순으로 정렬된 공개 게시물 목록을 반환합니다.&#x27;, schema: undefined})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">src/our-trip/our-trip.controller.ts:175</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>1</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                                        <code>Request</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getOurFeedsOrderedByRecent"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getOurFeedsOrderedByRecent</b></span>
+                        <a href="#getOurFeedsOrderedByRecent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getOurFeedsOrderedByRecent(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req: Request)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;order-by/recent&#x27;)<br />@ApiOperation({summary: &#x27;모든 공개 게시글 정렬 : 최신순&#x27;, description: &#x27;공개 게시물들을 최신순으로 정렬하여 보여준다.&#x27;})<br />@ApiQuery({name: &#x27;pageNumber&#x27;, required: false, type: Number, description: &#x27;페이지 번호&#x27;})<br />@ApiResponse({status: 200, description: &#x27;최신순으로 정렬된 공개 게시물 목록을 반환합니다.&#x27;, schema: undefined})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">src/our-trip/our-trip.controller.ts:132</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>1</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                                        <code>Request</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPublicFeeds"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getPublicFeeds</b></span>
+                        <a href="#getPublicFeeds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPublicFeeds(pageNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, req: Request)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get()<br />@ApiOperation({summary: &#x27;모든 게시글 조회 (공개)&#x27;, description: &#x27;공개된 모든 게시물을 조회한다.&#x27;})<br />@ApiQuery({name: &#x27;pageNumber&#x27;, required: false, type: Number, description: &#x27;페이지 번호&#x27;})<br />@ApiResponse({status: 200, description: &#x27;모든 공개 게시물 목록을 반환합니다.&#x27;, schema: undefined})<br />@ApiResponse({status: 500, description: &#x27;서버 오류&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">src/our-trip/our-trip.controller.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pageNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                                        <code>Request</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUserInfoOurTrip"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getUserInfoOurTrip</b></span>
+                        <a href="#getUserInfoOurTrip"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUserInfoOurTrip(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;user-info&#x27;)<br />@ApiOperation({summary: &#x27;회원 프로필 정보(이메일, 프로필 이미지 URL, 닉네임)를 회원 ID로 조회&#x27;, description: &#x27;회원 ID를 통해 해당 회원의 이메일, 프로필 이미지 URL, 닉네임을 조회한다.&#x27;})<br />@ApiBody({description: &#x27;회원 ID&#x27;, schema: undefined})<br />@ApiResponse({status: 200, description: &#x27;회원 정보를 반환합니다.&#x27;, schema: undefined})<br />@ApiResponse({status: 400, description: &#x27;잘못된 요청&#x27;})<br />@ApiResponse({status: 404, description: &#x27;회원 정보를 찾을 수 없음&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="252"
+                                    class="link-to-prism">src/our-trip/our-trip.controller.ts:252</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe, Query, Req } from &#x27;@nestjs/common&#x27;;
+import { Body } from &#x27;@nestjs/common&#x27;;
+import { UserService } from &#x27;@user/services/user.service&#x27;;
+import { Post } from &#x27;@nestjs/common&#x27;;
+import { OurTripService } from &#x27;./our-trip.service&#x27;;
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiParam, ApiBody } from &#x27;@nestjs/swagger&#x27;;
+
+@ApiTags(&#x27;OurTrip&#x27;)
+@Controller(&#x27;our-trip&#x27;)
+export class OurTripController {
+  constructor(
+    private readonly ourTripService: OurTripService,
+    private readonly userService: UserService,
+  ) {}
+
+  @Get()
+  @ApiOperation({ summary: &#x27;모든 게시글 조회 (공개)&#x27;, description: &#x27;공개된 모든 게시물을 조회한다.&#x27; })
+  @ApiQuery({ name: &#x27;pageNumber&#x27;, required: false, type: Number, description: &#x27;페이지 번호&#x27; })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;모든 공개 게시물 목록을 반환합니다.&#x27;,
+    schema: {
+      example: {
+        feeds: [
+          {
+            id: &#x27;feedId&#x27;,
+            title: &#x27;경주 여행 나들이~&#x27;,
+            content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+            createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+            likeCount: 23,
+            isPublic: true,
+            coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+          },
+        ],
+        pagination: { totalPages: 10, currentPage: 1, pageSize: 9 },
+      },
+    },
+  })
+  @ApiResponse({ status: 500, description: &#x27;서버 오류&#x27; })
+  async getPublicFeeds(@Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number, @Req() req: Request) {
+    try {
+      const userId &#x3D; req[&#x27;user&#x27;]?.userId;
+      return this.ourTripService.fetchOurFeeds(pageNumber, userId || null);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: &#x27;Failed to fetch public feeds&#x27;,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get(&#x27;date&#x27;)
+  @ApiOperation({
+    summary: &#x27;모든 공개 게시물 기간별 조회&#x27;,
+    description: &#x27;특정 기간 동안의 공개 게시물을 조회한다.&#x27;,
+  })
+  @ApiQuery({ name: &#x27;startDate&#x27;, required: true, type: String, description: &#x27;시작 날짜 (YYYY-MM-DD)&#x27; })
+  @ApiQuery({ name: &#x27;endDate&#x27;, required: true, type: String, description: &#x27;종료 날짜 (YYYY-MM-DD)&#x27; })
+  @ApiQuery({ name: &#x27;pageNumber&#x27;, required: false, type: Number, description: &#x27;페이지 번호&#x27; })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;특정 기간 내의 공개 게시물을 반환합니다.&#x27;,
+    schema: {
+      example: {
+        feeds: [
+          {
+            id: &#x27;feedId&#x27;,
+            title: &#x27;경주 여행 나들이~&#x27;,
+            content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+            createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+            likeCount: 23,
+            isPublic: true,
+            coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+          },
+        ],
+        pagination: { totalPages: 10, currentPage: 1, pageSize: 9 },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: &#x27;잘못된 날짜 형식 또는 논리적 오류&#x27; })
+  @ApiResponse({ status: 500, description: &#x27;서버 오류&#x27; })
+  async getFeedsByDate(
+    @Query(&#x27;startDate&#x27;) startDate: string,
+    @Query(&#x27;endDate&#x27;) endDate: string,
+    @Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number &#x3D; 1,
+    @Req() req: Request,
+  ) {
+    try {
+      const userId &#x3D; req[&#x27;user&#x27;]?.userId;
+      return this.ourTripService.fetchFeedsByDate(startDate, endDate, pageNumber, userId || null);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: &#x27;Failed to fetch public feeds&#x27;,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get(&#x27;order-by/recent&#x27;)
+  @ApiOperation({
+    summary: &#x27;모든 공개 게시글 정렬 : 최신순&#x27;,
+    description: &#x27;공개 게시물들을 최신순으로 정렬하여 보여준다.&#x27;,
+  })
+  @ApiQuery({ name: &#x27;pageNumber&#x27;, required: false, type: Number, description: &#x27;페이지 번호&#x27; })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;최신순으로 정렬된 공개 게시물 목록을 반환합니다.&#x27;,
+    schema: {
+      example: {
+        feeds: [
+          {
+            id: &#x27;feedId&#x27;,
+            title: &#x27;경주 여행 나들이~&#x27;,
+            content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+            createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+            likeCount: 23,
+            isPublic: true,
+            coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+          },
+        ],
+        pagination: { totalPages: 10, currentPage: 1, pageSize: 9 },
+      },
+    },
+  })
+  @ApiResponse({ status: 500, description: &#x27;서버 오류&#x27; })
+  async getOurFeedsOrderedByRecent(@Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number &#x3D; 1, @Req() req: Request) {
+    try {
+      const userId &#x3D; req[&#x27;user&#x27;]?.userId;
+      return this.ourTripService.sortOurFeedsByRecent(pageNumber, userId || null);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: &#x27;Failed to fetch public feeds&#x27;,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // our-trip/order-by/like-count?pageNumber&#x3D;1
+  @Get(&#x27;order-by/like-count&#x27;)
+  @ApiOperation({
+    summary: &#x27;모든 공개 게시글 정렬 : 인기순&#x27;,
+    description: &#x27;공개 게시물들을 인기순으로 정렬하여 보여준다.&#x27;,
+  })
+  @ApiQuery({ name: &#x27;pageNumber&#x27;, required: false, type: Number, description: &#x27;페이지 번호&#x27; })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;인기순으로 정렬된 공개 게시물 목록을 반환합니다.&#x27;,
+    schema: {
+      example: {
+        feeds: [
+          {
+            id: &#x27;feedId&#x27;,
+            title: &#x27;경주 여행 나들이~&#x27;,
+            content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+            createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+            likeCount: 23,
+            isPublic: true,
+            coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+          },
+        ],
+        pagination: { totalPages: 10, currentPage: 1, pageSize: 9 },
+      },
+    },
+  })
+  @ApiResponse({ status: 500, description: &#x27;서버 오류&#x27; })
+  async getOurFeedsOrderedByLikeCount(@Query(&#x27;pageNumber&#x27;, ParseIntPipe) pageNumber: number &#x3D; 1, @Req() req: Request) {
+    try {
+      const userId &#x3D; req[&#x27;user&#x27;]?.userId;
+      return this.ourTripService.sortOurFeedsByLikeCount(pageNumber, userId || null);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: &#x27;Failed to fetch public feeds&#x27;,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get(&#x27;:feedId&#x27;)
+  @ApiOperation({
+    summary: &#x27;게시물 ID로 특정 게시물 조회 (공개)&#x27;,
+    description: &#x27;게시물 ID를 이용해 특정 공개 게시물을 조회한다.&#x27;,
+  })
+  @ApiParam({
+    name: &#x27;feedId&#x27;,
+    description: &#x27;조회할 게시물의 ID&#x27;,
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;특정 게시물을 반환합니다.&#x27;,
+    schema: {
+      example: {
+        id: &#x27;feedId&#x27;,
+        title: &#x27;경주 여행 나들이~&#x27;,
+        content: &#x27;수학여행으로만 갔던 경주! 이번에 가니...&#x27;,
+        createdAt: &#x27;2024-11-01T08:00:00Z&#x27;,
+        likeCount: 23,
+        isPublic: true,
+        coverImage: &#x27;http://example.com/cover.jpg&#x27;,
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: &#x27;게시물이 존재하지 않음&#x27; })
+  getOnePublicFeed(@Param(&#x27;feedId&#x27;) feedId: string) {
+    return this.ourTripService.fetchOurFeed(feedId);
+  }
+
+  @Post(&#x27;user-info&#x27;)
+  @ApiOperation({
+    summary: &#x27;회원 프로필 정보(이메일, 프로필 이미지 URL, 닉네임)를 회원 ID로 조회&#x27;,
+    description: &#x27;회원 ID를 통해 해당 회원의 이메일, 프로필 이미지 URL, 닉네임을 조회한다.&#x27;,
+  })
+  @ApiBody({
+    description: &#x27;회원 ID&#x27;,
+    schema: {
+      type: &#x27;object&#x27;,
+      properties: {
+        userId: { type: &#x27;string&#x27;, format: &#x27;objectid&#x27; },
+      },
+      example: {
+        userId: &#x27;507f191e810c19729de860ea&#x27;,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: &#x27;회원 정보를 반환합니다.&#x27;,
+    schema: {
+      example: {
+        userId: &#x27;userId&#x27;,
+        email: &#x27;example@example.com&#x27;,
+        profileImage: &#x27;http://example.com/profile.jpg&#x27;,
+        nickname: &#x27;User123&#x27;,
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: &#x27;잘못된 요청&#x27; })
+  @ApiResponse({ status: 404, description: &#x27;회원 정보를 찾을 수 없음&#x27; })
+  async getUserInfoOurTrip(@Body(&#x27;userId&#x27;) userId: string) {
+    return this.userService.findUserInfoById(userId);
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
+            var COMPODOC_CURRENT_PAGE_URL = 'OurTripController.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

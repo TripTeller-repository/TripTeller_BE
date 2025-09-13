@@ -1,0 +1,352 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>tripteller documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+	   <link rel="stylesheet" href="./styles/style.css">
+        <link rel="stylesheet" href="./styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="./" class="navbar-brand">tripteller documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content getting-started">
+                   <div class="content-data">
+
+<h1>🌸TripTeller BackEnd Repository</h1>
+<p>📌 <b><a href="https://www.trip-teller.com/">배포 링크</a></b><br> 📌 <b><a href="https://github.com/TripTeller-repository">서비스 소개</a></b><br> 📌 <b><a href="https://api.trip-teller.com/api">스웨거</a></b><br> 📌 <b><a href="https://www.postman.com/tripteller/workspace/tripteller-prod/folder/32621611-481f263e-7597-4405-9cd9-9d0dfb22d124?action=share&creator=32621611&ctx=documentation">포스트맨</a></b><br>
+📌 <b><a href="https://github.com/TripTeller-repository/TripTeller_BE/wiki/MongoDB-%EC%8A%A4%ED%82%A4%EB%A7%88">MongoDB 스키마</a></b></p>
+<hr>
+<h2>테스트 계정</h2>
+<blockquote>
+<p>이메일 : <code>trip@teller.com</code> <br>
+비밀번호 : <code>letsgotrip1234!</code> <br></p>
+</blockquote>
+<hr>
+<h2>바로가기</h2>
+<h3>1. <a href="https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#1-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EC%9A%94-1">프로젝트 개요</a></h3>
+<h3>2. <a href="https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#2-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90-1">프로젝트 아키텍쳐</a></h3>
+<h3>3. <a href="https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#3-%EA%B5%AC%ED%98%84-%EB%82%B4%EC%9A%A9-1">구현 내용</a></h3>
+<h3>4. <a href="https://github.com/TripTeller-repository/TripTeller_BE?tab=readme-ov-file#4-%EC%9D%B4%EC%8A%88-%ED%95%B4%EA%B2%B0-1">이슈 해결</a></h3>
+<hr>
+<h2>프로젝트 개요</h2>
+<h3>🛠️ 기술스택</h3>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>분야</th>
+<th>기술스택</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>💻 백엔드</strong></td>
+<td><img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS" class="img-responsive"> <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" class="img-responsive"> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" class="img-responsive"> <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT" class="img-responsive"></td>
+</tr>
+<tr>
+<td><strong>🚀 배포</strong></td>
+<td><img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white" alt="AWS" class="img-responsive"> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" class="img-responsive"> <img src="https://img.shields.io/badge/Amazon%20EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white" alt="Amazon EC2" class="img-responsive"> <img src="https://img.shields.io/badge/Amazon%20ECR-FF9900?style=for-the-badge&logo=amazon&logoColor=white" alt="Amazon ECR" class="img-responsive"> <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" alt="Amazon S3" class="img-responsive"></td>
+</tr>
+</tbody>
+</table>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>기술</th>
+<th>선정 이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NestJS</strong></td>
+<td>TypeScript 기반 체계적 아키텍처, 객체지향 및 DI 지원</td>
+</tr>
+<tr>
+<td><strong>MongoDB</strong></td>
+<td>스키마리스 구조로 유연한 데이터 모델링, 읽기 최적화</td>
+</tr>
+<tr>
+<td><strong>JWT</strong></td>
+<td>상태 비저장으로 서버 로드 감소, 빠른 인증 처리</td>
+</tr>
+<tr>
+<td><strong>AWS</strong></td>
+<td>광범위한 서비스 제공, 대량 트래픽 처리 용이</td>
+</tr>
+<tr>
+<td><strong>Docker</strong></td>
+<td>개발/배포 환경 일관성, 컨테이너 기반 효율적 배포</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>프로젝트 아키텍처</h2>
+<hr>
+<h2>구현 내용</h2>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>분야</th>
+<th>항목</th>
+<th>세부 전략</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>📦 배포</strong></td>
+<td>인스턴스 배포</td>
+<td>• <strong>초기</strong>: pm2 활용<br>• <strong>후기</strong>: Docker 도입</td>
+</tr>
+<tr>
+<td></td>
+<td>Docker 환경</td>
+<td>• 개발환경과 배포환경 분리 구성</td>
+</tr>
+<tr>
+<td><strong>📊 로깅</strong></td>
+<td>수집 및 알림</td>
+<td>• Winston + CloudWatch → Slack 실시간 알람</td>
+</tr>
+<tr>
+<td></td>
+<td>패턴 표준화</td>
+<td>• 로그 레벨, 타임스탬프, 요청 ID, 사용자 ID 일관된 형식</td>
+</tr>
+<tr>
+<td></td>
+<td>모니터링</td>
+<td>• 에러율, 응답 시간, API 호출 빈도 대시보드 구성</td>
+</tr>
+<tr>
+<td><strong>⚠️ 에러 처리</strong></td>
+<td>계층별 처리</td>
+<td>• <strong>서비스</strong>: 비즈니스 로직 커스텀 예외<br>• <strong>컨트롤러</strong>: 기본 유효성 검증<br>• <strong>글로벌</strong>: Exception Filter로 미처리 예외 캐치</td>
+</tr>
+<tr>
+<td><strong>🏗️ NestJS</strong></td>
+<td>데이터 처리</td>
+<td>• Interceptor를 통한 데이터 직렬화 (비밀번호 등)</td>
+</tr>
+<tr>
+<td></td>
+<td>환경 설정</td>
+<td>• ConfigModule + joi로 환경변수 관리 및 유효성 검증</td>
+</tr>
+<tr>
+<td></td>
+<td>개발 원칙</td>
+<td>• Lifecycle 원칙 준수</td>
+</tr>
+<tr>
+<td></td>
+<td>유효성 검증</td>
+<td>• class-validator 라이브러리 커스텀 검사</td>
+</tr>
+<tr>
+<td><strong>💾 데이터베이스</strong></td>
+<td>트랜잭션</td>
+<td>• 트랜잭션 모듈 생성 후 update/create 작업 적용</td>
+</tr>
+<tr>
+<td><strong>📝 문서화</strong></td>
+<td>API 문서</td>
+<td>• Swagger 활용</td>
+</tr>
+<tr>
+<td></td>
+<td>코드 문서</td>
+<td>• Compodoc 활용</td>
+</tr>
+<tr>
+<td><strong>🔐 인증/인가</strong></td>
+<td>토큰 설계</td>
+<td>• 토큰에 IP/Device 정보 포함</td>
+</tr>
+<tr>
+<td></td>
+<td>토큰 관리</td>
+<td>• <strong>리프레시 토큰</strong>: 쿠키 저장, 1시간 유효<br>• <strong>액세스 토큰</strong>: 10분 유효, 자동 갱신</td>
+</tr>
+<tr>
+<td></td>
+<td>보안 강화</td>
+<td>• 의심스러운 로그인 3회 시 Google Authenticator 2단계 인증<br>• 카카오 소셜 로그인 지원</td>
+</tr>
+<tr>
+<td><strong>🖼️ 이미지</strong></td>
+<td>업로드</td>
+<td>• Presigned URL 활용</td>
+</tr>
+<tr>
+<td></td>
+<td>리사이징</td>
+<td>• 비용 절감을 위해 프론트엔드에서 처리 (소규모 프로젝트)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>이슈 해결</h2>
+<h3>1. 로그인 전략</h3>
+<h3>2. 배포 방식: pm2 vs docker</h3>
+<h3>3. 이미지 리사이징: 프론트엔드 vs 백엔드</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 0;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_URL = 'index.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="./js/libs/custom-elements.min.js"></script>
+       <script src="./js/libs/lit-html.js"></script>
+
+       <script src="./js/menu-wc.js" defer></script>
+       <script nomodule src="./js/menu-wc_es5.js" defer></script>
+
+       <script src="./js/libs/bootstrap-native.js"></script>
+
+       <script src="./js/libs/es6-shim.min.js"></script>
+       <script src="./js/libs/EventDispatcher.js"></script>
+       <script src="./js/libs/promise.min.js"></script>
+
+       <script src="./js/compodoc.js"></script>
+
+       <script src="./js/tabs.js"></script>
+       <script src="./js/menu.js"></script>
+       <script src="./js/libs/clipboard.min.js"></script>
+       <script src="./js/libs/prism.js"></script>
+       <script src="./js/sourceCode.js"></script>
+          <script src="./js/search/search.js"></script>
+          <script src="./js/search/lunr.min.js"></script>
+          <script src="./js/search/search-lunr.js"></script>
+          <script src="./js/search/search_index.js"></script>
+       <script src="./js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

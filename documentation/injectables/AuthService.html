@@ -1,0 +1,2241 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>tripteller documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">tripteller documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >AuthService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/authentication/auth.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#createTokens" >createTokens</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#createUser" >createUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#detectSuspiciousLogin" >detectSuspiciousLogin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchKakaoToken" >fetchKakaoToken</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchKakaoUserInfo" >fetchKakaoUserInfo</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLoginHistory" >getLoginHistory</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#hashPassword" >hashPassword</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#isWithDrawn" >isWithDrawn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#logout" >logout</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#oauthSignIn" >oauthSignIn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#refreshAccessToken" >refreshAccessToken</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#signIn" >signIn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyPassword" >verifyPassword</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyToken" >verifyToken</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#withdraw" >withdraw</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(userModel: <a href="../classes/User.html" target="_self">Model&lt;User&gt;</a>, loginModel: <a href="../classes/Login.html" target="_self">Model&lt;Login&gt;</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/authentication/auth.service.ts:22</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>userModel</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/User.html" target="_self" >Model&lt;User&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>loginModel</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Login.html" target="_self" >Model&lt;Login&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createTokens"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>createTokens</b></span>
+                        <a href="#createTokens"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createTokens(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authProvider: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, deviceInfo: <a href="../interfaces/UserDevice.html" target="_self">UserDevice</a>, ip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/authentication/auth.service.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>JWT 토큰 생성 (access, refresh)</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>authProvider</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>인증 제공자</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>deviceInfo</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserDevice.html" target="_self" >UserDevice</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>디바이스 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>ip</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>클라이언트 IP</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>accessToken, refreshToken</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>createUser</b></span>
+                        <a href="#createUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createUser(createUserDto: <a href="../classes/CreateUserDto.html" target="_self">CreateUserDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">src/authentication/auth.service.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>회원 가입</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>createUserDto</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateUserDto.html" target="_self" >CreateUserDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 회원가입 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>생성된 사용자</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="detectSuspiciousLogin"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>detectSuspiciousLogin</b></span>
+                        <a href="#detectSuspiciousLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>detectSuspiciousLogin(session: <a href="../classes/Login.html" target="_self">Login</a>, deviceInfo: <a href="../interfaces/UserDevice.html" target="_self">UserDevice</a>, ip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="209"
+                                    class="link-to-prism">src/authentication/auth.service.ts:209</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>의심스러운 로그인 감지</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>session</td>
+                                            <td>
+                                                            <code><a href="../classes/Login.html" target="_self" >Login</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>마지막 로그인 세션 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>deviceInfo</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserDevice.html" target="_self" >UserDevice</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>현재 디바이스 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>ip</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>현재 IP 주소</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>의심스러우면 true</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchKakaoToken"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchKakaoToken</b></span>
+                        <a href="#fetchKakaoToken"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchKakaoToken(code: string | null)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="259"
+                                    class="link-to-prism">src/authentication/auth.service.ts:259</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>카카오 토큰 요청 (인가 코드로)</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>code</td>
+                                            <td>
+                                                        <code>string | null</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>카카오 인가 코드</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>accessToken</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchKakaoUserInfo"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchKakaoUserInfo</b></span>
+                        <a href="#fetchKakaoUserInfo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchKakaoUserInfo(kakaoToken: string | null)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="287"
+                                    class="link-to-prism">src/authentication/auth.service.ts:287</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>카카오 사용자 정보 요청</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>kakaoToken</td>
+                                            <td>
+                                                        <code>string | null</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>액세스 토큰</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>사용자 정보 (이메일, 닉네임, 제공자)</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLoginHistory"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getLoginHistory</b></span>
+                        <a href="#getLoginHistory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLoginHistory(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="420"
+                                    class="link-to-prism">src/authentication/auth.service.ts:420</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>로그인 이력 조회 (최근 10건)</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>로그인 세션 배열</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hashPassword"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>hashPassword</b></span>
+                        <a href="#hashPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hashPassword(password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="359"
+                                    class="link-to-prism">src/authentication/auth.service.ts:359</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>비밀번호 해시화</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>password</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>원문 비밀번호</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>해시된 비밀번호</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isWithDrawn"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>isWithDrawn</b></span>
+                        <a href="#isWithDrawn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isWithDrawn(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="437"
+                                    class="link-to-prism">src/authentication/auth.service.ts:437</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>탈퇴 회원 여부 확인</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logout"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>logout</b></span>
+                        <a href="#logout"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>logout(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, sessionId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="408"
+                                    class="link-to-prism">src/authentication/auth.service.ts:408</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>로그아웃 처리</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>sessionId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>세션 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>성공 메시지</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="oauthSignIn"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>oauthSignIn</b></span>
+                        <a href="#oauthSignIn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>oauthSignIn(userInfo, deviceInfo: <a href="../interfaces/UserDevice.html" target="_self">UserDevice</a>, ip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="319"
+                                    class="link-to-prism">src/authentication/auth.service.ts:319</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>OAuth 기반 로그인 처리 (카카오 등)</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userInfo</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>소셜 사용자 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>deviceInfo</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserDevice.html" target="_self" >UserDevice</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>디바이스 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>ip</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>클라이언트 IP</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>accessToken, refreshToken</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="refreshAccessToken"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>refreshAccessToken</b></span>
+                        <a href="#refreshAccessToken"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>refreshAccessToken(refreshToken: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, deviceInfo: <a href="../interfaces/UserDevice.html" target="_self">UserDevice</a>, ip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">src/authentication/auth.service.ts:101</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>액세스 토큰 재발급</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>refreshToken</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>기존 리프레시 토큰</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>deviceInfo</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserDevice.html" target="_self" >UserDevice</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>디바이스 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>ip</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>클라이언트 IP</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>새 accessToken과 의심 로그인 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="signIn"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>signIn</b></span>
+                        <a href="#signIn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>signIn(signInDto: <a href="../classes/SignInDto.html" target="_self">SignInDto</a>, deviceInfo: <a href="../interfaces/UserDevice.html" target="_self">UserDevice</a>, ip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">src/authentication/auth.service.ts:156</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>이메일과 비밀번호 기반 로그인</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>signInDto</td>
+                                            <td>
+                                                            <code><a href="../classes/SignInDto.html" target="_self" >SignInDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>로그인 요청 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>deviceInfo</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserDevice.html" target="_self" >UserDevice</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>디바이스 정보</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>ip</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>클라이언트 IP</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>accessToken, refreshToken, suspicious</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyPassword"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyPassword</b></span>
+                        <a href="#verifyPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyPassword(password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, hashedPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="370"
+                                    class="link-to-prism">src/authentication/auth.service.ts:370</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>비밀번호 검증 (비교)</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>password</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>입력 비밀번호</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>hashedPassword</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>저장된 해시 비밀번호</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>일치 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyToken"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyToken</b></span>
+                        <a href="#verifyToken"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyToken(token: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="229"
+                                    class="link-to-prism">src/authentication/auth.service.ts:229</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>JWT 토큰 검증</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>token</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>JWT 토큰</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;jwt.JwtPayload&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>디코딩된 payload</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="withdraw"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>withdraw</b></span>
+                        <a href="#withdraw"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>withdraw(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="380"
+                                    class="link-to-prism">src/authentication/auth.service.ts:380</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>회원 탈퇴 처리</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>성공 메시지</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
+import { UserService } from &#x27;@user/services/user.service&#x27;;
+import { SignInDto } from &#x27;./dto/sign-in.dto&#x27;;
+import * as jwt from &#x27;jsonwebtoken&#x27;;
+import * as bcrypt from &#x27;bcrypt&#x27;;
+import axios from &#x27;axios&#x27;;
+import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
+import { Model } from &#x27;mongoose&#x27;;
+import { CreateUserDto } from &#x27;./dto/create-user.dto&#x27;;
+import { UserDevice } from &#x27;./user-device.interface&#x27;;
+import { Login } from &#x27;./login.schema&#x27;;
+import { User } from &#x27;@user/schemas/user.schema&#x27;;
+
+// 소셜 로그인 사용자 정보 제공자
+export enum EAuthProvider {
+  GOOGLE &#x3D; &#x27;Google&#x27;,
+  NAVER &#x3D; &#x27;Naver&#x27;,
+  KAKAO &#x3D; &#x27;Kakao&#x27;,
+}
+
+@Injectable()
+export class AuthService {
+  constructor(
+    @InjectModel(&#x27;User&#x27;) private readonly userModel: Model&lt;User&gt;,
+    @InjectModel(&#x27;Login&#x27;) private readonly loginModel: Model&lt;Login&gt;,
+    private readonly userService: UserService,
+  ) {}
+
+  /**
+   * 회원 가입
+   * @param createUserDto - 사용자 회원가입 정보
+   * @returns 생성된 사용자
+   * @throws {UnauthorizedException} 이미 가입된 이메일일 경우
+   */
+  async createUser(createUserDto: CreateUserDto) {
+    const existingEmail &#x3D; await this.userModel.findOne({ email: createUserDto.email });
+    if (existingEmail) {
+      throw new UnauthorizedException(&#x27;이미 가입된 계정입니다.&#x27;);
+    }
+
+    const hashedPassword &#x3D; await this.hashPassword(createUserDto.password);
+    const newUser &#x3D; {
+      ...createUserDto,
+      password: hashedPassword,
+    };
+
+    const user &#x3D; await this.userModel.create(newUser);
+    await user.save();
+    return user;
+  }
+
+  /**
+   * JWT 토큰 생성 (access, refresh)
+   * @description userId, authProvider 및 디바이스 정보를 기반으로 JWT 토큰을 생성
+   * @param userId - 사용자 ID
+   * @param authProvider - 인증 제공자
+   * @param deviceInfo - 디바이스 정보
+   * @param ip - 클라이언트 IP
+   * @returns accessToken, refreshToken
+   */
+  async createTokens(userId: string, authProvider: string, deviceInfo: UserDevice, ip: string) {
+    const loginAt &#x3D; new Date();
+
+    // 로그인 세션 저장
+    const loginSession &#x3D; await this.loginModel.create({
+      userId,
+      deviceInfo,
+      ipAddress: ip,
+      lastLoginAt: loginAt,
+    });
+    await loginSession.save();
+
+    // JWT payload 생성 (디바이스 및 IP 정보 포함)
+    const payload &#x3D; {
+      userId,
+      authProvider,
+      browser: deviceInfo.browser,
+      os: deviceInfo.os,
+      ip,
+      loginAt: loginAt.toISOString(),
+      sessionId: loginSession._id.toString(),
+    };
+
+    // Access Token 생성 (10분)
+    const accessToken &#x3D; jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: &#x27;10m&#x27; });
+
+    // Refresh Token 생성 (1시간)
+    const refreshToken &#x3D; jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: &#x27;1h&#x27; });
+
+    return { accessToken, refreshToken };
+  }
+
+  /**
+   * 액세스 토큰 재발급
+   * @param refreshToken - 기존 리프레시 토큰
+   * @param deviceInfo - 디바이스 정보
+   * @param ip - 클라이언트 IP
+   * @returns 새 accessToken과 의심 로그인 여부
+   * @throws {UnauthorizedException} 토큰 만료 또는 검증 실패 시
+   */
+  async refreshAccessToken(refreshToken: string, deviceInfo: UserDevice, ip: string) {
+    try {
+      // Refresh 토큰 검증
+      const decoded &#x3D; jwt.verify(refreshToken, process.env.SECRET_KEY) as jwt.JwtPayload;
+      const { userId, authProvider, sessionId } &#x3D; decoded;
+
+      // 로그인 세션 확인
+      const session &#x3D; await this.loginModel.findById(sessionId);
+      if (!session) {
+        throw new UnauthorizedException(&#x27;유효하지 않은 세션입니다.&#x27;);
+      }
+
+      // 의심스러운 로그인 감지 (IP나 디바이스 정보가 다를 경우)
+      const isSuspicious &#x3D; this.detectSuspiciousLogin(session, deviceInfo, ip);
+
+      // 로그인 세션 업데이트
+      session.lastLoginAt &#x3D; new Date();
+      session.ipAddress &#x3D; ip;
+      session.deviceInfo &#x3D; deviceInfo;
+      await session.save();
+
+      // 새 페이로드 생성
+      const payload &#x3D; {
+        userId,
+        authProvider,
+        // deviceId: deviceInfo.deviceId,
+        browser: deviceInfo.browser,
+        os: deviceInfo.os,
+        ip,
+        loginAt: new Date().toISOString(),
+        sessionId: session._id.toString(),
+        suspicious: isSuspicious,
+      };
+
+      // 새 액세스 토큰 생성 (10분)
+      const accessToken &#x3D; jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: &#x27;10m&#x27; });
+
+      return { accessToken, suspicious: isSuspicious };
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new UnauthorizedException(&#x27;Refresh token has expired&#x27;);
+      } else {
+        throw new UnauthorizedException(&#x27;Invalid refresh token&#x27;);
+      }
+    }
+  }
+
+  /**
+   * 이메일과 비밀번호 기반 로그인
+   * @param signInDto - 로그인 요청 정보
+   * @param deviceInfo - 디바이스 정보
+   * @param ip - 클라이언트 IP
+   * @returns accessToken, refreshToken, suspicious
+   * @throws {UnauthorizedException} 로그인 실패 시
+   */
+  async signIn(signInDto: SignInDto, deviceInfo: UserDevice, ip: string) {
+    try {
+      // 이메일로 특정 회원 조회
+      const user &#x3D; await this.userService.findUserByEmail(signInDto.email);
+
+      // 회원이 존재하지 않을 경우
+      if (!user || user.deletedAt) {
+        throw new UnauthorizedException(&#x27;등록되지 않은 회원입니다.&#x27;);
+      }
+
+      // 탈퇴한 회원인지 확인
+      if (user.deletedAt !&#x3D;&#x3D; null) {
+        throw new UnauthorizedException(&#x27;탈퇴한 회원입니다.&#x27;);
+      }
+
+      // 비밀번호 확인
+      const isPasswordValid &#x3D; await this.verifyPassword(signInDto.password, user.password);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException(&#x27;잘못된 비밀번호입니다.&#x27;);
+      }
+
+      // 최근 로그인 세션 확인
+      const lastSession &#x3D; await this.loginModel.findOne({ userId: user._id }).sort({ lastLoginAt: -1 });
+
+      // 의심스러운 로그인 감지
+      let suspicious &#x3D; false;
+      if (lastSession) {
+        suspicious &#x3D; this.detectSuspiciousLogin(lastSession, deviceInfo, ip);
+      }
+
+      // 토큰 발행
+      const userIdString &#x3D; user._id.toString();
+      const { accessToken, refreshToken } &#x3D; await this.createTokens(
+        userIdString,
+        user.authProvider || null,
+        deviceInfo,
+        ip,
+      );
+
+      // 로그인 성공 시 액세스 토큰과 리프레시 토큰 반환
+      return { accessToken, refreshToken, suspicious };
+    } catch (error) {
+      throw new UnauthorizedException(&#x27;로그인에 실패하였습니다.&#x27;);
+    }
+  }
+
+  /**
+   * 의심스러운 로그인 감지
+   * @param session - 마지막 로그인 세션 정보
+   * @param deviceInfo - 현재 디바이스 정보
+   * @param ip - 현재 IP 주소
+   * @returns 의심스러우면 true
+   */
+  private detectSuspiciousLogin(session: Login, deviceInfo: UserDevice, ip: string): boolean {
+    // IP 주소가 다를 경우
+    if (session.ipAddress !&#x3D;&#x3D; ip) {
+      return true;
+    }
+
+    // 브라우저나 OS가 변경된 경우
+    if (session.deviceInfo.browser !&#x3D;&#x3D; deviceInfo.browser || session.deviceInfo.os !&#x3D;&#x3D; deviceInfo.os) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * JWT 토큰 검증
+   * @param token - JWT 토큰
+   * @returns 디코딩된 payload
+   * @throws {UnauthorizedException} 유효하지 않은 토큰일 경우
+   */
+  async verifyToken(token: string): Promise&lt;jwt.JwtPayload&gt; {
+    try {
+      const decoded &#x3D; jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
+
+      // 세션 ID가 있는 경우 세션 유효성 확인
+      if (decoded.sessionId) {
+        const session &#x3D; await this.loginModel.findById(decoded.sessionId);
+        if (!session) {
+          throw new UnauthorizedException(&#x27;Invalid session&#x27;);
+        }
+      }
+
+      return decoded;
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new UnauthorizedException(&#x27;Token has expired&#x27;);
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        throw new UnauthorizedException(&#x27;Invalid token&#x27;);
+      } else {
+        throw new UnauthorizedException(&#x27;Token verification error&#x27;);
+      }
+    }
+  }
+
+  /**
+   * 카카오 토큰 요청 (인가 코드로)
+   * @param code - 카카오 인가 코드
+   * @returns accessToken
+   * @throws {UnauthorizedException} 요청 실패 시
+   */
+  async fetchKakaoToken(code: string | null) {
+    try {
+      const url &#x3D; &#x27;https://kauth.kakao.com/oauth/token&#x27;;
+      const data &#x3D; {
+        grant_type: &#x27;authorization_code&#x27;,
+        client_id: process.env.KAKAO_CLIENT_ID,
+        redirect_uri: process.env.KAKAO_CALLBACK_URL,
+        code: code,
+      };
+      const headers &#x3D; {
+        &#x27;Content-type&#x27;: &#x27;application/x-www-form-urlencoded;charset&#x3D;utf-8&#x27;,
+      };
+
+      const response &#x3D; await axios.post(url, data, { headers: headers });
+      const accessToken &#x3D; response.data.access_token;
+      return accessToken;
+    } catch (error) {
+      console.error(error);
+      throw new UnauthorizedException(&#x27;카카오 토큰 요청 실패&#x27;);
+    }
+  }
+
+  /**
+   * 카카오 사용자 정보 요청
+   * @param kakaoToken - 액세스 토큰
+   * @returns 사용자 정보 (이메일, 닉네임, 제공자)
+   * @throws {UnauthorizedException} 요청 실패 시
+   */
+  async fetchKakaoUserInfo(kakaoToken: string | null) {
+    try {
+      const url &#x3D; &#x27;https://kapi.kakao.com/v2/user/me&#x27;;
+      const { data } &#x3D; await axios.get(url, {
+        headers: {
+          Authorization: &#x60;Bearer ${kakaoToken}&#x60;,
+          &#x27;Content-type&#x27;: &#x27;application/x-www-form-urlencoded;charset&#x3D;utf-8&#x27;,
+        },
+      });
+
+      const nickname &#x3D; data.properties.nickname;
+      const email &#x3D; data.kakao_account.email;
+
+      if (!nickname || !email) {
+        throw new UnauthorizedException(&#x27;닉네임 혹은 이메일이 없습니다.&#x27;);
+      }
+
+      const userInfo &#x3D; { email, nickname, authProvider: EAuthProvider.KAKAO };
+      return userInfo;
+    } catch (error) {
+      throw new UnauthorizedException(&#x27;카카오 유저 정보 요청 실패&#x27;);
+    }
+  }
+
+  /**
+   * OAuth 기반 로그인 처리 (카카오 등)
+   * @param userInfo - 소셜 사용자 정보
+   * @param deviceInfo - 디바이스 정보
+   * @param ip - 클라이언트 IP
+   * @returns accessToken, refreshToken
+   * @throws {Error} OAuth 로그인 실패 시
+   */
+  async oauthSignIn(userInfo, deviceInfo: UserDevice, ip: string) {
+    try {
+      // 이메일로 회원 조회
+      const existingUser &#x3D; await this.userModel.findOne({ email: userInfo.email });
+
+      let user;
+      if (!existingUser) {
+        // 가입되지 않은 경우 회원가입 진행
+        const newUser &#x3D; {
+          email: userInfo.email,
+          authProvider: userInfo.authProvider,
+          nickname: userInfo.nickname,
+        };
+
+        user &#x3D; await this.userModel.create(newUser);
+        await user.save();
+      } else {
+        user &#x3D; existingUser;
+      }
+
+      // 토큰 발행
+      const { accessToken, refreshToken } &#x3D; await this.createTokens(
+        user._id.toString(),
+        userInfo.authProvider,
+        deviceInfo,
+        ip,
+      );
+
+      return { accessToken, refreshToken };
+    } catch (error) {
+      console.error(&#x27;OAuth sign-in failed:&#x27;, error);
+      throw new Error(&#x27;OAuth sign-in failed.&#x27;);
+    }
+  }
+
+  /**
+   * 비밀번호 해시화
+   * @param password - 원문 비밀번호
+   * @returns 해시된 비밀번호
+   */
+  async hashPassword(password: string) {
+    const saltRounds &#x3D; 15;
+    return await bcrypt.hash(password, saltRounds);
+  }
+
+  /**
+   * 비밀번호 검증 (비교)
+   * @param password - 입력 비밀번호
+   * @param hashedPassword - 저장된 해시 비밀번호
+   * @returns 일치 여부
+   */
+  async verifyPassword(password: string, hashedPassword: string) {
+    return await bcrypt.compare(password, hashedPassword);
+  }
+
+  /**
+   * 회원 탈퇴 처리
+   * @param userId - 사용자 ID
+   * @returns 성공 메시지
+   * @throws {UnauthorizedException} 탈퇴 실패 시
+   */
+  async withdraw(userId: string) {
+    try {
+      // 회원 ID로 회원 조회
+      const user &#x3D; await this.userService.findUserById(userId);
+
+      if (!user) {
+        throw new NotFoundException(&#x27;해당 ID를 가진 회원이 없습니다.&#x27;);
+      }
+
+      // DB에 있는 회원 id에서 deletedAt의 값을 현재 시각(date)로 만들기
+      await this.userService.deleteUserById(userId, new Date());
+
+      // 모든 로그인 세션 삭제
+      await this.loginModel.deleteMany({ userId });
+
+      return { message: &#x27;해당 회원의 탈퇴처리가 완료되었습니다.&#x27; };
+    } catch (error) {
+      console.error(error);
+      throw new UnauthorizedException(&#x27;회원 탈퇴 중 오류가 발생하였습니다.&#x27;);
+    }
+  }
+
+  /**
+   * 로그아웃 처리
+   * @param userId - 사용자 ID
+   * @param sessionId - 세션 ID
+   * @returns 성공 메시지
+   */
+  async logout(userId: string, sessionId: string) {
+    // 특정 세션 삭제
+    await this.loginModel.findByIdAndDelete(sessionId);
+    return { message: &#x27;로그아웃 되었습니다.&#x27; };
+  }
+
+  /**
+   * 로그인 이력 조회 (최근 10건)
+   * @param userId - 사용자 ID
+   * @returns 로그인 세션 배열
+   * @throws {Error} 조회 실패 시
+   */
+  async getLoginHistory(userId: string) {
+    try {
+      // 해당 사용자의 로그인 이력 조회 (최근 10개)
+      const loginHistory &#x3D; await this.loginModel.find({ userId }).sort({ lastLoginAt: -1 }).limit(10);
+
+      return loginHistory;
+    } catch (error) {
+      console.error(&#x27;Failed to get login history:&#x27;, error);
+      throw new Error(&#x27;로그인 이력 조회에 실패했습니다.&#x27;);
+    }
+  }
+
+  /**
+   * 탈퇴 회원 여부 확인
+   * @param userId - 사용자 ID
+   * @throws {UnauthorizedException} 탈퇴한 사용자일 경우
+   */
+  async isWithDrawn(userId: string) {
+    const user &#x3D; await this.userModel.findById({ _id: userId });
+    if (!user || user.deletedAt !&#x3D;&#x3D; null) {
+      throw new UnauthorizedException(&#x27;이미 탈퇴한 회원입니다.&#x27;);
+    }
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'AuthService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

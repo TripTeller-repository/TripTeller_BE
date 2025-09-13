@@ -1,17 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/authentication/auth.guard';
-import { PutTravelLogImageDto } from 'src/travel-log/dto/put-travel-log-image.dto';
-import { PutTravelLogPostContentDto } from 'src/travel-log/dto/put-travel-log-post-content.dto';
-import { TravelLogService } from 'src/travel-log/travel-log.service';
+import { JwtAuthGuard } from '@auth/guards/auth.guard';
+import { Body, Controller, Delete, Get, Param, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PutTravelLogImageDto } from '@travel-log/dto/put-travel-log-image.dto';
+import { PutTravelLogPostContentDto } from '@travel-log/dto/put-travel-log-post-content.dto';
+import { TravelLogService } from '@travel-log/travel-log.service';
 
 @ApiTags('TravelLog')
+@ApiBearerAuth()
 @Controller('')
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 export class TravelLogController {
   constructor(private readonly travelLogService: TravelLogService) {}
 
-  @Get('dailySchedule/:dailyScheduleId/travel-log')
+  @Get('daily-schedule/:dailyScheduleId/travel-log')
   @ApiOperation({ summary: '여행 로그 조회', description: '특정 dailyScheduleId에 해당하는 여행 로그를 조회합니다.' })
   @ApiParam({
     name: 'dailyScheduleId',
@@ -59,13 +60,13 @@ export class TravelLogController {
       },
     },
   })
-  async getTravelLogImageSignedUrl(@Req() req, @Param('fileName') fileName) {
+  async getTravelLogImageSignedUrl(@Req() req, @Param('fileName') fileName, @Query('contentType') contentType: string) {
     const { userId } = req.user;
-    const signedUrl = await this.travelLogService.fetchTravelLogImageSignedUrl(fileName, userId);
+    const signedUrl = await this.travelLogService.fetchTravelLogImageSignedUrl(fileName, userId, contentType);
     return { signedUrl };
   }
 
-  @Put('dailySchedule/:dailyScheduleId/travel-log/post-content')
+  @Put('daily-schedule/:dailyScheduleId/travel-log/post-content')
   @ApiOperation({ summary: '여행 로그 글 등록', description: '여행 로그의 내용을 등록합니다.' })
   @ApiParam({
     name: 'dailyScheduleId',
@@ -104,7 +105,7 @@ export class TravelLogController {
     return this.travelLogService.updateTravelLogPostContent(dailyScheduleId, putTravelLogPostContentDto);
   }
 
-  @Put('dailySchedule/:dailyScheduleId/travel-log/image')
+  @Put('daily-schedule/:dailyScheduleId/travel-log/image')
   @ApiOperation({ summary: '여행 로그 이미지 등록', description: '여행 로그 이미지를 등록합니다.' })
   @ApiParam({
     name: 'dailyScheduleId',
@@ -143,7 +144,7 @@ export class TravelLogController {
     return this.travelLogService.updateTravelLogImage(dailyScheduleId, putTravelLogImageDto);
   }
 
-  @Delete('dailySchedule/:dailyScheduleId/travel-log')
+  @Delete('daily-schedule/:dailyScheduleId/travel-log')
   @ApiOperation({ summary: '여행 로그 삭제', description: '특정 여행 로그를 삭제합니다.' })
   @ApiParam({
     name: 'dailyScheduleId',

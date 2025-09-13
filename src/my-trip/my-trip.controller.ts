@@ -1,14 +1,15 @@
 import { Controller, Post, Delete, Get, Param, Body, Req, Put, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { MyTripService } from './my-trip.service';
-import { CreateFeedDto } from '../feed/dto/create-feed.dto';
-import { UpdateFeedDto } from '../feed/dto/update-feed.dto';
-import { PostCoverImageDto } from '../feed/dto/post-cover-Image.dto';
-import { AuthGuard } from 'src/authentication/auth.guard';
-import { ApiOperation, ApiQuery, ApiResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { CreateFeedDto } from '../feed/dto/request/create-feed.dto';
+import { UpdateFeedDto } from '../feed/dto/request/update-feed.dto';
+import { PostCoverImageDto } from '../feed/dto/request/post-cover-Image.dto';
+import { ApiOperation, ApiQuery, ApiResponse, ApiParam, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '@auth/guards/auth.guard';
 
 @ApiTags('MyTrip')
+@ApiBearerAuth()
 @Controller('my-trip')
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 export class MyTripController {
   constructor(private readonly myTripService: MyTripService) {}
 

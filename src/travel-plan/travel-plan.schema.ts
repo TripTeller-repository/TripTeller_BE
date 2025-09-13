@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types, Document } from 'mongoose';
-import { DailyPlan } from 'src/daily-plan/daily-plan.schema';
-import { DailySchedule } from 'src/daily-schedule/daily-schedule.schema';
+import { DailyPlan } from '@daily-plan/daily-plan.schema';
+import { DailySchedule } from '@daily-schedule/daily-schedule.schema';
 import { RegionName } from './region-name.enum';
 
 export type TravelPlanDocument = TravelPlan & Document;
@@ -15,11 +15,11 @@ export type TravelPlanDocument = TravelPlan & Document;
 })
 export class TravelPlan {
   // 일별 일정 관리 (참조)
-  @Prop({ type: [{ type: Types.ObjectId, ref: DailySchedule.name }] })
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'DailySchedule' }], default: [] })
   dailySchedules: DailySchedule[];
 
   // 일별 지출 (참조)
-  @Prop({ type: [{ type: Types.ObjectId, ref: DailyPlan.name }] })
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'DailyPlan' }], default: [] })
   dailyPlans: DailyPlan[];
 
   // 지역
@@ -58,12 +58,36 @@ export class TravelPlan {
 // 동적으로 계산하여 변경되며, 일반적인 필드처럼 접근 가능
 const TravelPlanSchema = SchemaFactory.createForClass(TravelPlan);
 
+// // 가상 속성: 시작일
+// TravelPlanSchema.virtual('startDate').get(function (this: TravelPlan) {
+//   // 일별 일정 중 날짜 유형이 'DATE'인 것 필터링하여 날짜 배열 추출 후 정렬
+//   const dates = this.dailyPlans
+//     .filter((dailyPlan) => dailyPlan.dateType === 'DATE') // # => DailyPlan[]
+//     .map((dailyPlan) => dailyPlan.date) // # => Date[]
+//     .sort((a, b) => a.getTime() - b.getTime()); // # => Date[] 대신 정렬된 Date 배열
+
+//   // 가장 이른 날짜 반환
+//   return dates[0];
+// });
+
+// // 가상 속성: 종료일
+// TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
+//   // 일별 일정 중 날짜 유형이 'DATE'인 것 필터링하여 날짜 배열 추출 후 정렬
+//   const dates = this.dailyPlans
+//     .filter((dailyPlan) => dailyPlan.dateType === 'DATE') // # => DailyPlan[]
+//     .map((dailyPlan) => dailyPlan.date) // # => Date[]
+//     .sort((a, b) => a.getTime() - b.getTime()); // # => Date[] 대신 정렬된 Date 배열
+
+//   // 가장 늦은 날짜 반환
+//   return dates[dates.length - 1];
+// });
+
 // 가상 속성: 시작일
 TravelPlanSchema.virtual('startDate').get(function (this: TravelPlan) {
   // 일별 일정 중 날짜 유형이 'DATE'인 것 필터링하여 날짜 배열 추출 후 정렬
-  const dates = this.dailyPlans
-    .filter((dailyPlan) => dailyPlan.dateType === 'DATE') // # => DailyPlan[]
-    .map((dailyPlan) => dailyPlan.date) // # => Date[]
+  const dates = (this.dailyPlans as any[])
+    .filter((dailyPlan) => dailyPlan && dailyPlan.dateType === 'DATE') // # => DailyPlan[]
+    .map((dailyPlan) => dailyPlan.date as Date) // # => Date[]
     .sort((a, b) => a.getTime() - b.getTime()); // # => Date[] 대신 정렬된 Date 배열
 
   // 가장 이른 날짜 반환
@@ -73,9 +97,9 @@ TravelPlanSchema.virtual('startDate').get(function (this: TravelPlan) {
 // 가상 속성: 종료일
 TravelPlanSchema.virtual('endDate').get(function (this: TravelPlan) {
   // 일별 일정 중 날짜 유형이 'DATE'인 것 필터링하여 날짜 배열 추출 후 정렬
-  const dates = this.dailyPlans
-    .filter((dailyPlan) => dailyPlan.dateType === 'DATE') // # => DailyPlan[]
-    .map((dailyPlan) => dailyPlan.date) // # => Date[]
+  const dates = (this.dailyPlans as any[])
+    .filter((dailyPlan) => dailyPlan && dailyPlan.dateType === 'DATE') // # => DailyPlan[]
+    .map((dailyPlan) => dailyPlan.date as Date) // # => Date[]
     .sort((a, b) => a.getTime() - b.getTime()); // # => Date[] 대신 정렬된 Date 배열
 
   // 가장 늦은 날짜 반환

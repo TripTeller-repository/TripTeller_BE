@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import { DailyPlan } from './daily-plan.schema';
 import { CreateDailyPlanDto } from './dto/create-daily-plan.dto';
 import { PutDailyPlanDto } from './dto/put-daily-plan.dto';
-import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
+import { TravelPlan } from '@travel-plan/travel-plan.schema';
 
 @Injectable()
 export class DailyPlanService {
@@ -13,7 +13,14 @@ export class DailyPlanService {
     @InjectModel('TravelPlan') private readonly travelPlanModel: Model<TravelPlan>,
   ) {}
 
-  // 일별 일정 조회
+  /**
+   * 특정 여행 계획 내 일별 일정을 조회
+   *
+   * @param {string} travelPlanId - 여행 계획 ID
+   * @param {string} dailyPlanId - 조회할 일별 일정 ID
+   * @throws {NotFoundException} 해당 일정이 존재하지 않을 경우
+   * @returns {Promise<DailyPlan>} 일별 일정 정보
+   */
   async fetchOneDailyPlan(travelPlanId: string, dailyPlanId: string) {
     const findDailyPlan = await this.dailyPlanModel.findOne({ _id: dailyPlanId }).exec();
     if (!findDailyPlan) {
@@ -22,7 +29,14 @@ export class DailyPlanService {
     return findDailyPlan;
   }
 
-  // 일별 일정 생성
+  /**
+   * 새로운 일별 일정을 생성하고 해당 여행 계획에 연결
+   *
+   * @param {CreateDailyPlanDto} createDailyPlanDto - 생성할 일정 데이터
+   * @param {string} travelPlanId - 연결할 여행 계획 ID
+   * @throws {NotFoundException} 해당 여행 계획이 존재하지 않을 경우
+   * @returns {Promise<DailyPlan>} 생성된 일별 일정
+   */
   async createDailyPlan(createDailyPlanDto: CreateDailyPlanDto, travelPlanId: string) {
     const createDailyPlan = await this.dailyPlanModel.create(createDailyPlanDto);
     const plan = await this.travelPlanModel
@@ -41,7 +55,15 @@ export class DailyPlanService {
     return createDailyPlan;
   }
 
-  // 일별 일정 수정
+  /**
+   * 기존 일별 일정을 수정
+   *
+   * @param {string} travelPlanId - 여행 계획 ID
+   * @param {string} dailyPlanId - 수정할 일정 ID
+   * @param {PutDailyPlanDto} putDailyPlanDto - 수정할 데이터
+   * @throws {NotFoundException} 해당 일정이 존재하지 않을 경우
+   * @returns {Promise<DailyPlan>} 수정된 일정
+   */
   async updateDailyPlan(travelPlanId: string, dailyPlanId: string, putDailyPlanDto: PutDailyPlanDto) {
     const putDailyPlan = await this.dailyPlanModel
       .findOneAndUpdate({ _id: dailyPlanId }, putDailyPlanDto, { runValidators: true, new: true })
@@ -52,7 +74,14 @@ export class DailyPlanService {
     return putDailyPlan;
   }
 
-  // 일별 일정 삭제
+  /**
+   * 일별 일정을 삭제하고 여행 계획의 참조에서도 제거
+   *
+   * @param {string} travelPlanId - 여행 계획 ID
+   * @param {string} dailyPlanId - 삭제할 일정 ID
+   * @throws {NotFoundException} 해당 일정이 존재하지 않을 경우
+   * @returns {Promise<{ message: string }>} 삭제 성공 메시지
+   */
   async deleteDailyPlan(travelPlanId: string, dailyPlanId: string) {
     // travelPlan 모델의 dailyScheduleId 필드(배열)에서 dailyPlanId id값 삭제
     const objectIdDailyPlanId = new Types.ObjectId(dailyPlanId);

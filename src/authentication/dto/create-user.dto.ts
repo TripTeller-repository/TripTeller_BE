@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
-import { EAuthProvider } from '../auth.service';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 const passwordMessage = {
@@ -9,15 +8,6 @@ const passwordMessage = {
 };
 
 export class CreateUserDto {
-  @ApiProperty({
-    description: '소셜 로그인 제공자 (Google, Naver, Kakao)',
-    enum: EAuthProvider,
-    required: true,
-  })
-  @IsOptional()
-  @IsEnum(EAuthProvider)
-  authProvider: EAuthProvider;
-
   @ApiProperty({
     description: '사용자의 이메일 주소 (고유 식별자)',
     example: 'user@example.com',
@@ -38,22 +28,4 @@ export class CreateUserDto {
   @IsString()
   @Matches(passwordRegex, passwordMessage)
   password?: string;
-
-  @ApiProperty({
-    description: '사용자의 닉네임',
-    example: '여행자',
-    required: true,
-  })
-  @IsOptional()
-  @IsString()
-  nickname: string;
-
-  @ApiProperty({
-    description: '사용자의 프로필 이미지 URL',
-    example: 'http://example.com/profile.jpg',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  profileImage?: string;
 }

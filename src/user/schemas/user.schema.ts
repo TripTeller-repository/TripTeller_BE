@@ -9,7 +9,7 @@ enum AuthProvider {
 }
 
 const defaultProfileImage =
-  'https://tripteller.s3.ap-southeast-2.amazonaws.com/travel-log-image/6622249e858c86125a25a648_1713530880079.webp';
+  'https://tripteller-images.s3.ap-northeast-2.amazonaws.com/user-profile/%EC%8D%AC%EA%B5%AC%EB%A6%AC.webp';
 
 @Schema({ timestamps: true, collection: 'User' })
 export class User extends Document {
@@ -41,3 +41,7 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ deletedAt: 1 });
+UserSchema.index({ authProvider: 1 });

@@ -1,6 +1,16 @@
-import { Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe, Query, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { Body } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '@user/services/user.service';
 import { Post } from '@nestjs/common';
 import { OurTripService } from './our-trip.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
@@ -14,7 +24,7 @@ export class OurTripController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: '모든 게시글 조회 (공개)',     description: '공개된 모든 게시물을 조회한다.' })
+  @ApiOperation({ summary: '모든 게시글 조회 (공개)', description: '공개된 모든 게시물을 조회한다.' })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number, description: '페이지 번호' })
   @ApiResponse({
     status: 200,
@@ -37,8 +47,12 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getPublicFeeds(@Query('pageNumber', ParseIntPipe) pageNumber: number, @Req() req: Request) {
+  async getPublicFeeds(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
+      console.log('raw query:', (req as any).query);
       const userId = req['user']?.userId;
       return this.ourTripService.fetchOurFeeds(pageNumber, userId || null);
     } catch (error) {
@@ -52,10 +66,55 @@ export class OurTripController {
     }
   }
 
+  @Get(':feedId/travel-plan/:travelPlanId')
+  @ApiOperation({
+    summary: '특정 여행 일정을 여행 일정 ID로 조회',
+    description: '여행 일정 ID를 통해 특정 여행 일정을 조회한다. 해당 일정의 상세 정보를 포함하여 반환된다.',
+  })
+  @ApiParam({ name: 'feedId', description: 'Feed ID' })
+  @ApiResponse({
+    status: 200,
+    description: '여행 일정을 성공적으로 조회',
+    schema: {
+      example: {
+        _id: '605c72ef153207001f6470f',
+        title: '겨울 여행',
+        region: 'SEOUL',
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: '2024-12-01T00:00:00.000Z',
+        endDate: '2024-12-07T00:00:00.000Z',
+        dailySchedules: [],
+        dailyPlans: [],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '여행 일정을 성공적으로 조회',
+    schema: {
+      example: {
+        _id: '605c72ef153207001f6470f',
+        title: '겨울 여행',
+        region: 'SEOUL',
+        numberOfPeople: 4,
+        totalExpense: 100000,
+        startDate: '2024-12-01T00:00:00.000Z',
+        endDate: '2024-12-07T00:00:00.000Z',
+        dailySchedules: [],
+        dailyPlans: [],
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: '여행 일정을 찾을 수 없음' })
+  async getTravelPlan(@Param('feedId') feedId: string, @Param('travelPlanId') travelPlanId: string) {
+    return await this.ourTripService.fetchTravelPlan(feedId, travelPlanId);
+  }
+
   @Get('date')
-  @ApiOperation({ 
-    summary: '모든 공개 게시물 기간별 조회', 
-    description: '특정 기간 동안의 공개 게시물을 조회한다.' 
+  @ApiOperation({
+    summary: '모든 공개 게시물 기간별 조회',
+    description: '특정 기간 동안의 공개 게시물을 조회한다.',
   })
   @ApiQuery({ name: 'startDate', required: true, type: String, description: '시작 날짜 (YYYY-MM-DD)' })
   @ApiQuery({ name: 'endDate', required: true, type: String, description: '종료 날짜 (YYYY-MM-DD)' })
@@ -85,7 +144,7 @@ export class OurTripController {
   async getFeedsByDate(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
-    @Query('pageNumber', ParseIntPipe) pageNumber: number = 1,
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
     @Req() req: Request,
   ) {
     try {
@@ -103,9 +162,9 @@ export class OurTripController {
   }
 
   @Get('order-by/recent')
-  @ApiOperation({ 
-    summary: '모든 공개 게시글 정렬 : 최신순', 
-    description: '공개 게시물들을 최신순으로 정렬하여 보여준다.' 
+  @ApiOperation({
+    summary: '모든 공개 게시글 정렬 : 최신순',
+    description: '공개 게시물들을 최신순으로 정렬하여 보여준다.',
   })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number, description: '페이지 번호' })
   @ApiResponse({
@@ -129,7 +188,10 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getOurFeedsOrderedByRecent(@Query('pageNumber', ParseIntPipe) pageNumber: number = 1, @Req() req: Request) {
+  async getOurFeedsOrderedByRecent(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
       const userId = req['user']?.userId;
       return this.ourTripService.sortOurFeedsByRecent(pageNumber, userId || null);
@@ -144,11 +206,10 @@ export class OurTripController {
     }
   }
 
-  // our-trip/order-by/like-count?pageNumber=1
   @Get('order-by/like-count')
-  @ApiOperation({ 
-    summary: '모든 공개 게시글 정렬 : 인기순', 
-    description: '공개 게시물들을 인기순으로 정렬하여 보여준다.' 
+  @ApiOperation({
+    summary: '모든 공개 게시글 정렬 : 인기순',
+    description: '공개 게시물들을 인기순으로 정렬하여 보여준다.',
   })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number, description: '페이지 번호' })
   @ApiResponse({
@@ -172,7 +233,10 @@ export class OurTripController {
     },
   })
   @ApiResponse({ status: 500, description: '서버 오류' })
-  async getOurFeedsOrderedByLikeCount(@Query('pageNumber', ParseIntPipe) pageNumber: number = 1, @Req() req: Request) {
+  async getOurFeedsOrderedByLikeCount(
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe) pageNumber: number,
+    @Req() req: Request,
+  ) {
     try {
       const userId = req['user']?.userId;
       return this.ourTripService.sortOurFeedsByLikeCount(pageNumber, userId || null);
@@ -188,9 +252,9 @@ export class OurTripController {
   }
 
   @Get(':feedId')
-  @ApiOperation({ 
-    summary: '게시물 ID로 특정 게시물 조회 (공개)', 
-    description: '게시물 ID를 이용해 특정 공개 게시물을 조회한다.' 
+  @ApiOperation({
+    summary: '게시물 ID로 특정 게시물 조회 (공개)',
+    description: '게시물 ID를 이용해 특정 공개 게시물을 조회한다.',
   })
   @ApiParam({
     name: 'feedId',
@@ -219,20 +283,20 @@ export class OurTripController {
   }
 
   @Post('user-info')
-  @ApiOperation({ 
-    summary: '회원 프로필 정보(이메일, 프로필 이미지 URL, 닉네임)를 회원 ID로 조회', 
-    description: '회원 ID를 통해 해당 회원의 이메일, 프로필 이미지 URL, 닉네임을 조회한다.' 
+  @ApiOperation({
+    summary: '회원 프로필 정보(이메일, 프로필 이미지 URL, 닉네임)를 회원 ID로 조회',
+    description: '회원 ID를 통해 해당 회원의 이메일, 프로필 이미지 URL, 닉네임을 조회한다.',
   })
   @ApiBody({
     description: '회원 ID',
     schema: {
       type: 'object',
       properties: {
-        userId: { type: 'string', format: 'objectid' }
+        userId: { type: 'string', format: 'objectid' },
       },
       example: {
-        userId: '507f191e810c19729de860ea'
-      }
+        userId: '507f191e810c19729de860ea',
+      },
     },
   })
   @ApiResponse({

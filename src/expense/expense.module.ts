@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ExpenseController } from './expense.controller';
 import { ExpenseSchema } from './expense.schema';
 import { ExpenseService } from './expense.service';
-import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
+import { DailyPlanSchema } from '@daily-plan/daily-plan.schema';
 
 @Module({
   imports: [

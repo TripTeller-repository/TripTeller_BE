@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 import { OurTripController } from './our-trip.controller';
 import { OurTripService } from './our-trip.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FeedSchema } from 'src/feed/feed.schema';
-import { FeedExtractor } from 'src/utils/feed-extractor';
-import { TravelPlanSchema } from 'src/travel-plan/travel-plan.schema';
-import { UserSchema } from 'src/user/user.schema';
-import { ScrapSchema } from 'src/scrap/scrap.schema';
-import { UserService } from 'src/user/user.service';
-import { AuthService } from 'src/authentication/auth.service';
-import { FeedModule } from 'src/feed/feed.module';
-import { DailyPlanSchema } from 'src/daily-plan/daily-plan.schema';
-import { LoginSchema } from 'src/authentication/login.schema';
+import { FeedSchema } from '@feed/feed.schema';
+import { TravelPlanSchema } from '@travel-plan/travel-plan.schema';
+import { ScrapSchema } from '@scrap/scrap.schema';
+import { AuthService } from '@auth/auth.service';
+import { FeedModule } from '@feed/feed.module';
+import { DailyPlanSchema } from '@daily-plan/daily-plan.schema';
+import { LoginSchema } from '@auth/login.schema';
+import { UserSchema } from '@user/schemas/user.schema';
+import { UserModule } from '@user/user.module';
+import { TwoFactorSchema } from '@auth/schemas/two-factor.schema';
 
 @Module({
   imports: [
@@ -22,10 +22,12 @@ import { LoginSchema } from 'src/authentication/login.schema';
       { name: 'Scrap', schema: ScrapSchema },
       { name: 'DailyPlan', schema: DailyPlanSchema },
       { name: 'Login', schema: LoginSchema },
+      { name: 'TwoFactor', schema: TwoFactorSchema },
     ]),
     FeedModule,
+    UserModule,
   ],
-  providers: [OurTripService, FeedExtractor, UserService, AuthService],
+  providers: [OurTripService, AuthService],
   controllers: [OurTripController],
 })
 export class OurTripModule {}

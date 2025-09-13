@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { TravelPlan } from '@travel-plan/travel-plan.schema';
 import { Document, Types } from 'mongoose';
-import { TravelPlan } from 'src/travel-plan/travel-plan.schema';
 
 export type FeedDocument = Feed & Document;
 
@@ -59,5 +59,9 @@ const populate = function (next) {
 
 FeedSchema.pre('find', populate);
 FeedSchema.pre('findOne', populate);
+
+FeedSchema.index({ likeCount: -1, createdAt: -1 });
+FeedSchema.index({ userId: 1 });
+FeedSchema.index({ travelPlan: 1 });
 
 export { FeedSchema };

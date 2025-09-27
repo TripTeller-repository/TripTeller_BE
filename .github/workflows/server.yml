@@ -3,7 +3,7 @@ name: TripTeller Docker Deployment
 on:
   push:
     branches:
-      - master # 추후 master로 합칠 예정
+      - prod-docker # 추후 master로 합칠 예정
   workflow_dispatch:
     inputs:
       api_tag:
@@ -56,10 +56,8 @@ jobs:
           COOKIE_DOMAIN=${{ secrets.COOKIE_DOMAIN }}
           EOF
 
-      # .env는 compose에서 안 쓰므로 제거(불필요하면 굳이 만들지 않음)
-
       - name: Copy deployment files to server
-        uses: appleboy/scp-action@v0.1.7 # ← 버전 PIN
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.REMOTE_IP }}
           username: ${{ secrets.REMOTE_USER }}
@@ -74,8 +72,8 @@ jobs:
             scripts/deploy.sh
           target: /home/ubuntu/TripTeller_BE/
 
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v0.1.10 # ← 버전 PIN
+      - name: Deploy with Docker
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.REMOTE_IP }}
           username: ${{ secrets.REMOTE_USER }}
@@ -84,7 +82,4 @@ jobs:
           script: |
             set -euo pipefail
             cd /home/ubuntu/TripTeller_BE
-            git pull origin master
-            pm2 kill
-            npm i
-            npm run pm2:prod
+            docker compose -f docker-compose.yml --env-file .production.env up -d --build

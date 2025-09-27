@@ -1,6 +1,8 @@
 services:
   api:
-    build: .
+    build: 
+      context: .
+      dockerfile: ./deploy/prod.dockerfile  # 프로덕션 빌드로
     image: tripteller-api:local
     env_file:
       - .production.env

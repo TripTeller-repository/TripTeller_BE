@@ -23,9 +23,12 @@ RUN apk add --no-cache curl
 WORKDIR /usr/src/app
 
 # 프로덕션 의존성만 설치
-COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev && npm prune --omit=dev
+# COPY package.json package-lock.json ./
+# RUN --mount=type=cache,target=/root/.npm \
+#     npm ci --omit=dev && npm prune --omit=dev
+
+# devDependencies 포함해서 설치
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 # 빌드 아티팩트만 복사
 COPY --from=builder /usr/src/app/dist ./dist

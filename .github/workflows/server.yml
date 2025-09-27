@@ -84,16 +84,7 @@ jobs:
           script: |
             set -euo pipefail
             cd /home/ubuntu/TripTeller_BE
-
-            # (있으면) git 동기화
-            if [ -d .git ]; then
-              git fetch --all --prune || true
-              git checkout prod-docker
-              git pull origin prod-docker
-            fi
-
-            mkdir -p ./logs/nginx ./nginx
-            chmod +x ./scripts/deploy.sh
-
-            # 서버 로컬 빌드 + 롤링 배포 (중요: API_TAG 전달)
-            ./scripts/deploy.sh "${{ steps.tag.outputs.API_TAG }}"
+            git pull origin master
+            pm2 kill
+            npm i
+            npm run pm2:prod

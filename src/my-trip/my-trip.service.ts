@@ -30,25 +30,22 @@ export class MyTripService {
     // 해당 게시물 찾기
     const feed = await this.feedModel.findById(feedId).exec();
 
-    // 해당 회원 일치 여부 확인
-    if (userId !== feed.userId) {
-      throw new UnauthorizedException('해당 회원의 게시물이 아닙니다.');
-    }
-
     // 해당 게시물이 존재하는지 확인
     if (!feed) {
       throw new NotFoundException('해당 게시물이 존재하지 않습니다.');
     }
 
-    // coverImage 필드 가져오기
-    const coverImage = feed.coverImage;
+    // 해당 회원 일치 여부 확인
+    if (userId !== feed.userId) {
+      throw new UnauthorizedException('해당 회원의 게시물이 아닙니다.');
+    }
 
     // 커버 이미지가 존재하는지 확인
-    if (!feed) {
+    if (!feed.coverImage) {
       throw new NotFoundException('해당 게시물의 커버 이미지가 존재하지 않습니다.');
     }
 
-    return { coverImage };
+    return { coverImage: feed.coverImage };
   }
 
   /**
@@ -59,9 +56,8 @@ export class MyTripService {
    * @returns {Promise<FeedDocument>} 생성된 게시물
    */
   async createFeed(createFeedDto: CreateFeedDto, userId: string) {
-    createFeedDto.userId = userId;
-    const createdFeed = await this.feedModel.create(createFeedDto);
-    return createdFeed.save();
+    const feedData = { ...createFeedDto, userId };
+    return this.feedModel.create(feedData);
   }
 
   /**
@@ -74,22 +70,17 @@ export class MyTripService {
    * @returns {{ message: string }} 수정 완료 메시지
    */
   async updateFeed(feedId: string, userId: string, updateFeedDto: UpdateFeedDto) {
-    const feed = await this.feedModel.findById({ _id: feedId }).exec();
-    if (!feed) {
-      throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
-    }
-    if (feed.userId !== userId) {
-      throw new NotFoundException('게시물 작성자만 수정이 가능합니다.');
-    }
-    const updatedFeed = await this.feedModel.findByIdAndUpdate({ _id: feedId }, updateFeedDto, {
-      runValidators: true,
-      new: true,
-    });
+    await this.feedService.checkFeedAuthor(feedId, userId);
+
+    const updatedFeed = await this.feedModel
+      .findByIdAndUpdate(feedId, updateFeedDto, { runValidators: true, new: true })
+      .exec();
+
     if (!updatedFeed) {
       throw new NotFoundException('게시물 수정 중 오류가 발생하였습니다.');
-    } else {
-      return { message: '해당 게시물이 수정되었습니다.' };
     }
+
+    return { message: '해당 게시물이 수정되었습니다.' };
   }
 
   /**
@@ -101,15 +92,10 @@ export class MyTripService {
    * @returns {{ message: string }} 삭제 완료 메시지
    */
   async removeFeed(feedId: string, userId: string) {
-    const feed = await this.feedModel.findById(feedId).exec();
-    if (!feed) {
-      throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
-    }
-    if (feed.userId !== userId) {
-      throw new NotFoundException('게시물 작성자만 삭제가 가능합니다.');
-    }
-    feed.deletedAt = new Date();
-    feed.save();
+    await this.feedService.checkFeedAuthor(feedId, userId);
+
+    await this.feedModel.updateOne({ _id: feedId }, { deletedAt: new Date() }).exec();
+
     return { message: '해당 게시물이 삭제되었습니다.' };
   }
 
@@ -121,21 +107,7 @@ export class MyTripService {
    * @returns {Promise<any>} 페이지네이션된 게시물 데이터
    */
   async fetchAllMyFeedsPaginated(pageNumber: number = 1, userId: string) {
-    const pageSize = 9;
-    const criteria = { userId, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] };
-
-    // A. id 페이지만
-    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
-    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
-
-    // B. populate 포함 도큐 조회
-    const docs = await this.feedService.findByIds(ids);
-
-    // C. 추출
-    const data = await this.feedExtractor.extractFeeds(docs);
-
-    // D. 새 페이지 객체로 조립 (타입 충돌 방지)
-    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
+    return this.feedExtractor.fetchMyFeeds(pageNumber, userId);
   }
 
   /**
@@ -146,20 +118,14 @@ export class MyTripService {
    * @returns {Promise<any>} 해당 게시물 정보
    */
   async fetchMyFeedByFeedId(feedId: string, userId: string) {
-    const feed = await this.feedModel.findById(feedId).exec();
-    if (!feed) {
-      throw new NotFoundException('게시물을 찾을 수 없습니다.');
-    }
-    if (feed.userId !== userId) {
-      throw new NotFoundException('게시물 작성자만 조회가 가능합니다.');
-    }
-    const feeds = await this.feedModel
-      .find({
-        _id: feedId,
-        $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
-      })
-      .exec();
-    return this.feedExtractor.extractFeeds(feeds);
+    await this.feedService.checkFeedAuthor(feedId, userId);
+
+    const feed = await this.feedService.findByIds([feedId]);
+    return this.feedExtractor.extractFeeds(feed, userId);
+  }
+
+  async fetchMyFeedsByVisibility(pageNumber: number = 1, userId: string, isPublic: boolean) {
+    return this.feedExtractor.fetchMyFeeds(pageNumber, userId, { isPublic });
   }
 
   /**
@@ -170,15 +136,7 @@ export class MyTripService {
    * @returns {Promise<any>} 페이지네이션된 공개 게시물 목록
    */
   async fetchMyPublicFeeds(pageNumber: number = 1, userId: string) {
-    const pageSize = 9;
-    const criteria = { userId, isPublic: true, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] };
-
-    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
-    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
-    const docs = await this.feedService.findByIds(ids);
-    const data = await this.feedExtractor.extractFeeds(docs);
-
-    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
+    return this.fetchMyFeedsByVisibility(pageNumber, userId, true);
   }
 
   /**
@@ -189,15 +147,12 @@ export class MyTripService {
    * @returns {Promise<any>} 페이지네이션된 비공개 게시물 목록
    */
   async fetchMyPrivateFeeds(pageNumber: number = 1, userId: string) {
-    const pageSize = 9;
-    const criteria = { userId, isPublic: false, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] };
+    return this.fetchMyFeedsByVisibility(pageNumber, userId, false);
+  }
 
-    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
-    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
-    const docs = await this.feedService.findByIds(ids);
-    const data = await this.feedExtractor.extractFeeds(docs);
-
-    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
+  async sortMyFeeds(pageNumber: number = 1, userId: string, sortField: string, sortOrder: -1 | 1 = -1) {
+    const sort = { [sortField]: sortOrder };
+    return this.feedExtractor.fetchMyFeeds(pageNumber, userId, { sort });
   }
 
   /**
@@ -208,16 +163,7 @@ export class MyTripService {
    * @returns {Promise<any>} 최신순 정렬된 게시물 목록
    */
   async sortMyFeedsByRecent(pageNumber: number = 1, userId: string) {
-    const pageSize = 9;
-    const criteria = { userId, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] };
-    const sort = { createdAt: -1 };
-
-    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
-    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
-    const docs = await this.feedService.findByIds(ids);
-    const data = await this.feedExtractor.extractFeeds(docs, userId || undefined);
-
-    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
+    return this.sortMyFeeds(pageNumber, userId, 'createdAt', -1);
   }
 
   /**
@@ -228,16 +174,7 @@ export class MyTripService {
    * @returns {Promise<any>} 인기순 정렬된 게시물 목록
    */
   async sortMyFeedsByLikeCount(pageNumber: number = 1, userId: string) {
-    const pageSize = 9;
-    const criteria = { userId, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] };
-    const sort = { likeCount: -1 };
-
-    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
-    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
-    const docs = await this.feedService.findByIds(ids);
-    const data = await this.feedExtractor.extractFeeds(docs, userId || undefined);
-
-    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
+    return this.sortMyFeeds(pageNumber, userId, 'likeCount', -1);
   }
 
   /**

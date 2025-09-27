@@ -5,7 +5,7 @@ import { FeedDocument } from '@feed/feed.schema';
 import { Logger } from 'winston';
 import { TravelPlan } from '@travel-plan/travel-plan.schema';
 import { FeedExtractor } from '@feed/feed-extractor';
-import { ExtractedFeed } from './dto/response/extracted-feed.dto';
+// import { ExtractedFeed } from './dto/response/extracted-feed.dto';
 import { FeedScrapService } from '@common/services/feed-scrap.service';
 
 @Injectable()
@@ -49,26 +49,22 @@ export class FeedService implements OnModuleInit {
    * @returns {Promise<FeedDocument[]>} 피드 목록
    */
   async findByIds(feedIds: string[]): Promise<FeedDocument[]> {
+    if (!feedIds || feedIds.length === 0) return [];
+
     const feeds = await this.feedModel
       .find({ _id: { $in: feedIds } })
       .populate({
         path: 'travelPlan',
-        model: 'TravelPlan',
-        select: 'title region totalExpense dailyPlans dailySchedules startDate endDate',
-        populate: [
-          {
-            path: 'dailyPlans',
-            model: 'DailyPlan',
-            select: 'date dateType dailySchedules',
-            populate: { path: 'dailySchedules', model: 'DailySchedule', select: 'imageUrl isThumbnail' },
-          },
-          { path: 'dailySchedules', model: 'DailySchedule', select: 'imageUrl isThumbnail' },
-        ],
+        select: 'title region startDate endDate dailySchedules',
+        populate: {
+          path: 'dailySchedules',
+          select: 'imageUrl isThumbnail',
+        },
       })
-      .lean();
+      .lean()
+      .exec();
 
-    const map = new Map(feeds.map((f) => [String(f._id), f]));
-    return feedIds.map((id) => map.get(String(id))).filter(Boolean) as any;
+    return feeds as any;
   }
 
   /**
@@ -79,6 +75,7 @@ export class FeedService implements OnModuleInit {
    */
   async getTravelPlanForFeed(feedId: string): Promise<TravelPlan | null> {
     const feed = await this.findById(feedId);
+    if (!feed.travelPlan) return null;
     return this.travelPlanModel.findById(feed.travelPlan).exec();
   }
 
@@ -92,7 +89,7 @@ export class FeedService implements OnModuleInit {
   async checkFeedAuthor(feedId: string, userId: string): Promise<void> {
     const feed = await this.findById(feedId);
     if (feed.userId !== userId) {
-      throw new NotFoundException('작성자 불일치');
+      throw new NotFoundException('게시물 작성자만 접근할 수 있습니다.');
     }
   }
 
@@ -104,42 +101,27 @@ export class FeedService implements OnModuleInit {
    * @param {any} sort - 정렬 기준
    * @returns {Promise<any>} 페이지네이션된 피드 목록과 메타데이터
    */
-  async getPaginatedFeeds(
-    pageNumber = 1,
-    pageSize = 9,
-    criteria: any = {},
-    sort: any = { likeCount: -1, createdAt: -1 },
-  ) {
+  async getPaginatedFeeds(pageNumber = 1, pageSize = 9, criteria: any = {}, sort: any = { createdAt: -1 }) {
     const skip = (pageNumber - 1) * pageSize;
 
-    const commonMatch = {
-      $and: [{ travelPlan: { $ne: null } }, { $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] }],
-    };
-
-    const pipeline: any[] = [
+    const pipeline = [
       { $match: criteria },
       {
         $facet: {
-          metadata: [{ $match: commonMatch }, { $count: 'totalCount' }],
-          data: [
-            { $match: commonMatch },
-            { $sort: sort },
-            { $skip: skip },
-            { $limit: pageSize },
-            { $project: { _id: 1 } },
-          ],
+          metadata: [{ $count: 'totalCount' }],
+          data: [{ $sort: sort }, { $skip: skip }, { $limit: pageSize }, { $project: { _id: 1 } }],
         },
       },
     ];
 
-    const result = await this.feedModel.aggregate(pipeline).exec();
-    const totalCount = result[0].metadata[0]?.totalCount ?? 0;
+    const [result] = await this.feedModel.aggregate(pipeline).exec();
+    const totalCount = result.metadata[0]?.totalCount ?? 0;
 
     return {
       success: true,
       feeds: {
         metadata: { totalCount, pageNumber, pageSize },
-        data: result[0].data,
+        data: result.data,
       },
     };
   }
@@ -150,7 +132,7 @@ export class FeedService implements OnModuleInit {
    * @returns {Promise<FeedDocument[]>} 조건에 맞는 피드 목록
    */
   async findFeedsByCriteria(criteria: any): Promise<FeedDocument[]> {
-    return this.feedModel.find(criteria);
+    return this.feedModel.find(criteria).exec();
   }
 
   /**
@@ -183,22 +165,22 @@ export class FeedService implements OnModuleInit {
     await this.feedModel.updateOne({ _id: feedId }, { $inc: { likeCount: -1 } });
   }
 
-  /**
-   * 스크랩한 게시물 목록을 조회 (공통 서비스 활용)
-   * @param {string} userId - 사용자의 ID
-   * @returns {Promise<ExtractedFeed[]>} 사용자가 스크랩한 게시물 목록
-   */
-  async fetchScraps(userId: string): Promise<ExtractedFeed[]> {
-    // 공통 서비스에서 스크랩 목록 조회
-    const scrapLists = await this.feedScrapService.findScrapsByUserId(userId);
+  // /**
+  //  * 스크랩한 게시물 목록을 조회 (공통 서비스 활용)
+  //  * @param {string} userId - 사용자의 ID
+  //  * @returns {Promise<ExtractedFeed[]>} 사용자가 스크랩한 게시물 목록
+  //  */
+  // async fetchScraps(userId: string): Promise<ExtractedFeed[]> {
+  //   // 공통 서비스에서 스크랩 목록 조회
+  //   const scrapLists = await this.feedScrapService.findScrapsByUserId(userId);
 
-    // 스크랩된 피드 ID 목록을 추출
-    const feedIds = scrapLists.map((scrap) => scrap.feedId);
+  //   // 스크랩된 피드 ID 목록을 추출
+  //   const feedIds = scrapLists.map((scrap) => scrap.feedId);
 
-    // 여러 피드 데이터를 조회
-    const myFeeds = await this.findByIds(feedIds);
+  //   // 여러 피드 데이터를 조회
+  //   const myFeeds = await this.findByIds(feedIds);
 
-    // FeedExtractor를 통해 피드를 추출
-    return this.feedExtractor.extractFeeds(myFeeds, userId);
-  }
+  //   // FeedExtractor를 통해 피드를 추출
+  //   return this.feedExtractor.extractFeeds(myFeeds, userId);
+  // }
 }

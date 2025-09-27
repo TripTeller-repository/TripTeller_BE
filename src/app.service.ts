@@ -34,7 +34,7 @@ export class AppService {
           <span style="font-weight: bold; color: #4CAF50;">상태:</span> ${serverInfo.status} <br>
           <span style="font-weight: bold; color: #4CAF50;">환경:</span> ${serverInfo.environment} <br>
           <span style="font-weight: bold; color: #4CAF50;">시간:</span> ${new Date().toLocaleString('ko-KR')}
-
+>>>>>>>>> Temporary merge branch 2
         </p>
 
         <div style="font-size: 18px; margin-top: 20px;">

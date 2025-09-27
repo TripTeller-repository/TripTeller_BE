@@ -45,23 +45,9 @@ export default class Feed {
 const FeedSchema = SchemaFactory.createForClass(Feed);
 
 // 인덱스 추가
-FeedSchema.index({ userId: 1 });
+FeedSchema.index({ isPublic: 1, deletedAt: 1, createdAt: -1 });
 FeedSchema.index({ travelPlan: 1 });
-FeedSchema.index({ createdAt: -1 });
-
-const populate = function (next) {
-  this.populate({
-    path: 'travelPlan',
-    model: 'TravelPlan',
-  });
-  next();
-};
-
-FeedSchema.pre('find', populate);
-FeedSchema.pre('findOne', populate);
-
+FeedSchema.index({ userId: 1 });
 FeedSchema.index({ likeCount: -1, createdAt: -1 });
-FeedSchema.index({ userId: 1 });
-FeedSchema.index({ travelPlan: 1 });
 
 export { FeedSchema };

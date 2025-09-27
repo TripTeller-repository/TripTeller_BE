@@ -23,30 +23,7 @@ export class OurTripService {
    * @returns {Promise<any>} 페이지네이션된 공개 게시물 목록
    */
   async fetchOurFeeds(pageNumber: number = 1, userId?: string) {
-    const pageSize = 9;
-    const criteria = {
-      isPublic: true,
-      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
-    };
-
-    // 1) id 페이지만 받아옴
-    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria);
-
-    // 2) ids → 문서 조회 (populate 포함)
-    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
-    const docs = await this.feedService.findByIds(ids);
-
-    // 3) extractor로 슬림 변환
-    const data = await this.feedExtractor.extractFeeds(docs, userId ?? undefined);
-
-    // 4) 새 페이지 객체로 조립해서 반환 (원본 .data에 대입하지 않음)
-    return {
-      success: true,
-      feeds: {
-        metadata: pageIds.feeds.metadata,
-        data,
-      },
-    };
+    return this.feedExtractor.fetchPublicFeeds(pageNumber, userId);
   }
 
   // 특정 여행 일정 조회
@@ -79,6 +56,11 @@ export class OurTripService {
     return extractedFeed;
   }
 
+  async sortOurFeeds(pageNumber: number = 1, userId: string | undefined, sortField: string, sortOrder: -1 | 1 = -1) {
+    const sort = { [sortField]: sortOrder };
+    return this.feedExtractor.fetchPublicFeeds(pageNumber, userId, sort);
+  }
+
   /**
    * 공개 게시물을 최신순으로 정렬하여 조회 (페이지네이션)
    *
@@ -87,19 +69,7 @@ export class OurTripService {
    * @returns {Promise<any>} 최신순으로 정렬된 페이지네이션된 게시물 목록
    */
   async sortOurFeedsByRecent(pageNumber: number = 1, userId?: string) {
-    const pageSize = 9;
-    const criteria = {
-      isPublic: true,
-      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
-    };
-    const sort = { createdAt: -1 };
-
-    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
-    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
-    const docs = await this.feedService.findByIds(ids);
-    const data = await this.feedExtractor.extractFeeds(docs, userId ?? undefined);
-
-    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
+    return this.sortOurFeeds(pageNumber, userId, 'createdAt', -1);
   }
 
   /**
@@ -110,20 +80,9 @@ export class OurTripService {
    * @returns {Promise<any>} 인기순으로 정렬된 페이지네이션된 게시물 목록
    */
   async sortOurFeedsByLikeCount(pageNumber: number = 1, userId?: string) {
-    const pageSize = 9;
-    const criteria = {
-      isPublic: true,
-      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
-    };
-    const sort = { likeCount: -1 };
-
-    const pageIds = await this.feedService.getPaginatedFeeds(pageNumber, pageSize, criteria, sort);
-    const ids = (pageIds.feeds.data ?? []).map((d) => String((d as any)._id));
-    const docs = await this.feedService.findByIds(ids);
-    const data = await this.feedExtractor.extractFeeds(docs, userId ?? undefined);
-
-    return { success: true, feeds: { metadata: pageIds.feeds.metadata, data } };
+    return this.sortOurFeeds(pageNumber, userId, 'likeCount', -1);
   }
+
   /**
    * 공개 게시물을 특정 날짜 범위(startDate ~ endDate)에 해당하는 게시물만 조회
    *

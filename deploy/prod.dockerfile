@@ -42,7 +42,7 @@ LABEL org.opencontainers.image.title="TripTeller API" \
 
 # 내부 헬스체크 (도메인X, 로컬만)
 HEALTHCHECK --interval=10s --timeout=5s --start-period=20s --retries=5 \
-  CMD curl -fsS http://localhost:3000/health-check >/dev/null || exit 1
+  CMD curl -fsS http://localhost:3000/health >/dev/null || exit 1
 
 ENV NODE_ENV=production
 ENV PORT=3000

@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 
 # 1) 의존성 레이어 캐시 최적화
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci
+RUN npm ci
 
 # 2) 소스 복사 및 빌드
 COPY . .

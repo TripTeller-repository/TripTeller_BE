@@ -3,7 +3,7 @@ name: TripTeller Docker Deployment
 on:
   push:
     branches:
-      - prod-docker # 추후 master로 합칠 예정
+      - prod-docker
   workflow_dispatch:
     inputs:
       api_tag:
@@ -55,7 +55,23 @@ jobs:
           NODE_ENV=production
           COOKIE_DOMAIN=${{ secrets.COOKIE_DOMAIN }}
           EOF
-
+      - name: Check deployment files
+        run: |
+          echo "🔍 Checking deployment files..."
+          for f in \
+            .production.env \
+            docker-compose.yml \
+            nginx/default.conf \
+            nginx/nginx.conf \
+            deploy/prod.dockerfile \
+            scripts/deploy.sh
+          do
+            if [ -f "$f" ]; then
+              echo "✅ $f exists"
+            else
+              echo "❌ $f missing"
+            fi
+          done
       - name: Copy deployment files to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -71,8 +87,9 @@ jobs:
             deploy/prod.dockerfile
             scripts/deploy.sh
           target: /home/ubuntu/TripTeller_BE/
+          debug: true
 
-      - name: Deploy with Docker
+      - name: Zero-downtime Deploy
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.REMOTE_IP }}
@@ -82,4 +99,5 @@ jobs:
           script: |
             set -euo pipefail
             cd /home/ubuntu/TripTeller_BE
-            docker compose -f docker-compose.yml --env-file .production.env up -d --build
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh "${{ steps.tag.outputs.API_TAG }}"

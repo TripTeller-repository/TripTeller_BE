@@ -1,30 +1,32 @@
 services:
   api:
-    build: 
+    # 스케일링 위해서는 container_name 불필요
+    build:
       context: .
-      dockerfile: ./deploy/prod.dockerfile  # 프로덕션 빌드로
-    image: tripteller-api:local
+      dockerfile: ./deploy/prod.dockerfile # 프로덕션 빌드로
+    image: tripteller-api:${API_TAG:-latest}
     env_file:
       - .production.env
     networks:
       - tripteller-network
     restart: unless-stopped
-    init: true                # PID 1 시그널 처리
+    init: true
     expose:
-      - "3000"
+      - '3000'
     healthcheck:
       # 이미지에 curl 설치 (Dockerfile에 apk add --no-cache curl)
-      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/health-check >/dev/null || exit 1"]
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:3000/health >/dev/null || exit 1']
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
+    volumes:
+      - ./logs/api:/usr/src/app/logs
 
   nginx:
     image: nginx:stable-alpine
-    container_name: tripteller-nginx
     ports:
-      - "80:80"
+      - '80:80'
     networks:
       - tripteller-network
     volumes:

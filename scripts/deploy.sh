@@ -11,7 +11,7 @@ set -euo pipefail
 PROJECT_DIR="/home/ubuntu/TripTeller_BE"
 COMPOSE_FILE="docker-compose.yml"
 PROJECT_NAME="tripteller"
-TIMEOUT=300                # 헬스 대기 타임아웃(초)
+TIMEOUT=300           # 헬스 대기 타임아웃(초)
 LOG_FILE="$PROJECT_DIR/deployment.log"
 
 API_TAG="${1:-}"          # ex) 1.3.0-a1b2c3d  (필수)
@@ -22,9 +22,12 @@ log(){ echo "[$(date +'%F %T')] $1" | tee -a "$LOG_FILE"; }
 die(){ log "ERROR: $1"; exit 1; }
 
 health_count(){
-  docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" ps -q api \
-  | xargs -r docker inspect --format '{{.State.Health.Status}}' 2>/dev/null \
-  | awk '$1=="healthy"{c++} END{print c+0}'
+  local ids
+  ids=$(docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" ps -q api)
+  [ -z "$ids" ] && echo 0 && return
+  echo "$ids" | while read -r id; do
+    docker inspect --format '{{.State.Health.Status}}' "$id" 2>/dev/null || echo ""
+  done | grep -c "^healthy$" || echo 0
 }
 
 running_ids(){
@@ -63,9 +66,13 @@ log "Starting deployment - API_TAG=$API_TAG"
 
 # (중요) 필수 ENV 키 유효성 검사 - 필요시 목록 추가
 require_env_keys ".production.env" \
-  "NODE_ENV" \
-  "MONGODB_URL" \
-  "SECRET_KEY"
+  "NODE_ENV" "MONGODB_URL" "SECRET_KEY" \
+  "AWS_S3_ACCESSKEYID" "AWS_S3_SECRETACCESSKEY" "AWS_S3_REGION" "AWS_S3_BUCKET_NAME" \
+  "KAKAO_CLIENT_ID" "KAKAO_CALLBACK_URL" "KAKAO_REDIRECT_URI" "COOKIE_DOMAIN"
+
+# 로그 디렉토리 준비 (node UID=1000 권한)
+mkdir -p logs/api logs/nginx
+chown -R 1000:1000 logs/api || true
 
 # ====== 1) 새 이미지 '서버 로컬 빌드' ======
 log "Build new image locally"
@@ -75,14 +82,18 @@ docker build \
   -f deploy/prod.dockerfile \
   --build-arg BUILD_VERSION="$API_TAG" \
   --build-arg GIT_SHA="$GIT_SHA" \
-  -t ghcr.io/you/tripteller-api:$API_TAG \
-  -t ghcr.io/you/tripteller-api:latest \
+  -t tripteller-api:$API_TAG \
+  -t tripteller-api:latest \
   .
 
 # ====== 2) 기준 상태 보장 (api 2개 + nginx) ======
 log "Ensure baseline: api x2 + nginx"
 export API_TAG="$API_TAG"  # compose에서 image: ...:${API_TAG:-latest}에 주입
-docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" up -d --scale api=2 nginx || true
+if ! docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" ps nginx &>/dev/null; then
+  docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" up -d --scale api=2 nginx
+else
+  docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" up -d --scale api=2 --no-recreate api
+fi
 
 # ====== 3) 스케일 아웃 (2 -> 3) ======
 log "Scale out to 3"
@@ -107,8 +118,8 @@ while :; do
   sleep 5
 done
 
-# ====== 5) 구버전 우선 제거 → scale 2 ======
-TARGET_IMAGE="ghcr.io/you/tripteller-api:${API_TAG}"
+# ====== 5) 트래픽 전환(Nginx reload) 후 구버전 그레이스풀 종료 → scale 2 ======
+TARGET_IMAGE="tripteller-api:${API_TAG}"
 log "Prune old-image containers first (keep $TARGET_IMAGE)"
 
 mapfile -t IDS < <(running_ids)
@@ -123,15 +134,26 @@ for id in "${IDS[@]}"; do
   fi
 done
 
+# 신버전이 최소 1개 healthy → Nginx 설정 검증 후 reload
+log "Nginx config test..."
+if docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" exec -T nginx nginx -t; then
+  log "Reloading nginx..."
+  docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" exec -T nginx nginx -s reload
+  sleep 20   # 트래픽이 새 인스턴스로 넘어가도록 여유
+else
+  die "Nginx config test failed"
+fi
+
 # 현재 개수에서 2개만 남기도록, 우선 OLD부터 stop
 TOTAL=${#IDS[@]}
 TO_STOP=$(( TOTAL - 2 ))
 for id in "${OLD_IDS[@]}"; do
   [ "$TO_STOP" -le 0 ] && break
-  log "Stopping old-image container: $id"
-  docker stop "$id" >/dev/null
+  log "Gracefully stopping old-image container: $id"
+  docker stop --time=30 "$id" >/dev/null
   TO_STOP=$(( TO_STOP - 1 ))
 done
+
 # 그래도 남으면(전부 신버전이었을 때 등) NEW에서 정리
 if [ "$TO_STOP" -gt 0 ]; then
   for id in "${NEW_IDS[@]}"; do

@@ -1,9 +1,11 @@
 #!/bin/bash
 # TripTeller BE - 무중단 롤링 배포 (서버에서 로컬 빌드)
-# 1) 서버에서 Docker 이미지 빌드
-# 2) scale 2 -> 3 (신버전 추가)
-# 3) 헬스체크 통과 확인
-# 4) 구버전 우선 제거 후 scale 2로 정리
+# 1) 서버에서 Docker 이미지 빌드 및 태깅
+# 2) 새 컨테이너(신버전) 추가 -> 스케일 3
+# 3) 전체 컨테이너 중 healthy >= 2개일 때까지 대기
+# 4) 구버전 컨테이너(이전 이미지) 종료
+# 5) scale 2로 정리 및 안정화 로그 출력 
+# 6) 배포 완료 검증 및 불필요한 리소스 정리
 
 set -euo pipefail
 
@@ -21,13 +23,23 @@ API_TAG="${1:-}"          # ex) 1.3.0-a1b2c3d  (필수)
 log(){ echo "[$(date +'%F %T')] $1" | tee -a "$LOG_FILE"; }
 die(){ log "ERROR: $1"; exit 1; }
 
+# 새로운 컨테이너만 헬스체크 후 카운트
 health_count(){
+  local target_image="$1"
   local ids
   ids=$(docker compose -f "$COMPOSE_FILE" --project-name "$PROJECT_NAME" ps -q api)
   [ -z "$ids" ] && echo 0 && return
-  echo "$ids" | while read -r id; do
-    docker inspect --format '{{.State.Health.Status}}' "$id" 2>/dev/null || echo ""
-  done | grep -c "^healthy$" || echo 0
+
+  local healthy=0
+  for id in $ids; do
+    local img status
+    img=$(docker inspect --format '{{.Config.Image}}' "$id" 2>/dev/null || echo "")
+    status=$(docker inspect --format '{{.State.Health.Status}}' "$id" 2>/dev/null || echo "")
+    if [[ "$img" == "$target_image" && "$status" == "healthy" ]]; then
+      ((healthy++))
+    fi
+  done
+  echo "$healthy"
 }
 
 running_ids(){
